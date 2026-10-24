@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-10-24T12:49:56Z",
+  "branch": "main",
+  "commit": "2e4be1394b73ce9d202df89f9e8bd183efdb5219",
+  "command": "./tools/pnpm.sh infra:smoke",
+  "serverCommand": "./tools/pnpm.sh dev",
+  "server": {
+    "runtime": "Vite 8.3.5 + Cloudflare Vite plugin / local Workerd",
+    "origin": "http://127.0.0.1:5173",
+    "localAuthConfigured": false,
+    "externalProvidersTested": false
+  },
+  "exitCode": 0,
+  "result": {
+    "status": "PASS",
+    "scope": "local static assets + real workerd Hono route + fail-closed API",
+    "unauthenticatedPrivateApiStatus": 503,
+    "privateDataReturned": false
+  },
+  "limits": [
+    "No Neon Auth, Data API, Cloudflare Access, R2, email, GOWA, or AI provider behavior was tested.",
+    "This local smoke result does not prove live Worker identity propagation, RLS isolation, or production readiness."
+  ],
+  "runtimeVersions": {
+    "node": "24.22.1",
+    "pnpm": "11.25.0"
+  }
+}

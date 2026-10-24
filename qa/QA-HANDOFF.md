@@ -51,7 +51,7 @@ Gunakan wrapper `tools/pnpm.sh` agar runtime repo-pinned Node 24 dipilih bila te
 | `./tools/pnpm.sh build` | PASS | Worker + PWA build disajikan ulang dari preview yang baru dimulai; belum deploy |
 | `./tools/pnpm.sh test:e2e` | 25/25 PASS, Chromium 156.0.8078.4, local app + mocked APIs | Tidak menguji provider nyata; termasuk auth, 2 alur offline, transaksi lokal/demo dan 3 interaksi session management |
 | `./tools/pnpm.sh test:visual` | 14/14 PASS pada 320–1920px | Layout/overflow dan screen auth/settings; tidak dibandingkan pixel-per-pixel dengan 180 PNG sumber |
-| `./tools/pnpm.sh infra:smoke` | PASS, preview Worker/Hono loopback yang baru dibangun | Tanpa provider; unauthenticated `/api/v1/me` menghasilkan 503 karena Auth lokal tidak dikonfigurasi dan tidak mengembalikan data privat |
+| `./tools/pnpm.sh infra:smoke` | PASS, Vite dev lokal menjalankan route Hono melalui Cloudflare Workerd | Exit 0; unauthenticated `/api/v1/me` menghasilkan 503 fail-closed saat Auth lokal tidak dikonfigurasi. Tidak menguji provider eksternal; bukti: [`local-infra-smoke-2026-10-24.json`](./local-infra-smoke-2026-10-24.json). |
 | Neon staging role-policy probe | PASS; `qa/staging-role-policy-probe-2026-10-24.json` | A/B sintetis, claims disetel SQL, DDL/fixture di-rollback; tidak menguji Worker/JWT nyata |
 | Neon staging migration `0000`–`0004` | PASS untuk apply dan readback policy di branch `venfinance-p0-auth-20261024` | `0004` diterapkan via MCP transaction; tidak menguji fresh database, rollback, atau Worker identity live; P1-007 tetap blocked |
 | `tools/verify-local-postgres.py` (P0 generic probe) | 22/22 PASS pada bukti lokal sebelumnya | Probe schema generik P0-005, bukan migration aplikasi Drizzle/P3 |
