@@ -24,6 +24,7 @@
     "packages/**/*.ts",
     "packages/**/*.tsx",
     "*.ts",
+    "qa/neon-poc/**/*.ts",
     "qa/e2e/**/*.ts",
     "qa/fixtures/**/*.ts",
     "qa/fixtures/**/*.tsx"

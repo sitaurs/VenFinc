@@ -89,9 +89,13 @@
       "dependencies": [
         "P0-001"
       ],
-      "status": "in_progress",
+      "status": "blocked",
       "evidence": [
         "qa/neon-readiness-2026-10-24.json",
+        "qa/neon-poc/evidence-2026-10-24.json",
+        "qa/neon-poc/README.md",
+        "qa/neon-poc/test_auth.mjs",
+        "apps/edge/src/p0-005.worker.ts",
         "qa/database/README.md",
         "qa/database/ledger-probe.sql",
         "tools/verify-local-postgres.py",
@@ -102,7 +106,7 @@
       "blockers": [
         {
           "gate": "G-IDENTITY",
-          "reason": "Owner authorized staging-only POC on br-aged-mode-b4rcy9i0. Managed Auth and a bounded 0.25-CU endpoint are now provisioned on staging. SQL/RLS helpers are not installed, neondb_owner bypasses RLS, and JWT-bound requests through the disposable Worker are still unverified. Production branch remains untouched; operator MFA/step-up and verified email remain release blockers."
+          "reason": "Staging Neon Auth + Hono Worker + RLS POC proves A/B isolation, anonymous and tampered-JWT denial, and forged-owner denial through the staging Data API. Sign-out does not invalidate the already-issued 900-second JWT: replay returned HTTP 200, and the token has no sid claim. Direct @neondatabase/serverless access as the NOBYPASSRLS worker role cannot call auth.user_id() because schema auth is owned by cloud_admin. Operator MFA/email verification remain release blockers. A separate staging MCP-created role has BYPASSRLS and membership in neon_superuser; it was not used and its password was rotated, but deletion requires owner approval. Production branch was not mutated."
         }
       ],
       "minimum_verification": "PoC user A/B, session revoke, role JWT + akses data ditolak; dokumentasi masalah."

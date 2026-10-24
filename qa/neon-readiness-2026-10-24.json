@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-24T06:54:20Z",
+  "checkedAt": "2026-10-24T07:51:36Z",
   "projectId": "hidden-unit-95812377",
   "organizationId": "org-snowy-scene-55200104",
   "organizationDisplayName": "VenFinance",
@@ -51,7 +51,7 @@
     "computeEndpoint": {
       "id": "ep-rapid-flower-b46lkbp1",
       "type": "read_write",
-      "stateAtLastCheck": "active",
+      "stateAtLastCheck": "idle",
       "autoscalingMinCu": 0.25,
       "autoscalingMaxCu": 0.25,
       "poolerEnabled": false,
@@ -106,16 +106,18 @@
     "branchId": "br-aged-mode-b4rcy9i0",
     "productionBranchExcluded": true
   },
-  "state": "staging_poc_authorized_in_progress",
+  "state": "staging_poc_partial_session_revocation_blocked",
   "stagingPocExecution": {
-    "lastUpdatedAt": "2026-10-24T07:05:52Z",
+    "lastUpdatedAt": "2026-10-24T07:51:36Z",
     "branchId": "br-aged-mode-b4rcy9i0",
     "neonAuth": {
       "enabled": true,
       "provider": "better_auth",
       "databaseName": "neondb",
-      "generatedSchemas": ["neon_auth"],
-      "authSessionObserved": false,
+      "generatedSchemas": [
+        "neon_auth"
+      ],
+      "authSessionObserved": true,
       "productionBranchCheckedAndUnchanged": true
     },
     "compute": {
@@ -124,7 +126,8 @@
       "minCu": 0.25,
       "maxCu": 0.25,
       "suspendTimeoutSecondsReported": 0,
-      "accountRejectedSuspendTimeoutOverride": true
+      "accountRejectedSuspendTimeoutOverride": true,
+      "stateAfterCleanup": "idle"
     },
     "readOnlySqlChecks": {
       "authUserIdFunctionInitiallyPresent": false,
@@ -133,16 +136,87 @@
       "authenticatedDatabaseRolePresent": false,
       "databaseOwnerBypassesRls": true
     },
-    "sqlProbeApplied": false,
-    "syntheticAuthUsersCreated": false,
-    "workerJwtRlsTested": false,
-    "secretsPersisted": false
+    "sqlProbeApplied": true,
+    "syntheticAuthUsersCreated": true,
+    "workerJwtRlsTested": true,
+    "secretsPersisted": false,
+    "dataApi": {
+      "enabled": true,
+      "url": "https://ep-rapid-flower-b46lkbp1.apirest.c-6.us-east-2.aws.neon.tech/neondb/rest/v1",
+      "authProvider": "neon_auth",
+      "exposedSchemas": [
+        "p0_005_poc"
+      ],
+      "defaultGrantsApplied": false,
+      "maxRows": 20,
+      "corsAllowedOrigins": [
+        "http://127.0.0.1:8788"
+      ],
+      "authenticatedRoleBypassesRls": false,
+      "anonymousRoleBypassesRls": false,
+      "endpointState": "active"
+    },
+    "postPocSqlChecks": {
+      "pgSessionJwtInstalled": true,
+      "authUserIdFunctionPresent": true,
+      "databaseOwnerBypassesRls": true,
+      "authenticatedRolePresent": true,
+      "authenticatedRoleBypassesRls": false,
+      "runtimeWorkerRoleBypassesRls": false,
+      "ownerProbeRlsEnabled": true,
+      "ownerProbeForceRlsEnabled": true,
+      "ownerPolicy": "owner_user_id = auth.user_id()"
+    },
+    "workerTestResults": {
+      "workerHealth": true,
+      "anonymousDenied": true,
+      "syntheticSignupA": true,
+      "syntheticSignupB": true,
+      "jwtTamperDenied": true,
+      "forgedOwnerDenied": true,
+      "userAReadsOwnOnly": true,
+      "userBCannotReadA": true,
+      "userBReadsOwnOnly": true,
+      "userACannotReadB": true,
+      "sessionRevocationEnforced": false,
+      "staleJwtReplayStatusAfterSignout": 200,
+      "tokenLifetimeSeconds": 900,
+      "sessionIdClaimPresent": false,
+      "testCommandExitCode": 1
+    },
+    "directServerlessDriver": {
+      "runtimeRole": "venfinance_p0_worker",
+      "runtimeRoleBypassesRls": false,
+      "authUserIdCallable": false,
+      "observedError": "permission denied for schema auth",
+      "authSchemaOwner": "cloud_admin",
+      "authSchemaUsageGrantAppliedToRuntime": false,
+      "databaseUrlRemovedFromLocalVars": true
+    },
+    "roleSafetyFinding": {
+      "role": "venfinance_p0_runtime",
+      "bypassesRls": true,
+      "memberOf": "neon_superuser",
+      "usedByWorker": false,
+      "passwordRotatedAfterDiscovery": true,
+      "revokeAttempt": "denied by Neon: permission denied to revoke role neon_superuser",
+      "cleanupRequiresOwnerApproval": true
+    }
   },
   "productionReady": false,
   "productionMigrationApplied": false,
   "secretsPersisted": false,
-  "note": "Owner explicitly authorized the P0-005 staging POC. This remains a pre-execution checkpoint; external state and evidence fields update after each operation. No production mutation or deployment is authorized.",
+  "note": "POC Neon Auth + Hono Worker + RLS berjalan hanya pada branch staging. A/B isolation, anonymous/tampered JWT denial, dan forged-owner denial lulus via Neon Data API. P0-005 tetap blocked: JWT replay setelah sign-out masih diterima hingga token expiry (900 detik, tanpa sid). Production branch tidak dimutasi. Ada role staging bawaan MCP dengan BYPASSRLS/neon_superuser yang tidak digunakan; penghapusan memerlukan approval owner.",
   "accessPath": "MCP",
   "cliLoginRequired": false,
-  "cliFallbackWithdrawn": true
+  "cliFallbackWithdrawn": true,
+  "productionReadback": {
+    "branchId": "br-rapid-band-b4jw3tlq",
+    "isDefault": true,
+    "authEnabled": false,
+    "dataApiEnabled": false,
+    "sqlWritesPerformed": false,
+    "endpointStateObservedAtFinalRead": "active",
+    "endpointActionTaken": false
+  }
 }

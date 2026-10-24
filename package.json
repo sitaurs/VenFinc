@@ -11,7 +11,7 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "preview": "vite preview --host 127.0.0.1",
-    "lint": "eslint apps packages qa/e2e qa/fixtures tools/*.mjs *.ts && stylelint 'packages/ui/src/**/*.css' 'apps/web/src/**/*.css' --allow-empty-input",
+    "lint": "eslint apps packages qa/e2e qa/fixtures qa/neon-poc tools/*.mjs *.ts && stylelint 'packages/ui/src/**/*.css' 'apps/web/src/**/*.css' --allow-empty-input",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "build": "vite build",

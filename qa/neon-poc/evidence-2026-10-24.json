@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-24T07:51:36Z",
+  "taskId": "P0-005",
+  "result": "blocked_after_partial_pass",
+  "scope": {
+    "projectId": "hidden-unit-95812377",
+    "stagingBranchId": "br-aged-mode-b4rcy9i0",
+    "stagingBranchName": "venfinance-p0-auth-20261024",
+    "stagingEndpointId": "ep-rapid-flower-b46lkbp1",
+    "productionBranchId": "br-rapid-band-b4jw3tlq",
+    "productionBranchAuthEnabled": false,
+    "productionBranchDataApiEnabled": false,
+    "productionSqlWritten": false,
+    "productionEndpointActionTaken": false,
+    "productionEndpointStateObservedAtEnd": "active",
+    "productionEndpointNote": "The Neon endpoint inventory reported the production endpoint active at final readback. No production endpoint was started, suspended, queried with SQL, or otherwise changed during this POC.",
+    "stagingEndpointStateAfterCleanup": "idle",
+    "stagingEndpointMinCu": 0.25,
+    "stagingEndpointMaxCu": 0.25,
+    "stagingEndpointSuspendTimeoutSeconds": 0
+  },
+  "stagingAuth": {
+    "provider": "better_auth",
+    "emailPasswordSignupEnabled": true,
+    "verificationRequired": false,
+    "trustedOrigin": "http://127.0.0.1:5173",
+    "jwtIssuerObserved": "https://ep-rapid-flower-b46lkbp1.neonauth.c-6.us-east-2.aws.neon.tech",
+    "jwtRoleObserved": "authenticated",
+    "jwtLifetimeSeconds": 900,
+    "jwtContainsSessionIdClaim": false,
+    "signupAndSignoutHttpStatuses": [200, 200]
+  },
+  "stagingDataApi": {
+    "enabled": true,
+    "url": "https://ep-rapid-flower-b46lkbp1.apirest.c-6.us-east-2.aws.neon.tech/neondb/rest/v1",
+    "authProvider": "neon_auth",
+    "exposedSchemas": ["p0_005_poc"],
+    "defaultGrantsApplied": false,
+    "maxRows": 20,
+    "aggregatesEnabled": false,
+    "openApiMode": "disabled",
+    "corsAllowedOrigins": ["http://127.0.0.1:8788"],
+    "authenticatedRoleBypassesRls": false,
+    "anonymousRoleBypassesRls": false,
+    "tablePrivileges": ["SELECT", "INSERT"],
+    "tableRlsEnabled": true,
+    "tableForceRlsEnabled": true,
+    "ownerPolicy": "owner_user_id = auth.user_id()"
+  },
+  "browserWorkerTest": {
+    "command": "python3 /home/zamn/.agents/skills/webapp-testing/scripts/with_server.py --timeout 60 --server './tools/pnpm.sh --filter @venfinance/qa-neon-poc dev' --port 5173 --server 'XDG_CONFIG_HOME=/tmp/venfinance-wrangler-config WRANGLER_SEND_METRICS=false ./tools/pnpm.sh --filter @venfinance/qa-neon-poc worker' --port 8788 -- bash -lc './tools/pnpm.sh exec node qa/neon-poc/test_auth.mjs'",
+    "exitCode": 1,
+    "workerHealth": true,
+    "anonymousDenied": true,
+    "syntheticSignupA": true,
+    "syntheticSignupB": true,
+    "jwtTamperDenied": true,
+    "forgedOwnerDenied": true,
+    "userAReadsOwnOnly": true,
+    "userBCannotReadA": true,
+    "userBReadsOwnOnly": true,
+    "userACannotReadB": true,
+    "sessionRevocationEnforced": false,
+    "staleJwtReplayStatusAfterSignout": 200,
+    "staleJwtReplaySessionMode": "jwt-only",
+    "failureReason": "Neon Auth sign-out completed, but the 900-second signed JWT has no session-id claim and the Worker/Data API accepted replay after sign-out."
+  },
+  "directServerlessDriver": {
+    "runtimeRole": "venfinance_p0_worker",
+    "runtimeRoleBypassesRls": false,
+    "authUserIdCallable": false,
+    "observedError": "permission denied for schema auth",
+    "authSchemaOwner": "cloud_admin",
+    "authSchemaUsageGrantAppliedToRuntime": false,
+    "databaseUrlRemovedFromLocalVars": true
+  },
+  "roleSafetyFinding": {
+    "role": "venfinance_p0_runtime",
+    "bypassesRls": true,
+    "memberOf": "neon_superuser",
+    "usedByWorker": false,
+    "passwordRotatedAfterDiscovery": true,
+    "revokeAttempt": "denied by Neon: permission denied to revoke role neon_superuser",
+    "cleanup": "Role remains in the staging branch. Deleting it uses a destructive Neon operation and requires owner approval."
+  },
+  "secretHandling": {
+    "credentialsInRepository": false,
+    "credentialsInTestOutput": false,
+    "devVarsIgnoredByGit": true,
+    "devVarsMode": "0600",
+    "stagingDatabaseUrlRemovedAfterPoc": true
+  },
+  "releaseBlockers": [
+    "Session revocation is not immediate; a signed-out JWT remained usable until expiry.",
+    "Operator MFA/step-up and production email verification/deliverability are not proven.",
+    "Direct @neondatabase/serverless role access to auth.user_id() is blocked by auth schema ownership; Data API is only a staging POC adapter pending architecture review.",
+    "The unintended privileged staging role venfinance_p0_runtime needs owner-approved cleanup."
+  ],
+  "productionReady": false,
+  "deploymentPerformed": false
+}

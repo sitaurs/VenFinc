@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "dependencies": {
+    "@neondatabase/serverless": "1.2.0",
     "@venfinance/contracts": "workspace:*",
-    "hono": "4.13.13"
+    "hono": "4.13.13",
+    "jose": "6.2.13"
   }
 }

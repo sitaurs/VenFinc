@@ -1,0 +1,17 @@
+{
+  "name": "@venfinance/qa-neon-poc",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --config ./vite.config.ts --host 127.0.0.1 --port 5173 --strictPort",
+    "worker": "wrangler dev --config wrangler.jsonc --local --ip 127.0.0.1 --port 8788 --inspector-port 9231"
+  },
+  "dependencies": {
+    "@neondatabase/auth": "0.7.0-beta"
+  },
+  "devDependencies": {
+    "vite": "8.3.5",
+    "wrangler": "4.152.0"
+  }
+}
