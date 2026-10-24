@@ -1,0 +1,1549 @@
+{
+  "id": "c75618a0-64ec-4d49-92b4-9bdb823e8ab1",
+  "prevId": "ed3682fc-9085-4a60-9b83-97aa4322b0b1",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.categories": {
+      "name": "categories",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "icon_key": {
+          "name": "icon_key",
+          "type": "varchar(80)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "color_token": {
+          "name": "color_token",
+          "type": "varchar(80)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "archived_at": {
+          "name": "archived_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "categories_user_active_name_uq": {
+          "name": "categories_user_active_name_uq",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "lower(\"name\")",
+              "isExpression": true,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "with": {},
+          "method": "btree",
+          "where": "\"categories\".\"archived_at\" IS NULL",
+          "concurrently": false
+        }
+      },
+      "foreignKeys": {
+        "categories_user_id_user_profiles_user_id_fk": {
+          "name": "categories_user_id_user_profiles_user_id_fk",
+          "tableFrom": "categories",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "tableTo": "user_profiles",
+          "columnsTo": [
+            "user_id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        },
+        "categories_parent_same_user_fk": {
+          "name": "categories_parent_same_user_fk",
+          "tableFrom": "categories",
+          "columnsFrom": [
+            "user_id",
+            "parent_id"
+          ],
+          "tableTo": "categories",
+          "columnsTo": [
+            "user_id",
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "categories_user_id_id_uq": {
+          "name": "categories_user_id_id_uq",
+          "columns": [
+            "user_id",
+            "id"
+          ],
+          "nullsNotDistinct": false
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.category_allocations": {
+      "name": "category_allocations",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "finance_event_id": {
+          "name": "finance_event_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category_id": {
+          "name": "category_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "amount_minor": {
+          "name": "amount_minor",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "note": {
+          "name": "note",
+          "type": "varchar(240)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "category_allocations_event_same_user_fk": {
+          "name": "category_allocations_event_same_user_fk",
+          "tableFrom": "category_allocations",
+          "columnsFrom": [
+            "user_id",
+            "finance_event_id"
+          ],
+          "tableTo": "finance_events",
+          "columnsTo": [
+            "user_id",
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "category_allocations_category_same_user_fk": {
+          "name": "category_allocations_category_same_user_fk",
+          "tableFrom": "category_allocations",
+          "columnsFrom": [
+            "user_id",
+            "category_id"
+          ],
+          "tableTo": "categories",
+          "columnsTo": [
+            "user_id",
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "category_allocations_positive_amount": {
+          "name": "category_allocations_positive_amount",
+          "value": "\"category_allocations\".\"amount_minor\" > 0"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.command_idempotency": {
+      "name": "command_idempotency",
+      "schema": "",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "operation": {
+          "name": "operation",
+          "type": "varchar(80)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "idempotency_key": {
+          "name": "idempotency_key",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "canonical_request": {
+          "name": "canonical_request",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "result_event_id": {
+          "name": "result_event_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "command_idempotency_user_operation_key_uq": {
+          "name": "command_idempotency_user_operation_key_uq",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "operation",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "idempotency_key",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "with": {},
+          "method": "btree",
+          "concurrently": false
+        }
+      },
+      "foreignKeys": {
+        "command_idempotency_user_id_user_profiles_user_id_fk": {
+          "name": "command_idempotency_user_id_user_profiles_user_id_fk",
+          "tableFrom": "command_idempotency",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "tableTo": "user_profiles",
+          "columnsTo": [
+            "user_id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        },
+        "command_idempotency_result_same_user_fk": {
+          "name": "command_idempotency_result_same_user_fk",
+          "tableFrom": "command_idempotency",
+          "columnsFrom": [
+            "user_id",
+            "result_event_id"
+          ],
+          "tableTo": "finance_events",
+          "columnsTo": [
+            "user_id",
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.finance_events": {
+      "name": "finance_events",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kind": {
+          "name": "kind",
+          "type": "finance_event_kind",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "finance_event_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'posted'"
+        },
+        "amount_minor": {
+          "name": "amount_minor",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "negative_balance_confirmed": {
+          "name": "negative_balance_confirmed",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "currency": {
+          "name": "currency",
+          "type": "char(3)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'IDR'"
+        },
+        "wallet_id": {
+          "name": "wallet_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "destination_wallet_id": {
+          "name": "destination_wallet_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "category_id": {
+          "name": "category_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "effective_at": {
+          "name": "effective_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "timezone": {
+          "name": "timezone",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "note": {
+          "name": "note",
+          "type": "varchar(500)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "merchant": {
+          "name": "merchant",
+          "type": "varchar(160)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_channel": {
+          "name": "source_channel",
+          "type": "varchar(30)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'manual'"
+        },
+        "client_mutation_id": {
+          "name": "client_mutation_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "revision_of": {
+          "name": "revision_of",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reversal_of": {
+          "name": "reversal_of",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "refund_of": {
+          "name": "refund_of",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "finance_events_idempotency_uq": {
+          "name": "finance_events_idempotency_uq",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "source_channel",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "client_mutation_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "with": {},
+          "method": "btree",
+          "where": "\"finance_events\".\"client_mutation_id\" IS NOT NULL",
+          "concurrently": false
+        },
+        "finance_events_wallet_opening_uq": {
+          "name": "finance_events_wallet_opening_uq",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "wallet_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "with": {},
+          "method": "btree",
+          "where": "\"finance_events\".\"kind\" = 'opening' AND \"finance_events\".\"wallet_id\" IS NOT NULL",
+          "concurrently": false
+        },
+        "finance_events_user_effective_idx": {
+          "name": "finance_events_user_effective_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "effective_at",
+              "isExpression": false,
+              "asc": false,
+              "nulls": "last"
+            },
+            {
+              "expression": "id",
+              "isExpression": false,
+              "asc": false,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "with": {},
+          "method": "btree",
+          "concurrently": false
+        },
+        "finance_events_user_status_created_idx": {
+          "name": "finance_events_user_status_created_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": false,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "with": {},
+          "method": "btree",
+          "concurrently": false
+        }
+      },
+      "foreignKeys": {
+        "finance_events_user_id_user_profiles_user_id_fk": {
+          "name": "finance_events_user_id_user_profiles_user_id_fk",
+          "tableFrom": "finance_events",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "tableTo": "user_profiles",
+          "columnsTo": [
+            "user_id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        },
+        "finance_events_wallet_same_user_fk": {
+          "name": "finance_events_wallet_same_user_fk",
+          "tableFrom": "finance_events",
+          "columnsFrom": [
+            "user_id",
+            "wallet_id"
+          ],
+          "tableTo": "wallets",
+          "columnsTo": [
+            "user_id",
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "finance_events_destination_wallet_same_user_fk": {
+          "name": "finance_events_destination_wallet_same_user_fk",
+          "tableFrom": "finance_events",
+          "columnsFrom": [
+            "user_id",
+            "destination_wallet_id"
+          ],
+          "tableTo": "wallets",
+          "columnsTo": [
+            "user_id",
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "finance_events_category_same_user_fk": {
+          "name": "finance_events_category_same_user_fk",
+          "tableFrom": "finance_events",
+          "columnsFrom": [
+            "user_id",
+            "category_id"
+          ],
+          "tableTo": "categories",
+          "columnsTo": [
+            "user_id",
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "finance_events_revision_same_user_fk": {
+          "name": "finance_events_revision_same_user_fk",
+          "tableFrom": "finance_events",
+          "columnsFrom": [
+            "user_id",
+            "revision_of"
+          ],
+          "tableTo": "finance_events",
+          "columnsTo": [
+            "user_id",
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "finance_events_reversal_same_user_fk": {
+          "name": "finance_events_reversal_same_user_fk",
+          "tableFrom": "finance_events",
+          "columnsFrom": [
+            "user_id",
+            "reversal_of"
+          ],
+          "tableTo": "finance_events",
+          "columnsTo": [
+            "user_id",
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "finance_events_refund_same_user_fk": {
+          "name": "finance_events_refund_same_user_fk",
+          "tableFrom": "finance_events",
+          "columnsFrom": [
+            "user_id",
+            "refund_of"
+          ],
+          "tableTo": "finance_events",
+          "columnsTo": [
+            "user_id",
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "finance_events_user_id_id_uq": {
+          "name": "finance_events_user_id_id_uq",
+          "columns": [
+            "user_id",
+            "id"
+          ],
+          "nullsNotDistinct": false
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "finance_events_positive_amount": {
+          "name": "finance_events_positive_amount",
+          "value": "\"finance_events\".\"amount_minor\" > 0"
+        },
+        "finance_events_currency_idr": {
+          "name": "finance_events_currency_idr",
+          "value": "\"finance_events\".\"currency\" = 'IDR'"
+        },
+        "finance_events_wallet_shape": {
+          "name": "finance_events_wallet_shape",
+          "value": "(\"finance_events\".\"kind\" IN ('income', 'expense', 'opening', 'adjustment', 'refund', 'debt_payment', 'loan_disbursement', 'loan_receipt') AND \"finance_events\".\"wallet_id\" IS NOT NULL) OR (\"finance_events\".\"kind\" IN ('transfer', 'savings_transfer') AND \"finance_events\".\"wallet_id\" IS NOT NULL AND \"finance_events\".\"destination_wallet_id\" IS NOT NULL AND \"finance_events\".\"wallet_id\" <> \"finance_events\".\"destination_wallet_id\") OR (\"finance_events\".\"kind\" IN ('debt_opening') AND \"finance_events\".\"wallet_id\" IS NULL)"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.ledger_accounts": {
+      "name": "ledger_accounts",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "purpose": {
+          "name": "purpose",
+          "type": "ledger_account_purpose",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "wallet_id": {
+          "name": "wallet_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "currency": {
+          "name": "currency",
+          "type": "char(3)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'IDR'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "ledger_accounts_wallet_uq": {
+          "name": "ledger_accounts_wallet_uq",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "wallet_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "with": {},
+          "method": "btree",
+          "where": "\"ledger_accounts\".\"purpose\" = 'wallet' AND \"ledger_accounts\".\"wallet_id\" IS NOT NULL",
+          "concurrently": false
+        },
+        "ledger_accounts_user_contra_uq": {
+          "name": "ledger_accounts_user_contra_uq",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "purpose",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "with": {},
+          "method": "btree",
+          "where": "\"ledger_accounts\".\"purpose\" <> 'wallet' AND \"ledger_accounts\".\"wallet_id\" IS NULL",
+          "concurrently": false
+        }
+      },
+      "foreignKeys": {
+        "ledger_accounts_user_id_user_profiles_user_id_fk": {
+          "name": "ledger_accounts_user_id_user_profiles_user_id_fk",
+          "tableFrom": "ledger_accounts",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "tableTo": "user_profiles",
+          "columnsTo": [
+            "user_id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        },
+        "ledger_accounts_wallet_same_user_fk": {
+          "name": "ledger_accounts_wallet_same_user_fk",
+          "tableFrom": "ledger_accounts",
+          "columnsFrom": [
+            "user_id",
+            "wallet_id"
+          ],
+          "tableTo": "wallets",
+          "columnsTo": [
+            "user_id",
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "ledger_accounts_user_id_id_uq": {
+          "name": "ledger_accounts_user_id_id_uq",
+          "columns": [
+            "user_id",
+            "id"
+          ],
+          "nullsNotDistinct": false
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "ledger_accounts_wallet_shape": {
+          "name": "ledger_accounts_wallet_shape",
+          "value": "(\"ledger_accounts\".\"purpose\" = 'wallet' AND \"ledger_accounts\".\"wallet_id\" IS NOT NULL) OR (\"ledger_accounts\".\"purpose\" <> 'wallet' AND \"ledger_accounts\".\"wallet_id\" IS NULL)"
+        },
+        "ledger_accounts_currency_idr": {
+          "name": "ledger_accounts_currency_idr",
+          "value": "\"ledger_accounts\".\"currency\" = 'IDR'"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.ledger_postings": {
+      "name": "ledger_postings",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "finance_event_id": {
+          "name": "finance_event_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ledger_account_id": {
+          "name": "ledger_account_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "signed_minor": {
+          "name": "signed_minor",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "currency": {
+          "name": "currency",
+          "type": "char(3)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'IDR'"
+        },
+        "posted_at": {
+          "name": "posted_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "ledger_postings_user_event_idx": {
+          "name": "ledger_postings_user_event_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "finance_event_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "with": {},
+          "method": "btree",
+          "concurrently": false
+        },
+        "ledger_postings_user_account_posted_idx": {
+          "name": "ledger_postings_user_account_posted_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "ledger_account_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "posted_at",
+              "isExpression": false,
+              "asc": false,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "with": {},
+          "method": "btree",
+          "concurrently": false
+        }
+      },
+      "foreignKeys": {
+        "ledger_postings_event_same_user_fk": {
+          "name": "ledger_postings_event_same_user_fk",
+          "tableFrom": "ledger_postings",
+          "columnsFrom": [
+            "user_id",
+            "finance_event_id"
+          ],
+          "tableTo": "finance_events",
+          "columnsTo": [
+            "user_id",
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "ledger_postings_account_same_user_fk": {
+          "name": "ledger_postings_account_same_user_fk",
+          "tableFrom": "ledger_postings",
+          "columnsFrom": [
+            "user_id",
+            "ledger_account_id"
+          ],
+          "tableTo": "ledger_accounts",
+          "columnsTo": [
+            "user_id",
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "ledger_postings_nonzero": {
+          "name": "ledger_postings_nonzero",
+          "value": "\"ledger_postings\".\"signed_minor\" <> 0"
+        },
+        "ledger_postings_currency_idr": {
+          "name": "ledger_postings_currency_idr",
+          "value": "\"ledger_postings\".\"currency\" = 'IDR'"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "platform.roles": {
+      "name": "roles",
+      "schema": "platform",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "platform_role",
+          "typeSchema": "platform",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'user'"
+        },
+        "assigned_by": {
+          "name": "assigned_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "platform_roles_role_idx": {
+          "name": "platform_roles_role_idx",
+          "columns": [
+            {
+              "expression": "role",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "with": {},
+          "method": "btree",
+          "concurrently": false
+        }
+      },
+      "foreignKeys": {
+        "roles_user_id_user_profiles_user_id_fk": {
+          "name": "roles_user_id_user_profiles_user_id_fk",
+          "tableFrom": "roles",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "tableTo": "user_profiles",
+          "columnsTo": [
+            "user_id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "platform_roles_version_positive": {
+          "name": "platform_roles_version_positive",
+          "value": "\"platform\".\"roles\".\"version\" > 0"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "audit.security_events": {
+      "name": "security_events",
+      "schema": "audit",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "subject_user_id": {
+          "name": "subject_user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "actor_user_id": {
+          "name": "actor_user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "action": {
+          "name": "action",
+          "type": "varchar(80)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "resource_type": {
+          "name": "resource_type",
+          "type": "varchar(80)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "masked_resource_id": {
+          "name": "masked_resource_id",
+          "type": "varchar(120)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "result": {
+          "name": "result",
+          "type": "varchar(24)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "reason_code": {
+          "name": "reason_code",
+          "type": "varchar(80)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "trace_id": {
+          "name": "trace_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "occurred_at": {
+          "name": "occurred_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
+        }
+      },
+      "indexes": {
+        "security_events_occurred_idx": {
+          "name": "security_events_occurred_idx",
+          "columns": [
+            {
+              "expression": "occurred_at",
+              "isExpression": false,
+              "asc": false,
+              "nulls": "last"
+            },
+            {
+              "expression": "id",
+              "isExpression": false,
+              "asc": false,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "with": {},
+          "method": "btree",
+          "concurrently": false
+        },
+        "security_events_actor_idx": {
+          "name": "security_events_actor_idx",
+          "columns": [
+            {
+              "expression": "actor_user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "occurred_at",
+              "isExpression": false,
+              "asc": false,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "with": {},
+          "method": "btree",
+          "concurrently": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "security_events_result_valid": {
+          "name": "security_events_result_valid",
+          "value": "\"audit\".\"security_events\".\"result\" IN ('allowed', 'denied', 'failed')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.user_profiles": {
+      "name": "user_profiles",
+      "schema": "",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "display_name": {
+          "name": "display_name",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "locale": {
+          "name": "locale",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'id-ID'"
+        },
+        "timezone": {
+          "name": "timezone",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Asia/Jakarta'"
+        },
+        "preferred_currency": {
+          "name": "preferred_currency",
+          "type": "char(3)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'IDR'"
+        },
+        "account_status": {
+          "name": "account_status",
+          "type": "account_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'active'"
+        },
+        "onboarding_at": {
+          "name": "onboarding_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "user_profiles_locale_supported": {
+          "name": "user_profiles_locale_supported",
+          "value": "\"user_profiles\".\"locale\" IN ('id-ID', 'en-US')"
+        },
+        "user_profiles_currency_idr": {
+          "name": "user_profiles_currency_idr",
+          "value": "\"user_profiles\".\"preferred_currency\" = 'IDR'"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.wallets": {
+      "name": "wallets",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "wallet_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "currency": {
+          "name": "currency",
+          "type": "char(3)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'IDR'"
+        },
+        "display_order": {
+          "name": "display_order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "archived_at": {
+          "name": "archived_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "wallets_user_active_name_uq": {
+          "name": "wallets_user_active_name_uq",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "lower(\"name\")",
+              "isExpression": true,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "with": {},
+          "method": "btree",
+          "where": "\"wallets\".\"archived_at\" IS NULL",
+          "concurrently": false
+        },
+        "wallets_user_order_idx": {
+          "name": "wallets_user_order_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "display_order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "with": {},
+          "method": "btree",
+          "concurrently": false
+        }
+      },
+      "foreignKeys": {
+        "wallets_user_id_user_profiles_user_id_fk": {
+          "name": "wallets_user_id_user_profiles_user_id_fk",
+          "tableFrom": "wallets",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "tableTo": "user_profiles",
+          "columnsTo": [
+            "user_id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "wallets_user_id_id_uq": {
+          "name": "wallets_user_id_id_uq",
+          "columns": [
+            "user_id",
+            "id"
+          ],
+          "nullsNotDistinct": false
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "wallets_currency_idr": {
+          "name": "wallets_currency_idr",
+          "value": "\"wallets\".\"currency\" = 'IDR'"
+        }
+      },
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.ledger_account_purpose": {
+      "name": "ledger_account_purpose",
+      "schema": "public",
+      "values": [
+        "wallet",
+        "income",
+        "expense",
+        "liability",
+        "receivable",
+        "equity"
+      ]
+    },
+    "public.account_status": {
+      "name": "account_status",
+      "schema": "public",
+      "values": [
+        "active",
+        "suspended",
+        "pending_deletion"
+      ]
+    },
+    "public.finance_event_kind": {
+      "name": "finance_event_kind",
+      "schema": "public",
+      "values": [
+        "income",
+        "expense",
+        "transfer",
+        "refund",
+        "adjustment",
+        "debt_payment",
+        "debt_opening",
+        "loan_disbursement",
+        "loan_receipt",
+        "savings_transfer",
+        "opening"
+      ]
+    },
+    "public.finance_event_status": {
+      "name": "finance_event_status",
+      "schema": "public",
+      "values": [
+        "posted",
+        "voided"
+      ]
+    },
+    "platform.platform_role": {
+      "name": "platform_role",
+      "schema": "platform",
+      "values": [
+        "user",
+        "admin",
+        "superuser"
+      ]
+    },
+    "public.wallet_type": {
+      "name": "wallet_type",
+      "schema": "public",
+      "values": [
+        "cash",
+        "bank",
+        "e_wallet",
+        "savings",
+        "other"
+      ]
+    }
+  },
+  "schemas": {
+    "audit": "audit",
+    "platform": "platform"
+  },
+  "views": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

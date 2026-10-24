@@ -11,9 +11,11 @@ import {
   resolveNeonSession,
   type NeonAuthBindings,
 } from "./auth";
+import financeRoutes from "./finance";
+import type { DataApiBindings } from "./database";
 
 type Env = {
-  Bindings: NeonAuthBindings & { APP_ENV: string; DATABASE_URL?: string };
+  Bindings: NeonAuthBindings & DataApiBindings & { APP_ENV: string; DATABASE_URL?: string };
   Variables: {
     requestId: string;
     identity: {
@@ -104,7 +106,7 @@ app.get("/api/v1/health", (c) =>
             c.env?.NEON_AUTH_JWKS_URL
               ? "unknown"
               : "not_configured",
-          database: c.env?.DATABASE_URL ? "unknown" : "not_configured",
+          database: c.env?.NEON_DATA_API_URL ? "unknown" : "not_configured",
           storage: "unknown",
           whatsapp: "not_configured",
           ai: "not_configured",
@@ -149,7 +151,9 @@ app.get("/api/v1/session", (c) => {
   );
 });
 
-// Finance endpoints remain closed until their schema, RLS and route contracts pass staging tests.
+app.route("/api/v1", financeRoutes);
+
+// Any route without an explicit handler stays closed by default.
 app.all("/api/v1/*", (c) =>
   c.json(
     errorEnvelope(

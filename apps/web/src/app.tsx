@@ -8,12 +8,10 @@ import {
   ChevronRight,
   CircleHelp,
   Globe2,
-  LockKeyhole,
   Moon,
   Play,
   ShieldCheck,
   Sun,
-  WalletCards,
   ChartNoAxesCombined,
   FilePenLine,
   AlertCircle,
@@ -21,8 +19,12 @@ import {
 import { Button, Card, EmptyState, Badge } from "@venfinance/ui";
 import { healthSchema, publicConfigSchema } from "@venfinance/contracts";
 import { PreferencesProvider, usePreferences } from "./preferences";
+import { AuthPage } from "./auth-page";
 
 const Demo = lazy(() => import("./demo/demo"));
+const PrivateFinanceApp = lazy(() =>
+  import("./finance-app").then((module) => ({ default: module.PrivateFinanceApp })),
+);
 const UiComponentGallery = import.meta.env.DEV
   ? lazy(() => import("../../../qa/fixtures/ui-components"))
   : null;
@@ -276,112 +278,20 @@ export async function publicConfig() {
   return publicConfigSchema.parse(body.data);
 }
 function AuthGate() {
-  const { t } = usePreferences();
   const location = useLocation();
   const config = useQuery({
     queryKey: ["public-config"],
     queryFn: publicConfig,
   });
   const register = location.pathname === "/register";
-  return (
-    <>
-      <PublicHeader />
-      <main id="main-content" className="auth-page">
-        <Card className="auth-card">
-          <div className="auth-icon">
-            <LockKeyhole size={30} />
-          </div>
-          <h1>
-            {register
-              ? t("Buat akun VenFinance", "Create a VenFinance account")
-              : t("Selamat datang kembali", "Welcome back")}
-          </h1>
-          <p className="muted">
-            {t(
-              "Ruang untuk catatan dan rencana keuanganmu.",
-              "A space for your finances and plans.",
-            )}
-          </p>
-          {config.isPending ? (
-            <div role="status" className="notice">
-              {t(
-                "Memeriksa ketersediaan akses…",
-                "Checking sign-in availability…",
-              )}
-            </div>
-          ) : config.isError ? (
-            <div role="alert" className="notice notice-warning">
-              <AlertCircle size={20} />
-              <div>
-                <strong>
-                  {t(
-                    "Layanan belum dapat dihubungi",
-                    "Unable to reach the service",
-                  )}
-                </strong>
-                <p>
-                  {t(
-                    "Periksa koneksi lalu coba kembali.",
-                    "Check your connection and try again.",
-                  )}
-                </p>
-                <Button
-                  variant="ghost"
-                  onClick={() => {
-                    void config.refetch();
-                  }}
-                >
-                  {t("Coba lagi", "Retry")}
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <div role="status" className="notice">
-              <ShieldCheck size={22} />
-              <div>
-                <strong>
-                  {t(
-                    "Akses akun belum dibuka",
-                    "Account access is not open yet",
-                  )}
-                </strong>
-                <p>
-                  {t(
-                    "Layanan autentikasi sedang disiapkan. Kamu bisa menjelajahi demo tanpa memasukkan data pribadi.",
-                    "Authentication is being prepared. Explore the demo without entering personal information.",
-                  )}
-                </p>
-              </div>
-            </div>
-          )}
-          <Button asChild>
-            <Link to="/demo">
-              {t("Coba demo dahulu", "Try the demo")}
-              <ArrowRight size={18} />
-            </Link>
-          </Button>
-          <Link to="/status">
-            {t("Lihat status layanan", "View service status")}
-          </Link>
-        </Card>
-        <div className="auth-illustration">
-          <WalletCards size={64} strokeWidth={1.2} />
-          <h2>
-            {t(
-              "Setiap catatan, selangkah lebih terarah.",
-              "Every entry, a step in the right direction.",
-            )}
-          </h2>
-          <p>
-            {t(
-              "VenFinance membantu mencatat. Uangmu tetap berada di rekening dan dompetmu.",
-              "VenFinance keeps records. Your money stays in your own accounts and wallets.",
-            )}
-          </p>
-        </div>
-      </main>
-    </>
-  );
+  return <AuthPage
+    register={register}
+    authAvailable={config.data?.authAvailable ?? false}
+    registrationOpen={config.data?.registrationOpen ?? false}
+    loading={config.isPending}
+    unavailable={config.isError}
+    retry={() => { void config.refetch(); }}
+  />;
 }
 function StatusPage() {
   const { t, locale } = usePreferences();
@@ -632,7 +542,7 @@ export function App() {
             <Route path="/register" element={<AuthGate />} />
             <Route path="/status" element={<StatusPage />} />
             <Route path="/faq" element={<HelpPage />} />
-            <Route path="/app/*" element={<Navigate to="/login" replace />} />
+            <Route path="/app/*" element={<PrivateFinanceApp />} />
             <Route path="/admin/*" element={<Navigate to="/login" replace />} />
             <Route
               path="/system/*"

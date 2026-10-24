@@ -1,5 +1,13 @@
 # Probe PostgreSQL lokal
 
+## Ledger aplikasi
+
+`ledger-contract.sql` menerapkan kontrak migrasi aplikasi pada cluster kosong sebagai role migrator simulasi `neondb_owner` yang `NOBYPASSRLS`, lalu menjalankan kontrak sebagai `authenticated`. Jalankan `pnpm db:test:local` setelah PostgreSQL server tools tersedia; untuk paket PostgreSQL non-standar, set `VENFINANCE_PG_BIN`, `PGSHARE`, dan `LD_LIBRARY_PATH` sebelum perintah. Harness hanya menggunakan binary lokal, socket Unix lokal pada direktori sementara, trust lokal dalam cluster disposable, dan menghapus cluster setelah selesai. Jangan berikan DSN/host Neon ke harness ini.
+
+Kasus aplikasi meliputi pembuatan ID di server, profil/peran default, dua tenant, FORCE RLS, penolakan insert ledger langsung, posting seimbang, transfer bukan konsumsi, replay idempotent, refund terlacak, konfirmasi saldo negatif, dan nilai BIGINT di atas batas aman JavaScript. Harness mengisi `request.jwt.claims` secara langsung untuk menguji SQL; ia tidak membuktikan bahwa Neon Data API memvalidasi JWT atau mengisi klaim tersebut. Bukti staging melalui Worker tetap wajib.
+
+Harness sebelumnya di bawah ini adalah probe terpisah untuk eksperimen P0-005 dan bukan implementasi ledger aplikasi.
+
 Persiapan P0-005 berupa SQL dan harness terisolasi, sesuai izin mock/staging pada AGENTS §8. Dependensi P0-001 sudah selesai; P0-005 tetap **blocked** karena Neon Managed Auth, revocation dan propagasi identitas melalui Worker belum diuji. Ini bukan migrasi Drizzle atau implementasi P3.
 
 `ledger-probe.sql` membuat empat tabel dengan RLS paksa, foreign key komposit pemilik, constraint saldo event, dan fungsi posting dengan idempotensi atomik. Role fixture `poc_a`/`poc_b` hanya mempunyai SELECT dan EXECUTE pada fungsi yang diizinkan. Pemilik fungsi tidak memiliki LOGIN, SUPERUSER atau BYPASSRLS. Identitas memakai `session_user` PostgreSQL fixture; **jangan menyalin adapter identitas ini ke Neon**. Kontrak produksi harus memakai subject Neon terverifikasi dan diuji ulang melalui Worker.

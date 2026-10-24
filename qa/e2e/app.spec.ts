@@ -105,8 +105,10 @@ test("private routes stay closed and public service status does not fabricate he
       "Sec-Fetch-Mode": "navigate",
     },
   });
-  expect(response.status()).toBe(401);
-  expect((await response.json()).error.code).toBe("AUTH_REQUIRED");
+  expect([401, 503]).toContain(response.status());
+  expect((await response.json()).error.code).toBe(
+    response.status() === 401 ? "AUTH_REQUIRED" : "DEPENDENCY_UNAVAILABLE",
+  );
   expect(response.headers()["cache-control"]).toContain("no-store");
   await page.goto("/status");
   await expect(

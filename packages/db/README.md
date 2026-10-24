@@ -1,3 +1,7 @@
 # Database
 
-Schema/migrations Drizzle, fungsi uang atomik dan RLS akan diimplementasikan setelah P0-008/P0-005 terbukti. Branch uji Neon terpisah sudah dibuat tanpa compute; Auth, koneksi SQL dan migrasi belum diprovisikan. Lihat [rencana staging](../../infra/NEON-STAGING-PLAN.md) dan [probe PostgreSQL lokal](../../qa/database/README.md). Tidak ada migration produksi atau bypass RLS dalam bootstrap ini.
+Skema aplikasi disimpan sebagai Drizzle di `src/schema.ts`; migrasi PostgreSQL berada di `migrations/`. Drizzle ORM dipatok ke 0.45.4 dan Drizzle Kit ke 0.31.11. `pnpm --filter @venfinance/db generate` hanya menghasilkan berkas migrasi dari skema lokal; jangan arahkan `DATABASE_URL` ke production dari laptop atau CI umum. Migrasi RLS dan fungsi ledger dibuat sebagai migrasi kustom Drizzle supaya tetap masuk ke journal yang dibaca migrator.
+
+RLS dan fungsi posting di migrasi harus diuji di cluster lokal disposable dan branch staging VenFinance. `pnpm db:test:local` hanya menjalankan cluster PostgreSQL sementara di mesin pengembang; klaim JWT lokal pada harness disetel langsung dan tidak membuktikan verifikasi Neon Data API. Koneksi Data API staging tidak dipakai oleh browser; Worker hanya menerima cookie Neon Auth, memeriksa sesi aktif, lalu meneruskan JWT terverifikasi dari server ke Data API. P0-005/P0-008/P1-007 tetap blocked sampai tes RLS melalui Worker, owner-checked R2, kuota, dan jalur migrasi/rollback lulus.
+
+Lihat [rencana staging](../../infra/NEON-STAGING-PLAN.md), [model data TRD-01](../../architecture/TRD-01-DATA-MODEL.md), dan [probe PostgreSQL lokal](../../qa/database/README.md). Production tidak disentuh.

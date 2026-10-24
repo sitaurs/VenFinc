@@ -21,6 +21,7 @@
     "test:security": "vitest run apps/edge/src/security.test.ts && node tools/scan-client.mjs",
     "test:contracts": "vitest run packages/contracts/src",
     "db:check": "node tools/integration-gate.mjs db",
+    "db:test:local": "python3 tools/test-db-ledger.py",
     "infra:smoke": "node tools/infra-smoke.mjs",
     "docs:check": "python3 tools/validate_handoff.py && python3 tools/check_execution.py"
   },

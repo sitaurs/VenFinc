@@ -1,0 +1,2 @@
+ALTER TABLE "finance_events" ADD COLUMN "negative_balance_confirmed" boolean DEFAULT false NOT NULL;--> statement-breakpoint
+CREATE UNIQUE INDEX "finance_events_wallet_opening_uq" ON "finance_events" USING btree ("user_id","wallet_id") WHERE "finance_events"."kind" = 'opening' AND "finance_events"."wallet_id" IS NOT NULL;

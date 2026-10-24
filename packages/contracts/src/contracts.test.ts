@@ -73,6 +73,8 @@ describe("shared protocol", () => {
     expect(timezoneSchema.safeParse("Not/AZone").success).toBe(false);
     expect(timezoneSchema.parse("Asia/Makassar")).toBe("Asia/Makassar");
     expect(paginationSchema.parse({})).toEqual({ limit: 20 });
+    expect(paginationSchema.parse({ limit: 99 }).limit).toBe(99);
+    expect(paginationSchema.safeParse({ limit: 100 }).success).toBe(false);
     expect(paginationSchema.safeParse({ limit: 101 }).success).toBe(false);
   });
   it("requires stable codes and safe error shape", () => {
