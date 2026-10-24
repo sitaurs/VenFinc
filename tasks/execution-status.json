@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-24 06:59:37 UTC",
+  "updated_at": "2026-10-24 07:05:52 UTC",
   "source_of_truth": "Execution status only; task source markdown keeps the original baseline wording. A blocked external gate is not done.",
   "status_values": [
     "todo",
@@ -102,7 +102,7 @@
       "blockers": [
         {
           "gate": "G-IDENTITY",
-          "reason": "Owner authorized staging-only Neon Auth/SQL/RLS/A-B POC on br-aged-mode-b4rcy9i0. POC is in progress. Actual Worker sessions, revoke/JWT/RLS proof, operator MFA binding, step-up, email verification and production delivery remain unverified; production stays blocked."
+          "reason": "Owner authorized staging-only POC on br-aged-mode-b4rcy9i0. Managed Auth and a bounded 0.25-CU endpoint are now provisioned on staging. SQL/RLS helpers are not installed, neondb_owner bypasses RLS, and JWT-bound requests through the disposable Worker are still unverified. Production branch remains untouched; operator MFA/step-up and verified email remain release blockers."
         }
       ],
       "minimum_verification": "PoC user A/B, session revoke, role JWT + akses data ditolak; dokumentasi masalah."

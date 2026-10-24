@@ -47,9 +47,19 @@
     "protected": false,
     "createdAt": "2026-10-24T05:22:40Z",
     "metadataVerifiedBySeparateDescribe": true,
-    "computeCreated": false,
-    "neonAuthEnabled": false,
-    "authProvisioned": false,
+    "computeCreated": true,
+    "computeEndpoint": {
+      "id": "ep-rapid-flower-b46lkbp1",
+      "type": "read_write",
+      "stateAtLastCheck": "active",
+      "autoscalingMinCu": 0.25,
+      "autoscalingMaxCu": 0.25,
+      "poolerEnabled": false,
+      "suspendTimeoutSecondsReported": 0,
+      "suspendTimeoutOverrideAccepted": false
+    },
+    "neonAuthEnabled": true,
+    "authProvisioned": true,
     "applicationMigrationApplied": false,
     "autoExpiryConfigured": false
   },
@@ -75,16 +85,14 @@
     "authUsersCreated": false,
     "computeStarted": false,
     "writesNotPerformed": [
-      "Provision Neon Auth",
-      "Apply database SQL or migrations",
-      "Create test users",
-      "Start a Postgres compute endpoint"
+      "Apply database SQL/RLS probe",
+      "Create synthetic test users"
     ],
     "writeScope": "Pemilik mengizinkan POC staging pada 2026-10-24: Neon Auth, SQL/RLS, user A/B sintetis, dan compute seperlunya hanya pada br-aged-mode-b4rcy9i0. Branch production tetap dilarang disentuh."
   },
   "mcpCapabilities": {
     "inspectionAndSqlAuthToolsExposed": true,
-    "sqlAndAuthWritesInvoked": false,
+    "sqlAndAuthWritesInvoked": true,
     "cliLoginRequiredForCurrentMcpPath": false
   },
   "authRoadmapCheck": {
@@ -99,6 +107,37 @@
     "productionBranchExcluded": true
   },
   "state": "staging_poc_authorized_in_progress",
+  "stagingPocExecution": {
+    "lastUpdatedAt": "2026-10-24T07:05:52Z",
+    "branchId": "br-aged-mode-b4rcy9i0",
+    "neonAuth": {
+      "enabled": true,
+      "provider": "better_auth",
+      "databaseName": "neondb",
+      "generatedSchemas": ["neon_auth"],
+      "authSessionObserved": false,
+      "productionBranchCheckedAndUnchanged": true
+    },
+    "compute": {
+      "created": true,
+      "endpointId": "ep-rapid-flower-b46lkbp1",
+      "minCu": 0.25,
+      "maxCu": 0.25,
+      "suspendTimeoutSecondsReported": 0,
+      "accountRejectedSuspendTimeoutOverride": true
+    },
+    "readOnlySqlChecks": {
+      "authUserIdFunctionInitiallyPresent": false,
+      "sessionJwtExtensionAvailable": true,
+      "sessionJwtExtensionInstalled": false,
+      "authenticatedDatabaseRolePresent": false,
+      "databaseOwnerBypassesRls": true
+    },
+    "sqlProbeApplied": false,
+    "syntheticAuthUsersCreated": false,
+    "workerJwtRlsTested": false,
+    "secretsPersisted": false
+  },
   "productionReady": false,
   "productionMigrationApplied": false,
   "secretsPersisted": false,
