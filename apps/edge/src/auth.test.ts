@@ -199,39 +199,6 @@ describe("same-origin Neon Auth boundary", () => {
     expect(fetcher).toHaveBeenCalledTimes(1);
   });
 
-  it("checks password-reset codes only with the forget-password purpose", async () => {
-    const fetcher = vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
-      expect(String(init?.body)).toBe(JSON.stringify({
-        email: "person@example.invalid",
-        otp: "123456",
-        type: "forget-password",
-      }));
-      return Response.json({ success: true });
-    });
-    vi.stubGlobal("fetch", fetcher);
-    const response = await app.request(
-      "https://finance.test/api/auth/email-otp/check-verification-otp",
-      {
-        method: "POST",
-        headers: { Origin: appOrigin, "Content-Type": "application/json" },
-        body: JSON.stringify({ email: "Person@example.invalid", otp: "123456", type: "forget-password" }),
-      },
-      bindings(),
-    );
-    expect(response.status).toBe(200);
-    const passwordless = await app.request(
-      "https://finance.test/api/auth/email-otp/check-verification-otp",
-      {
-        method: "POST",
-        headers: { Origin: appOrigin, "Content-Type": "application/json" },
-        body: JSON.stringify({ email: "person@example.invalid", otp: "123456", type: "sign-in" }),
-      },
-      bindings(),
-    );
-    expect(passwordless.status).toBe(400);
-    expect(fetcher).toHaveBeenCalledTimes(1);
-  });
-
   it("uses Neon Auth SDK's managed emailOtp.resetPassword route", async () => {
     const fetcher = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
       expect(String(input)).toBe(`${authBase}/email-otp/passcode`);

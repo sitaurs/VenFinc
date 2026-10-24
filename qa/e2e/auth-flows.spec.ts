@@ -61,10 +61,6 @@ test("password recovery uses one-use OTP and matching confirmation without expos
     calls.push({ path: new URL(route.request().url()).pathname, body: route.request().postDataJSON() });
     await route.fulfill({ json: { success: true } });
   });
-  await page.route("**/api/auth/email-otp/check-verification-otp", async (route) => {
-    calls.push({ path: new URL(route.request().url()).pathname, body: route.request().postDataJSON() });
-    await route.fulfill({ json: { success: true } });
-  });
   await page.route("**/api/auth/email-otp/passcode", async (route) => {
     calls.push({ path: new URL(route.request().url()).pathname, body: route.request().postDataJSON() });
     await route.fulfill({ json: { success: true } });
@@ -81,13 +77,11 @@ test("password recovery uses one-use OTP and matching confirmation without expos
   await expect(page.getByRole("status")).toContainText("Jika akun cocok");
 
   await page.getByLabel("Kode pemulihan", { exact: true }).fill("654321");
-  await page.getByRole("button", { name: "Verifikasi kode", exact: true }).click();
-  await expect(page.getByLabel("Kata sandi baru", { exact: true })).toBeVisible();
   await page.getByLabel("Kata sandi baru", { exact: true }).fill("Synthetic-QA-Password-02");
   await page.getByLabel("Konfirmasi kata sandi baru", { exact: true }).fill("different-password");
   await page.getByRole("button", { name: "Simpan kata sandi", exact: true }).click();
   await expect(page.getByRole("alert")).toContainText("belum cocok");
-  expect(calls).toHaveLength(2);
+  expect(calls).toHaveLength(1);
 
   await page.getByLabel("Konfirmasi kata sandi baru", { exact: true }).fill("Synthetic-QA-Password-02");
   await page.getByRole("button", { name: "Simpan kata sandi", exact: true }).click();
@@ -95,7 +89,6 @@ test("password recovery uses one-use OTP and matching confirmation without expos
   await expect(page.getByRole("status")).toContainText("berhasil diperbarui");
   expect(calls).toEqual([
     { path: "/api/auth/forget-password/email-otp", body: { email: "qa@example.invalid" } },
-    { path: "/api/auth/email-otp/check-verification-otp", body: { email: "qa@example.invalid", otp: "654321", type: "forget-password" } },
     { path: "/api/auth/email-otp/passcode", body: { email: "qa@example.invalid", otp: "654321", password: "Synthetic-QA-Password-02" } },
   ]);
 });

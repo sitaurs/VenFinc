@@ -48,7 +48,6 @@ const allowedAuthRoutes = new Map<string, string>([
   ["POST /sign-up/email", "sign-up"],
   ["POST /email-otp/send-verification-otp", "verification-otp-send"],
   ["POST /email-otp/verify-email", "verification-otp-verify"],
-  ["POST /email-otp/check-verification-otp", "verification-otp-check"],
   ["POST /forget-password/email-otp", "password-reset-otp-send"],
   // @neondatabase/auth 0.7 exposes emailOtp.resetPassword via the Managed Auth
   // `email-otp/passcode` route (the Better Auth plugin's lower-level route is
@@ -319,11 +318,6 @@ function normalizedAuthBody(route: string, bytes: Uint8Array): string | null {
       return exactKeys(["email", "otp"]) && typeof otp === "string" && otpPattern.test(otp)
         ? JSON.stringify({ email: normalizedEmail, otp })
         : null;
-    case "/email-otp/check-verification-otp":
-      return exactKeys(["email", "otp", "type"]) && typeof otp === "string" &&
-        otpPattern.test(otp) && input.type === "forget-password"
-        ? JSON.stringify({ email: normalizedEmail, otp, type: "forget-password" })
-        : null;
     case "/forget-password/email-otp":
       return exactKeys(["email"]) ? JSON.stringify({ email: normalizedEmail }) : null;
     case "/email-otp/passcode":
@@ -373,7 +367,7 @@ function safeProviderFailure(
   if (route === "/sign-in/email") {
     return jsonError("AUTH_REQUIRED", "Email atau kata sandi belum cocok.", requestId, 401);
   }
-  if (route === "/email-otp/verify-email" || route === "/email-otp/check-verification-otp" || route === "/email-otp/passcode") {
+  if (route === "/email-otp/verify-email" || route === "/email-otp/passcode") {
     return jsonError("INVALID_INPUT", "Kode tidak valid atau sudah kedaluwarsa.", requestId, 400);
   }
   return jsonError("INVALID_INPUT", "Permintaan autentikasi tidak dapat diproses.", requestId, 400);

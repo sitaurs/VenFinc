@@ -260,29 +260,12 @@ export function ResetPasswordPage(props: AuthFlowProps) {
   const [otp, setOtp] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [codeVerified, setCodeVerified] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
-    if (!codeVerified) {
-      setBusy(true);
-      try {
-        await authPost("email-otp/check-verification-otp", {
-          email: email.trim().toLowerCase(),
-          otp: otp.trim(),
-          type: "forget-password",
-        });
-        setCodeVerified(true);
-      } catch (caught) {
-        setError(requestError(caught, t));
-      } finally {
-        setBusy(false);
-      }
-      return;
-    }
     if (password !== confirmPassword) {
       setError(t("Konfirmasi kata sandi belum cocok.", "The password confirmation does not match."));
       return;
@@ -316,24 +299,19 @@ export function ResetPasswordPage(props: AuthFlowProps) {
   return (
     <AuthFlowFrame
       title={t("Buat kata sandi baru", "Create a new password")}
-      description={codeVerified
-        ? t("Pilih kata sandi baru untuk mengamankan akunmu.", "Choose a new password to secure your account.")
-        : t("Masukkan kode pemulihan yang dikirim ke email akunmu.", "Enter the recovery code sent to your account email.")}
+      description={t("Masukkan kode pemulihan dan pilih kata sandi baru untuk mengamankan akunmu.", "Enter the recovery code and choose a new password to secure your account.")}
       icon={<LockKeyhole size={54} strokeWidth={1.65} />}
       backTo="/forgot-password"
     >
       <Availability props={props} />
       {state?.notice ? <p className="auth-flow-help" role="status">{state.notice}</p> : null}
       <form className="auth-form auth-flow-card" onSubmit={submit}>
-        {!codeVerified ? <>
-          <TextField label="Email" type="email" autoComplete="email" inputMode="email" value={email} onChange={(event) => setEmail(event.target.value)} maxLength={254} required />
-          <TextField label={t("Kode pemulihan", "Recovery code")} autoComplete="one-time-code" inputMode="numeric" value={otp} onChange={(event) => setOtp(event.target.value.replace(/\D/g, "").slice(0, 12))} minLength={4} maxLength={12} pattern="[0-9]{4,12}" required />
-        </> : <>
-          <TextField label={t("Kata sandi baru", "New password")} type="password" autoComplete="new-password" value={password} onChange={(event) => setPassword(event.target.value)} minLength={8} maxLength={128} required />
-          <TextField label={t("Konfirmasi kata sandi baru", "Confirm new password")} type="password" autoComplete="new-password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} minLength={8} maxLength={128} required />
-        </>}
+        <TextField label="Email" type="email" autoComplete="email" inputMode="email" value={email} onChange={(event) => setEmail(event.target.value)} maxLength={254} required />
+        <TextField label={t("Kode pemulihan", "Recovery code")} autoComplete="one-time-code" inputMode="numeric" value={otp} onChange={(event) => setOtp(event.target.value.replace(/\D/g, "").slice(0, 12))} minLength={4} maxLength={12} pattern="[0-9]{4,12}" required />
+        <TextField label={t("Kata sandi baru", "New password")} type="password" autoComplete="new-password" value={password} onChange={(event) => setPassword(event.target.value)} minLength={8} maxLength={128} required />
+        <TextField label={t("Konfirmasi kata sandi baru", "Confirm new password")} type="password" autoComplete="new-password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} minLength={8} maxLength={128} required />
         {error ? <p className="auth-form-error" role="alert">{error}</p> : null}
-        <Button type="submit" loading={busy} disabled={props.loading || props.unavailable || !props.authAvailable} className="auth-submit">{codeVerified ? t("Simpan kata sandi", "Save password") : t("Verifikasi kode", "Verify code")}</Button>
+        <Button type="submit" loading={busy} disabled={props.loading || props.unavailable || !props.authAvailable} className="auth-submit">{t("Simpan kata sandi", "Save password")}</Button>
       </form>
       <p className="auth-switch"><Link to="/forgot-password">{t("Minta kode baru", "Request a new code")}</Link></p>
     </AuthFlowFrame>
