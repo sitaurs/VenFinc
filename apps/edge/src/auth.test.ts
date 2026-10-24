@@ -111,6 +111,163 @@ describe("same-origin Neon Auth boundary", () => {
     expect(fetcher).toHaveBeenCalledTimes(1);
   });
 
+  it("rejects unapproved fields before they reach an auth provider", async () => {
+    const fetcher = vi.fn();
+    vi.stubGlobal("fetch", fetcher);
+    const response = await app.request(
+      "https://finance.test/api/auth/sign-in/email",
+      {
+        method: "POST",
+        headers: { Origin: appOrigin, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: "a@example.invalid",
+          password: "synthetic-only",
+          callbackURL: "https://attacker.invalid/collect",
+        }),
+      },
+      bindings(),
+    );
+    expect(response.status).toBe(400);
+    expect(fetcher).not.toHaveBeenCalled();
+  });
+
+  it("hides provider details and account-existence differences from public auth requests", async () => {
+    vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
+      const path = new URL(String(input)).pathname;
+      if (path.endsWith("/sign-in/email")) {
+        return Response.json({ code: "USER_NOT_FOUND", message: "EMAIL_ENUMERATION_CANARY" }, { status: 404 });
+      }
+      return Response.json({ code: "USER_NOT_FOUND", message: "EMAIL_ENUMERATION_CANARY" }, { status: 404 });
+    }));
+
+    const signIn = await app.request(
+      "https://finance.test/api/auth/sign-in/email",
+      {
+        method: "POST",
+        headers: { Origin: appOrigin, "Content-Type": "application/json" },
+        body: JSON.stringify({ email: "missing@example.invalid", password: "synthetic-only" }),
+      },
+      bindings(),
+    );
+    expect(signIn.status).toBe(401);
+    expect(await signIn.text()).not.toContain("EMAIL_ENUMERATION_CANARY");
+
+    const reset = await app.request(
+      "https://finance.test/api/auth/forget-password/email-otp",
+      {
+        method: "POST",
+        headers: { Origin: appOrigin, "Content-Type": "application/json" },
+        body: JSON.stringify({ email: "missing@example.invalid" }),
+      },
+      bindings(),
+    );
+    expect(reset.status).toBe(200);
+    expect(await reset.text()).toBe('{"success":true}');
+  });
+
+  it("allows only verification codes, never passwordless sign-in OTPs on this public flow", async () => {
+    const fetcher = vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
+      expect(String(init?.body)).toBe(JSON.stringify({
+        email: "person@example.invalid",
+        type: "email-verification",
+      }));
+      return Response.json({ success: true });
+    });
+    vi.stubGlobal("fetch", fetcher);
+    const response = await app.request(
+      "https://finance.test/api/auth/email-otp/send-verification-otp",
+      {
+        method: "POST",
+        headers: { Origin: appOrigin, "Content-Type": "application/json" },
+        body: JSON.stringify({ email: " Person@Example.invalid ", type: "email-verification" }),
+      },
+      bindings(),
+    );
+    expect(response.status).toBe(200);
+    expect(fetcher).toHaveBeenCalledTimes(1);
+
+    const passwordless = await app.request(
+      "https://finance.test/api/auth/email-otp/send-verification-otp",
+      {
+        method: "POST",
+        headers: { Origin: appOrigin, "Content-Type": "application/json" },
+        body: JSON.stringify({ email: "person@example.invalid", type: "sign-in" }),
+      },
+      bindings(),
+    );
+    expect(passwordless.status).toBe(400);
+    expect(fetcher).toHaveBeenCalledTimes(1);
+  });
+
+  it("checks password-reset codes only with the forget-password purpose", async () => {
+    const fetcher = vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
+      expect(String(init?.body)).toBe(JSON.stringify({
+        email: "person@example.invalid",
+        otp: "123456",
+        type: "forget-password",
+      }));
+      return Response.json({ success: true });
+    });
+    vi.stubGlobal("fetch", fetcher);
+    const response = await app.request(
+      "https://finance.test/api/auth/email-otp/check-verification-otp",
+      {
+        method: "POST",
+        headers: { Origin: appOrigin, "Content-Type": "application/json" },
+        body: JSON.stringify({ email: "Person@example.invalid", otp: "123456", type: "forget-password" }),
+      },
+      bindings(),
+    );
+    expect(response.status).toBe(200);
+    const passwordless = await app.request(
+      "https://finance.test/api/auth/email-otp/check-verification-otp",
+      {
+        method: "POST",
+        headers: { Origin: appOrigin, "Content-Type": "application/json" },
+        body: JSON.stringify({ email: "person@example.invalid", otp: "123456", type: "sign-in" }),
+      },
+      bindings(),
+    );
+    expect(passwordless.status).toBe(400);
+    expect(fetcher).toHaveBeenCalledTimes(1);
+  });
+
+  it("uses Neon Auth SDK's managed emailOtp.resetPassword route", async () => {
+    const fetcher = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      expect(String(input)).toBe(`${authBase}/email-otp/passcode`);
+      expect(String(init?.body)).toBe(JSON.stringify({
+        email: "person@example.invalid",
+        otp: "123456",
+        password: "Synthetic-Password-01",
+      }));
+      return Response.json({ success: true });
+    });
+    vi.stubGlobal("fetch", fetcher);
+    const response = await app.request(
+      "https://finance.test/api/auth/email-otp/passcode",
+      {
+        method: "POST",
+        headers: { Origin: appOrigin, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: " Person@Example.invalid ",
+          otp: "123456",
+          password: "Synthetic-Password-01",
+        }),
+      },
+      bindings(),
+    );
+    expect(response.status).toBe(200);
+    expect(fetcher).toHaveBeenCalledTimes(1);
+
+    const uncontractedRoute = await app.request(
+      "https://finance.test/api/auth/email-otp/reset-password",
+      { method: "POST", headers: { Origin: appOrigin, "Content-Type": "application/json" }, body: "{}" },
+      bindings(),
+    );
+    expect(uncontractedRoute.status).toBe(404);
+    expect(fetcher).toHaveBeenCalledTimes(1);
+  });
+
   it("keeps public signup closed unless the server feature flag is enabled", async () => {
     const fetcher = vi.fn();
     vi.stubGlobal("fetch", fetcher);
@@ -204,7 +361,7 @@ describe("same-origin Neon Auth boundary", () => {
       {
         method: "POST",
         headers: { Origin: appOrigin, "Content-Type": "application/json" },
-        body: "{}",
+        body: JSON.stringify({ email: "a@example.invalid", password: "synthetic-only" }),
       },
       bindings(),
     );

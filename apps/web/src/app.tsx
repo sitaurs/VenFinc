@@ -20,6 +20,7 @@ import { Button, Card, EmptyState, Badge } from "@venfinance/ui";
 import { healthSchema, publicConfigSchema } from "@venfinance/contracts";
 import { PreferencesProvider, usePreferences } from "./preferences";
 import { AuthPage } from "./auth-page";
+import { ForgotPasswordPage, ResetPasswordPage, VerifyEmailPage } from "./auth-flows";
 
 const Demo = lazy(() => import("./demo/demo"));
 const PrivateFinanceApp = lazy(() =>
@@ -287,13 +288,22 @@ function AuthGate() {
     queryFn: publicConfig,
   });
   const register = location.pathname === "/register";
+  const props = {
+    authAvailable: config.data?.authAvailable ?? false,
+    loading: config.isPending,
+    unavailable: config.isError,
+    retry: () => { void config.refetch(); },
+  };
+  if (location.pathname === "/verify-email") return <VerifyEmailPage {...props} />;
+  if (location.pathname === "/forgot-password") return <ForgotPasswordPage {...props} />;
+  if (location.pathname === "/reset-password") return <ResetPasswordPage {...props} />;
   return <AuthPage
     register={register}
-    authAvailable={config.data?.authAvailable ?? false}
+    authAvailable={props.authAvailable}
     registrationOpen={config.data?.registrationOpen ?? false}
-    loading={config.isPending}
-    unavailable={config.isError}
-    retry={() => { void config.refetch(); }}
+    loading={props.loading}
+    unavailable={props.unavailable}
+    retry={props.retry}
   />;
 }
 function StatusPage() {
@@ -543,6 +553,9 @@ export function App() {
             )}
             <Route path="/login" element={<AuthGate />} />
             <Route path="/register" element={<AuthGate />} />
+            <Route path="/verify-email" element={<AuthGate />} />
+            <Route path="/forgot-password" element={<AuthGate />} />
+            <Route path="/reset-password" element={<AuthGate />} />
             <Route path="/offline-unlock" element={<OfflineUnlockPage />} />
             <Route path="/status" element={<StatusPage />} />
             <Route path="/faq" element={<HelpPage />} />

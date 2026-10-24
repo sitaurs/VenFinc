@@ -49,12 +49,13 @@ export function AuthPage({ register, authAvailable, registrationOpen, loading, u
   const location = useLocation();
   const queryClient = useQueryClient();
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const routeState = location.state as { email?: string; notice?: string } | null;
+  const [email, setEmail] = useState(routeState?.email ?? "");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(routeState?.notice ?? null);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -65,18 +66,20 @@ export function AuthPage({ register, authAvailable, registrationOpen, loading, u
     let signedIn = false;
     try {
       if (register) {
+        const normalizedEmail = email.trim().toLowerCase();
         await authPost("sign-up/email", {
           name: name.trim(),
-          email: email.trim().toLowerCase(),
+          email: normalizedEmail,
           password,
-          callbackURL: `${window.location.origin}/login`,
         });
-        setNotice(t("Permintaan pendaftaran diterima. Ikuti petunjuk verifikasi email sebelum masuk.", "The sign-up request was received. Follow the email verification instructions before signing in."));
+        navigate("/verify-email", {
+          replace: true,
+          state: { email: normalizedEmail, justRegistered: true },
+        });
       } else {
         await authPost("sign-in/email", {
           email: email.trim().toLowerCase(),
           password,
-          callbackURL: `${window.location.origin}/app`,
         });
         signedIn = true;
         await apiData("/api/v1/session", privateSessionSchema);
@@ -144,7 +147,10 @@ export function AuthPage({ register, authAvailable, registrationOpen, loading, u
             </form>
           ) : null}
 
-          {!register && authAvailable ? <Link className="auth-forgot" to="/faq">{t("Butuh bantuan untuk masuk?", "Need help signing in?")}</Link> : null}
+          {!register && authAvailable ? <Link className="auth-forgot" to="/forgot-password">{t("Lupa kata sandi?", "Forgot password?")}</Link> : null}
+          {!register && authAvailable ? <Link className="auth-forgot" to="/verify-email" state={{ email }}>
+            {t("Belum menerima kode verifikasi?", "Didn’t receive a verification code?")}
+          </Link> : null}
           {!register ? <Link className="auth-offline-link" to="/offline-unlock">{t("Buka draf offline di perangkat ini", "Open offline drafts on this device")}</Link> : null}
           <p className="auth-switch">{register ? t("Sudah punya akun?", "Already have an account?") : t("Belum punya akun?", "New to VenFinance?")} {register
             ? <Link to="/login">{t("Masuk", "Sign in")}</Link>

@@ -46,7 +46,18 @@ const allowedAuthRoutes = new Map<string, string>([
   ["POST /sign-in/email", "sign-in"],
   ["POST /sign-out", "sign-out"],
   ["POST /sign-up/email", "sign-up"],
+  ["POST /email-otp/send-verification-otp", "verification-otp-send"],
+  ["POST /email-otp/verify-email", "verification-otp-verify"],
+  ["POST /email-otp/check-verification-otp", "verification-otp-check"],
+  ["POST /forget-password/email-otp", "password-reset-otp-send"],
+  // @neondatabase/auth 0.7 exposes emailOtp.resetPassword via the Managed Auth
+  // `email-otp/passcode` route (the Better Auth plugin's lower-level route is
+  // different, so do not proxy that uncontracted endpoint).
+  ["POST /email-otp/passcode", "password-reset-otp-apply"],
 ]);
+
+const emailPattern = /^[^\s@<>]+@[^\s@<>.]+(?:\.[^\s@<>.]+)+$/u;
+const otpPattern = /^[0-9]{4,12}$/u;
 
 function jsonError(
   code: "AUTH_REQUIRED" | "FORBIDDEN" | "DEPENDENCY_UNAVAILABLE" | "NOT_FOUND" | "INVALID_INPUT",
@@ -267,6 +278,107 @@ async function readBoundedBody(
   return body;
 }
 
+function normalizedAuthBody(route: string, bytes: Uint8Array): string | null {
+  let value: unknown;
+  try {
+    value = JSON.parse(new TextDecoder().decode(bytes));
+  } catch {
+    return null;
+  }
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const input = value as Record<string, unknown>;
+  const exactKeys = (allowed: string[]) =>
+    Object.keys(input).length === allowed.length && Object.keys(input).every((key) => allowed.includes(key));
+  if (route === "/sign-out") return exactKeys([]) ? "{}" : null;
+  const email = input.email;
+  if (typeof email !== "string" || email.length > 254 || !emailPattern.test(email.trim())) {
+    return null;
+  }
+  const normalizedEmail = email.trim().toLowerCase();
+  const password = input.password;
+  const otp = input.otp;
+
+  switch (route) {
+    case "/sign-in/email":
+      return exactKeys(["email", "password"]) && typeof password === "string" && password.length <= 128
+        ? JSON.stringify({ email: normalizedEmail, password })
+        : null;
+    case "/sign-up/email": {
+      const name = input.name;
+      return exactKeys(["name", "email", "password"]) && typeof name === "string" &&
+        name.trim().length > 0 && name.trim().length <= 100 &&
+        typeof password === "string" && password.length >= 8 && password.length <= 128
+        ? JSON.stringify({ name: name.trim(), email: normalizedEmail, password })
+        : null;
+    }
+    case "/email-otp/send-verification-otp":
+      return exactKeys(["email", "type"]) && input.type === "email-verification"
+        ? JSON.stringify({ email: normalizedEmail, type: "email-verification" })
+        : null;
+    case "/email-otp/verify-email":
+      return exactKeys(["email", "otp"]) && typeof otp === "string" && otpPattern.test(otp)
+        ? JSON.stringify({ email: normalizedEmail, otp })
+        : null;
+    case "/email-otp/check-verification-otp":
+      return exactKeys(["email", "otp", "type"]) && typeof otp === "string" &&
+        otpPattern.test(otp) && input.type === "forget-password"
+        ? JSON.stringify({ email: normalizedEmail, otp, type: "forget-password" })
+        : null;
+    case "/forget-password/email-otp":
+      return exactKeys(["email"]) ? JSON.stringify({ email: normalizedEmail }) : null;
+    case "/email-otp/passcode":
+      return exactKeys(["email", "otp", "password"]) && typeof otp === "string" &&
+        otpPattern.test(otp) && typeof password === "string" &&
+        password.length >= 8 && password.length <= 128
+        ? JSON.stringify({ email: normalizedEmail, otp, password })
+        : null;
+    default:
+      return null;
+  }
+}
+
+function safeProviderFailure(
+  route: string,
+  status: number,
+  requestId: string,
+): Response {
+  if (status === 429) {
+    return jsonError(
+      "INVALID_INPUT",
+      "Terlalu banyak percobaan. Tunggu sebentar lalu coba lagi.",
+      requestId,
+      429,
+    );
+  }
+  if (status >= 500) {
+    return jsonError(
+      "DEPENDENCY_UNAVAILABLE",
+      "Layanan autentikasi sementara tidak dapat dijangkau.",
+      requestId,
+      503,
+    );
+  }
+  if (route === "/forget-password/email-otp" || route === "/email-otp/send-verification-otp") {
+    // The caller must not learn whether an email has an account or a pending verification.
+    return new Response(JSON.stringify({ success: true }), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store",
+        Pragma: "no-cache",
+        "X-Content-Type-Options": "nosniff",
+      },
+    });
+  }
+  if (route === "/sign-in/email") {
+    return jsonError("AUTH_REQUIRED", "Email atau kata sandi belum cocok.", requestId, 401);
+  }
+  if (route === "/email-otp/verify-email" || route === "/email-otp/check-verification-otp" || route === "/email-otp/passcode") {
+    return jsonError("INVALID_INPUT", "Kode tidak valid atau sudah kedaluwarsa.", requestId, 400);
+  }
+  return jsonError("INVALID_INPUT", "Permintaan autentikasi tidak dapat diproses.", requestId, 400);
+}
+
 export async function proxyNeonAuth(
   request: Request,
   env: NeonAuthBindings,
@@ -316,7 +428,11 @@ export async function proxyNeonAuth(
     if (!bounded) {
       return jsonError("INVALID_INPUT", "Permintaan terlalu besar.", requestId, 413);
     }
-    body = bounded;
+    const normalized = normalizedAuthBody(route.route, bounded);
+    if (!normalized) {
+      return jsonError("INVALID_INPUT", "Data autentikasi tidak valid.", requestId, 400);
+    }
+    body = new TextEncoder().encode(normalized);
   }
 
   const headers = new Headers({
@@ -352,6 +468,20 @@ export async function proxyNeonAuth(
       requestId,
       502,
     );
+  }
+
+  if (!upstream.ok) return safeProviderFailure(route.route, upstream.status, requestId);
+
+  if (route.route === "/forget-password/email-otp") {
+    return new Response(JSON.stringify({ success: true }), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "private, no-store",
+        Pragma: "no-cache",
+        "X-Content-Type-Options": "nosniff",
+      },
+    });
   }
 
   const response = responseHeaders(upstream, base.hostname, env.APP_ENV === "production");

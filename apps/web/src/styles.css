@@ -2975,6 +2975,99 @@
   display: none;
 }
 
+.auth-flow-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+  color: var(--text);
+}
+
+.auth-panel-flow .auth-form-wrap {
+  gap: 16px;
+}
+
+.auth-panel-flow .auth-brand {
+  justify-content: center;
+}
+
+.auth-panel-flow .auth-heading {
+  text-align: center;
+}
+
+.auth-flow-illustration {
+  width: 132px;
+  height: 132px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 2px;
+  border: 1px solid color-mix(in srgb, var(--brand) 12%, var(--line));
+  border-radius: 30px;
+  color: var(--brand);
+  background: radial-gradient(circle at 50% 36%, var(--brand-soft), var(--surface) 72%);
+}
+
+.auth-flow-card {
+  width: 100%;
+  display: grid;
+  gap: 16px;
+  padding: clamp(17px, 3vw, 24px);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: var(--surface);
+  box-shadow: 0 16px 44px color-mix(in srgb, var(--text) 6%, transparent);
+}
+
+.auth-flow-card .auth-form {
+  width: 100%;
+  margin: 0;
+}
+
+.auth-flow-card-plain {
+  width: 100%;
+  display: grid;
+  gap: 16px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.auth-flow-masked-email,
+.auth-flow-help {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.auth-flow-masked-email strong {
+  color: var(--text);
+}
+
+.auth-flow-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.auth-flow-actions a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  color: var(--brand);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.auth-flow-actions .button {
+  min-height: 46px;
+}
+
+.auth-flow-help {
+  text-align: center;
+}
+
 .auth-art {
   position: relative;
   min-height: 610px;
@@ -3696,6 +3789,12 @@
     padding: 24px clamp(22px, 6vw, 42px) 35px;
   }
 
+  .auth-panel-flow {
+    justify-content: flex-start;
+    gap: 14px;
+    padding-top: max(16px, env(safe-area-inset-top));
+  }
+
   .auth-form-wrap {
     width: min(100%, 460px);
     gap: 20px;
@@ -3726,6 +3825,42 @@
   .auth-panel-register .auth-brand {
     justify-content: flex-start;
     align-self: center;
+  }
+
+  .auth-panel-flow .auth-brand {
+    justify-content: center;
+    align-self: center;
+  }
+
+  .auth-panel-flow .auth-flow-illustration {
+    width: 112px;
+    height: 112px;
+    border-radius: 25px;
+  }
+
+  .auth-panel-flow .auth-heading {
+    gap: 7px;
+    margin-top: 0;
+  }
+
+  .auth-panel-flow .auth-flow-card {
+    padding: 17px;
+  }
+
+  .auth-panel-flow .auth-form {
+    gap: 14px;
+  }
+
+  .auth-flow-card-plain {
+    gap: 14px;
+  }
+
+  .auth-flow-actions > * {
+    flex: 1 1 auto;
+  }
+
+  .auth-flow-actions .button {
+    justify-content: center;
   }
 
   .auth-back {
