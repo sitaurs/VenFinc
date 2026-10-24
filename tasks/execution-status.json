@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-24 12:17:52 UTC",
+  "updated_at": "2026-10-24 12:58:59 UTC",
   "source_of_truth": "Execution status only; task source markdown keeps the original baseline wording. A blocked external gate is not done.",
   "status_values": [
     "todo",
@@ -36,11 +36,16 @@
         "P0-001"
       ],
       "status": "blocked",
-      "evidence": [],
+      "evidence": [
+        "tools/armbian_preflight.py",
+        "tools/test_armbian_preflight.py",
+        "qa/armbian-preflight/README.md",
+        "qa/armbian-preflight/local-script-validation-2026-10-24.json"
+      ],
       "blockers": [
         {
           "gate": "G-INFRA",
-          "reason": "ARM64 device ownership/access and reproducible RAM/CPU/storage/uptime benchmarks are not established."
+          "reason": "The preflight collector is prepared, but ARM64 device ownership/access and reproducible target-device RAM/CPU/storage/uptime measurements remain unverified."
         }
       ],
       "minimum_verification": "Log benchmark dan nilai baseline yang dapat direproduksi."

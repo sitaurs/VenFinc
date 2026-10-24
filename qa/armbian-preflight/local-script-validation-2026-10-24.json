@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-10-24T12:58:59Z",
+  "branch": "main",
+  "commit": "787b5e914f49c6dda005dbe2bd246c8d413d8e8c",
+  "host": {
+    "architecture": "x86_64",
+    "python": "3.14.4",
+    "arm64Target": false
+  },
+  "checks": [
+    {
+      "command": "python3 tools/test_armbian_preflight.py",
+      "exitCode": 0,
+      "testsPassed": 3,
+      "testsFailed": 0
+    },
+    {
+      "command": "python3 tools/armbian_preflight.py --benchmark --benchmark-seconds 0.1 --benchmark-size-mib 1 --storage-path /tmp",
+      "exitCode": 0,
+      "assertions": [
+        "JSON report generated",
+        "networkAccessed=false",
+        "applicationDataRead=false",
+        "temporary benchmark file removed after checksum verification"
+      ]
+    }
+  ],
+  "result": "PASS: collector code and bounded scratch benchmark validated on a development host",
+  "targetDeviceBaselineCaptured": false,
+  "taskStatus": "BLOCKED",
+  "blocker": "Owner-controlled ARM64 device ownership/access and reproducible target-device resource measurements are not established."
+}

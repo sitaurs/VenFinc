@@ -14,6 +14,8 @@ Ini rencana tes, bukan bukti kelulusan produksi. Catat `PASS`, `FAIL`, `BLOCKED`
 - Jangan deploy, migrasi production, mengubah DNS/Tunnel/Access, mengirim WA, mendaftarkan nomor, mengubah role live, atau memicu provider berbayar. Integrasi yang belum berizin/prasyaratnya hilang tetap `BLOCKED`.
 - Jangan lampirkan secret/token/cookie/JWT, isi bukti, note transaksi atau pesan WA di laporan. Redaksi screenshot/trace/log.
 
+P0-002 preflight is available at [`armbian-preflight/README.md`](./armbian-preflight/README.md); local code-validation evidence is [`local-script-validation-2026-10-24.json`](./armbian-preflight/local-script-validation-2026-10-24.json). The default collector is read-only; its local validation on a developer host is not an ARM64 device baseline. Keep P0-002 `BLOCKED` until the owner-controlled target device is measured.
+
 ## Keadaan infrastruktur yang sudah dibaca
 
 Cloudflare `venlab.tech` aktif. ADR-0002 menyetujui `staging-finance.venlab.tech` untuk staging saja. App Access staging sudah dibuat tanpa kebijakan Allow sehingga deny-by-default; One-time PIN satu-satunya IdP yang tersedia dan belum membuktikan MFA. Belum ada DNS, custom Worker domain, atau deployment staging. Tidak ada Worker produksi `venfinance`; DNS produksi tetap belum dikonfigurasi. Bucket R2 `ven` tersedia di APAC, `r2.dev` mati, CORS belum dikonfigurasi, object lock kosong; tidak ada objek yang dibaca/ditulis. Bucket `sap` tidak diakses. Rincian aman ada di [`staging-host-readiness-2026-10-24.json`](./staging-host-readiness-2026-10-24.json) dan [`cloudflare-reconnection-evidence.json`](./cloudflare-reconnection-evidence.json).
