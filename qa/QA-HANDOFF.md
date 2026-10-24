@@ -48,7 +48,8 @@ Gunakan wrapper `tools/pnpm.sh` agar runtime repo-pinned Node 24 dipilih bila te
 | `./tools/pnpm.sh test` | 97/97 PASS; diverifikasi ulang pada `4594d6a` | Unit tests; provider auth route dan session management memakai mocks; tambahan replay revoked-cookie/stale-bearer ditolak pada Hono test fixture. Catatan eksekusi terkini: [`local-verification-2026-10-24.json`](./local-verification-2026-10-24.json). |
 | `./tools/pnpm.sh test:contracts` | 21/21 PASS | Contract tests |
 | `./tools/pnpm.sh test:security` | 9/9 PASS + client bundle scan | Scan heuristic, bukan audit/RLS proof |
-| `./tools/pnpm.sh build` | PASS | Worker + PWA build disajikan ulang dari preview yang baru dimulai; belum deploy |
+| `./tools/pnpm.sh build` | PASS | Worker + PWA production bundle dibuat ulang; build lokal belum deploy. Bukti build + staging dry-run terbaru: [`staging-deploy-preflight-2026-10-24.json`](./staging-deploy-preflight-2026-10-24.json). |
+| `wrangler deploy --dry-run --config infra/wrangler.staging.jsonc` | PASS | Wrangler membaca 31 aset PWA (336.84 KiB upload); tidak membuat deployment, DNS, atau perubahan resource remote. |
 | `./tools/pnpm.sh test:e2e` | 25/25 PASS, Chromium 156.0.8078.4, local app + mocked APIs | Tidak menguji provider nyata; termasuk auth, 2 alur offline, transaksi lokal/demo dan 3 interaksi session management |
 | `./tools/pnpm.sh test:visual` | 14/14 PASS pada 320–1920px | Layout/overflow dan screen auth/settings; tidak dibandingkan pixel-per-pixel dengan 180 PNG sumber |
 | `./tools/pnpm.sh infra:smoke` | PASS, Vite dev lokal menjalankan route Hono melalui Cloudflare Workerd | Exit 0; unauthenticated `/api/v1/me` menghasilkan 503 fail-closed saat Auth lokal tidak dikonfigurasi. Tidak menguji provider eksternal; bukti: [`local-infra-smoke-2026-10-24.json`](./local-infra-smoke-2026-10-24.json). |

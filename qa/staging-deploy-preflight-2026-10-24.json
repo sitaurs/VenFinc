@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-10-24T12:54:15Z",
+  "branch": "main",
+  "commit": "35febd87c2523fc45368f9baca70094d99cf9f8f",
+  "runtimeVersions": {
+    "node": "24.22.1",
+    "pnpm": "11.25.0",
+    "wrangler": "4.152.0",
+    "vite": "8.3.5"
+  },
+  "build": {
+    "command": "XDG_CONFIG_HOME=/tmp/venfinance-wrangler-config WRANGLER_LOG_PATH=/tmp/venfinance-wrangler-config/.wrangler/logs ./tools/pnpm.sh build",
+    "exitCode": 0,
+    "workerBundle": "328.07 kB (77.45 kB gzip)",
+    "pwaPrecache": {
+      "entries": 21,
+      "sizeKiB": 1531.66
+    }
+  },
+  "stagingDryRun": {
+    "command": "XDG_CONFIG_HOME=/tmp/venfinance-wrangler-config WRANGLER_LOG_PATH=/tmp/venfinance-wrangler-config/.wrangler/logs ./tools/pnpm.sh exec wrangler deploy --dry-run --config infra/wrangler.staging.jsonc",
+    "exitCode": 0,
+    "assetsRead": 31,
+    "uploadKiB": 336.84,
+    "uploadGzipKiB": 73.39,
+    "authAndDatabaseBindingsPresent": true,
+    "r2BindingPresent": false
+  },
+  "remoteMutationPerformed": false,
+  "limits": [
+    "Dry-run does not prove Wrangler OAuth authorization, staging DNS or Access routing, live Neon Auth, Worker-to-Data-API RLS identity, or provider behavior.",
+    "No R2 binding is configured in this staging Worker; private proof storage remains blocked until the owner-checked adapter passes its required tests.",
+    "This evidence does not establish production readiness or authorize a production deployment."
+  ]
+}
