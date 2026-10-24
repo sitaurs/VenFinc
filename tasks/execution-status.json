@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-24 06:00:26 UTC",
+  "updated_at": "2026-10-24 06:37:19 UTC",
   "source_of_truth": "Execution status only; task source markdown keeps the original baseline wording. A blocked external gate is not done.",
   "status_values": [
     "todo",
@@ -1930,8 +1930,10 @@
       "dependencies": [
         "P4-001"
       ],
-      "status": "in_progress",
-      "evidence": [],
+      "status": "done",
+      "evidence": [
+        "qa/p4-002-core-components-evidence.json"
+      ],
       "blockers": [],
       "minimum_verification": "Story fixtures cover hover/focus/disabled/error/keyboard."
     },

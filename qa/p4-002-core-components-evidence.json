@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "task_id": "P4-002",
+  "title": "Create accessible core components",
+  "result": "PASS",
+  "verified_at_utc": "2026-10-24 06:37:19 UTC",
+  "scope": "Reusable accessible UI primitives for actions, fields, dialogs, navigation, tabs, status and messages, loading states, and exact IDR display, with an isolated dev-only showcase fixture.",
+  "runtime": {
+    "project_node": "24.22.1",
+    "project_node_pins": [
+      ".nvmrc: v24.22.1",
+      ".node-version: 24.22.1",
+      "package.json engines: >=24.22.1 <25"
+    ],
+    "pnpm": "11.25.0",
+    "selection": "All project checks used PATH=/tmp/venfinance-node24/bin:$PATH with the verified Node 24.22.1 binary and tools/pnpm.sh.",
+    "direct_shell_node": "22.23.3 (host default; not used for project checks)"
+  },
+  "changed_files": [
+    "apps/web/src/app.tsx",
+    "packages/ui/package.json",
+    "packages/ui/src/index.tsx",
+    "packages/ui/src/money.test.ts",
+    "packages/ui/src/tokens.css",
+    "pnpm-lock.yaml",
+    "qa/e2e/ui-components.spec.ts",
+    "qa/fixtures/ui-components.css",
+    "qa/fixtures/ui-components.tsx",
+    "tasks/execution-status.json",
+    "tsconfig.json"
+  ],
+  "checks": [
+    {
+      "command": "PATH=/tmp/venfinance-node24/bin:$PATH ./tools/pnpm.sh lint",
+      "exit_code": 0,
+      "result": "PASS",
+      "output": "ESLint and Stylelint completed."
+    },
+    {
+      "command": "PATH=/tmp/venfinance-node24/bin:$PATH ./tools/pnpm.sh typecheck",
+      "exit_code": 0,
+      "result": "PASS",
+      "output": "TypeScript completed with no diagnostics."
+    },
+    {
+      "command": "PATH=/tmp/venfinance-node24/bin:$PATH ./tools/pnpm.sh test",
+      "exit_code": 0,
+      "result": "PASS",
+      "output": "7 test files; 59 tests passed."
+    },
+    {
+      "command": "PATH=/tmp/venfinance-node24/bin:$PATH XDG_CONFIG_HOME=/tmp/venfinance-xdg ./tools/pnpm.sh build",
+      "exit_code": 0,
+      "result": "PASS",
+      "output": "Cloudflare Worker, client, and PWA service worker built."
+    },
+    {
+      "command": "PATH=/tmp/venfinance-node24/bin:$PATH ./tools/pnpm.sh test:security",
+      "exit_code": 0,
+      "result": "PASS",
+      "output": "9 security tests passed; heuristic client artifact scan checked 8 files with no findings."
+    },
+    {
+      "command": "PATH=/tmp/venfinance-node24/bin:$PATH ./tools/pnpm.sh test:e2e",
+      "exit_code": 0,
+      "result": "PASS",
+      "output": "15 Playwright tests passed, including disabled/loading, React Router child activation, keyboard focus, field error descriptions, tabs, dialog focus return, masked money, status, toast, and skeleton semantics."
+    },
+    {
+      "command": "PATH=/tmp/venfinance-node24/bin:$PATH ./tools/pnpm.sh test:visual",
+      "exit_code": 0,
+      "result": "PASS",
+      "output": "12 captures passed: app widths 320, 360, 361, 390, 768, 1024, 1211, 1440, 1920 px and component fixture widths 320, 390, 1440 px; horizontal overflow assertions passed."
+    },
+    {
+      "command": "PATH=/tmp/venfinance-node24/bin:$PATH ./tools/pnpm.sh docs:check",
+      "exit_code": 0,
+      "result": "PASS",
+      "output": "177 requirement IDs, 373 task records, 90 screen IDs and all tracked reference hashes validated; production_ready remains false."
+    },
+    {
+      "command": "if rg -l -F -e 'Komponen VenFinance' -e 'Buka demo sedang diproses' apps/web/dist/client/assets; then echo 'QA fixture leaked into client bundle'; exit 1; else echo 'PASS: QA component fixture absent from production client assets'; fi",
+      "exit_code": 0,
+      "result": "PASS",
+      "output": "Unique QA fixture strings are absent from production client assets."
+    }
+  ],
+  "visual_evidence": {
+    "status": "Local Playwright captures; not a production design signoff.",
+    "captures": [
+      "test-results/ui-components--visual-P4-002-component-gallery-fits-320px-chromium/ui-components-320.png",
+      "test-results/ui-components--visual-P4-002-component-gallery-fits-1440px-chromium/ui-components-1440.png"
+    ],
+    "design_gate": "G-VISUAL remains open; current production screens have not been accepted against all original references."
+  },
+  "security_and_release_limitations": [
+    "The client artifact scan is heuristic and does not replace a security audit.",
+    "This task adds foundational components; live auth, role enforcement, Neon RLS, ledger posting, owner-checked R2, WA/AI integrations, and production deployment were not verified by these component tests.",
+    "Overall project readiness remains false and other release gates remain tracked in tasks/execution-status.json and qa/ACCEPTANCE-MATRIX.md."
+  ],
+  "commit": {
+    "sha": "9a4728af4e33959d42295e74eb06a1c1819c20e4",
+    "branch": "main",
+    "remote": "https://github.com/sitaurs/VenFinc.git",
+    "remote_ref_sha_verified": "9a4728af4e33959d42295e74eb06a1c1819c20e4"
+  }
+}
