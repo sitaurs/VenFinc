@@ -6,8 +6,24 @@ import {
   publicConfigSchema,
   successEnvelope,
 } from "@venfinance/contracts";
+import {
+  proxyNeonAuth,
+  resolveNeonSession,
+  type NeonAuthBindings,
+} from "./auth";
 
-type Env = { Bindings: { APP_ENV: string }; Variables: { requestId: string } };
+type Env = {
+  Bindings: NeonAuthBindings & { APP_ENV: string; DATABASE_URL?: string };
+  Variables: {
+    requestId: string;
+    identity: {
+      subject: string;
+      expiresAt: number;
+      emailVerified: true;
+      providerJwt: string;
+    };
+  };
+};
 export const app = new Hono<Env>();
 
 app.use("/api/*", secureHeaders());
@@ -35,6 +51,46 @@ app.use("/api/*", async (c, next) => {
   return next();
 });
 
+// Auth is proxied same-origin so the managed provider's opaque HttpOnly session
+// cookie stays on finance.venlab.tech. No client bearer token reaches private APIs.
+app.all("/api/auth/*", (c) =>
+  proxyNeonAuth(c.req.raw, c.env, c.get("requestId")),
+);
+
+app.use("/api/v1/*", async (c, next) => {
+  if (["/api/v1/health", "/api/v1/config/public"].includes(c.req.path)) {
+    return next();
+  }
+  const resolution = await resolveNeonSession(c.req.raw, c.env ?? {});
+  if (resolution.ok) {
+    for (const cookie of resolution.refreshedCookies) {
+      c.header("Set-Cookie", cookie, { append: true });
+    }
+  }
+  if (!resolution.ok) {
+    return c.json(
+      errorEnvelope(
+        "DEPENDENCY_UNAVAILABLE",
+        "Layanan autentikasi sementara tidak dapat dijangkau.",
+        c.get("requestId"),
+      ),
+      503,
+    );
+  }
+  if (!resolution.session) {
+    return c.json(
+      errorEnvelope(
+        "AUTH_REQUIRED",
+        "Masuk diperlukan untuk mengakses data pribadi.",
+        c.get("requestId"),
+      ),
+      401,
+    );
+  }
+  c.set("identity", resolution.session);
+  return next();
+});
+
 app.get("/api/v1/health", (c) =>
   c.json(
     successEnvelope(
@@ -42,8 +98,13 @@ app.get("/api/v1/health", (c) =>
         api: "available",
         checkedAt: new Date().toISOString(),
         services: {
-          auth: "not_configured",
-          database: "not_configured",
+          auth:
+            c.env?.AUTH_PROXY_ENABLED === "1" &&
+            c.env?.NEON_AUTH_ISSUER &&
+            c.env?.NEON_AUTH_JWKS_URL
+              ? "unknown"
+              : "not_configured",
+          database: c.env?.DATABASE_URL ? "unknown" : "not_configured",
           storage: "unknown",
           whatsapp: "not_configured",
           ai: "not_configured",
@@ -58,8 +119,12 @@ app.get("/api/v1/config/public", (c) =>
   c.json(
     successEnvelope(
       publicConfigSchema.parse({
-        authAvailable: false,
-        registrationOpen: false,
+        authAvailable:
+          c.env?.AUTH_PROXY_ENABLED === "1" && Boolean(c.env?.NEON_AUTH_URL),
+        registrationOpen:
+          c.env?.AUTH_PROXY_ENABLED === "1" &&
+          c.env?.PUBLIC_SIGNUP_ENABLED === "1" &&
+          c.env?.EMAIL_VERIFICATION_ENABLED === "1",
         personalWhatsAppAvailable: false,
         aiAvailable: false,
         defaultLocale: "id-ID",
@@ -70,15 +135,29 @@ app.get("/api/v1/config/public", (c) =>
   ),
 );
 
-// No identity adapter has passed P0. Cookies, role headers and body user IDs grant no access.
+app.get("/api/v1/session", (c) => {
+  const identity = c.get("identity");
+  return c.json(
+    successEnvelope(
+      {
+        authenticated: true,
+        userId: identity.subject,
+        expiresAt: new Date(identity.expiresAt * 1000).toISOString(),
+      },
+      c.get("requestId"),
+    ),
+  );
+});
+
+// Finance endpoints remain closed until their schema, RLS and route contracts pass staging tests.
 app.all("/api/v1/*", (c) =>
   c.json(
     errorEnvelope(
-      "AUTH_REQUIRED",
-      "Masuk diperlukan untuk mengakses data pribadi.",
+      "NOT_FOUND",
+      "Halaman tidak ditemukan.",
       c.get("requestId"),
     ),
-    401,
+    404,
   ),
 );
 app.notFound((c) =>

@@ -45,7 +45,7 @@ describe("P1 API security boundary (not a live RLS proof)", () => {
         "X-Role": "superuser",
       },
     });
-    expect(r.status).toBe(401);
+      expect(r.status).toBe(503);
     expect(await r.text()).not.toContain("victim");
   });
   it("rejects cross-origin state-changing requests before any handler", async () => {
