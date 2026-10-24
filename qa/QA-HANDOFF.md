@@ -45,7 +45,7 @@ Gunakan wrapper `tools/pnpm.sh` agar runtime repo-pinned Node 24 dipilih bila te
 | Perintah/suite | Hasil terakhir | Batas |
 |---|---:|---|
 | `./tools/pnpm.sh lint`, `typecheck` | PASS, Node 24.22.1 / pnpm 11.25.0 | Tidak membuktikan provider cloud |
-| `./tools/pnpm.sh test` | 97/97 PASS | Unit tests; provider auth route dan session management memakai mocks; tambahan replay revoked-cookie/stale-bearer ditolak pada Hono test fixture |
+| `./tools/pnpm.sh test` | 97/97 PASS; diverifikasi ulang pada `4594d6a` | Unit tests; provider auth route dan session management memakai mocks; tambahan replay revoked-cookie/stale-bearer ditolak pada Hono test fixture. Catatan eksekusi terkini: [`local-verification-2026-10-24.json`](./local-verification-2026-10-24.json). |
 | `./tools/pnpm.sh test:contracts` | 21/21 PASS | Contract tests |
 | `./tools/pnpm.sh test:security` | 9/9 PASS + client bundle scan | Scan heuristic, bukan audit/RLS proof |
 | `./tools/pnpm.sh build` | PASS | Worker + PWA build disajikan ulang dari preview yang baru dimulai; belum deploy |

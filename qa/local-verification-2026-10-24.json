@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "startedAt": "2026-10-24T12:38:33Z",
+  "finishedAt": "2026-10-24T12:38:37Z",
+  "branch": "main",
+  "commit": "4594d6aa17301ff64fc501336d0a83d44a69f2ab",
+  "command": "./tools/pnpm.sh test -- apps/edge/src/auth.test.ts",
+  "exitCode": 0,
+  "runtime": {
+    "repositoryNode": "24.22.1",
+    "systemShellNode": "22.23.3",
+    "pnpm": "11.25.0"
+  },
+  "result": {
+    "testFilesPassed": 10,
+    "testFilesFailed": 0,
+    "testsPassed": 97,
+    "testsFailed": 0
+  },
+  "scope": "Local unit and mock tests only. This does not prove live Neon session revocation, RLS behavior, email verification, Cloudflare Access MFA, or production readiness."
+}
