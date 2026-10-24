@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-24 06:50:33 UTC",
+  "updated_at": "2026-10-24 06:59:37 UTC",
   "source_of_truth": "Execution status only; task source markdown keeps the original baseline wording. A blocked external gate is not done.",
   "status_values": [
     "todo",
@@ -89,7 +89,7 @@
       "dependencies": [
         "P0-001"
       ],
-      "status": "blocked",
+      "status": "in_progress",
       "evidence": [
         "qa/neon-readiness-2026-10-24.json",
         "qa/database/README.md",
@@ -102,7 +102,7 @@
       "blockers": [
         {
           "gate": "G-IDENTITY",
-          "reason": "Read-only Neon MCP tools are now available. Checks confirm Neon Auth is disabled on both the unprotected default branch named production and the isolated child staging branch; the Neon Auth roadmap still lists Managed MFA as coming soon. The owner's current authorization covers analysis; provisioning Auth, applying SQL, creating test users, or starting staging compute requires explicit write approval and may consume quota. Actual Worker A/B sessions, revoke/JWT/RLS proof, Cloudflare Access MFA binding, and step-up remain unverified. CLI login is not required for the MCP path."
+          "reason": "Owner authorized staging-only Neon Auth/SQL/RLS/A-B POC on br-aged-mode-b4rcy9i0. POC is in progress. Actual Worker sessions, revoke/JWT/RLS proof, operator MFA binding, step-up, email verification and production delivery remain unverified; production stays blocked."
         }
       ],
       "minimum_verification": "PoC user A/B, session revoke, role JWT + akses data ditolak; dokumentasi masalah."

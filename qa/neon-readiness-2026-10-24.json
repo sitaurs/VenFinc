@@ -80,7 +80,7 @@
       "Create test users",
       "Start a Postgres compute endpoint"
     ],
-    "writeScope": "Owner authorization currently covers infrastructure analysis. Staging writes and compute usage require explicit approval."
+    "writeScope": "Pemilik mengizinkan POC staging pada 2026-10-24: Neon Auth, SQL/RLS, user A/B sintetis, dan compute seperlunya hanya pada br-aged-mode-b4rcy9i0. Branch production tetap dilarang disentuh."
   },
   "mcpCapabilities": {
     "inspectionAndSqlAuthToolsExposed": true,
@@ -92,11 +92,17 @@
     "checkedAt": "2026-10-24T06:54:20Z",
     "managedMfa": "MFA support remains listed as coming soon."
   },
-  "state": "scope_verified_auth_disabled_staging_poc_waits_for_write_approval",
+  "ownerStagingPocApproval": {
+    "approvedOn": "2026-10-24",
+    "scope": "Enable Neon Auth, staging-only SQL/RLS and synthetic A/B test accounts; start staging compute only if needed.",
+    "branchId": "br-aged-mode-b4rcy9i0",
+    "productionBranchExcluded": true
+  },
+  "state": "staging_poc_authorized_in_progress",
   "productionReady": false,
   "productionMigrationApplied": false,
   "secretsPersisted": false,
-  "note": "Read-only MCP inspection is current. The only existing staging resource is the named child branch; no compute, auth users, schema migration, or live deployment was performed.",
+  "note": "Owner explicitly authorized the P0-005 staging POC. This remains a pre-execution checkpoint; external state and evidence fields update after each operation. No production mutation or deployment is authorized.",
   "accessPath": "MCP",
   "cliLoginRequired": false,
   "cliFallbackWithdrawn": true
