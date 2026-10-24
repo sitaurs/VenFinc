@@ -537,3 +537,166 @@ export function MoneyText({
     </span>
   );
 }
+
+export type ChartColor =
+  | "brand"
+  | "info"
+  | "success"
+  | "warning"
+  | "orange"
+  | "teal"
+  | "pink"
+  | "rose";
+
+export type ChartDataPoint = {
+  id: string;
+  label: string;
+  value: bigint | string;
+  color?: ChartColor;
+};
+
+const chartColorPalette: ChartColor[] = [
+  "brand",
+  "orange",
+  "info",
+  "teal",
+  "pink",
+  "rose",
+  "success",
+  "warning",
+];
+
+function parseChartValue(value: bigint | string) {
+  const decimal = typeof value === "bigint" ? value.toString() : value;
+  if (!/^-?(?:0|[1-9]\d*)$/.test(decimal)) {
+    throw new TypeError("Chart values must be exact integer strings or bigint values.");
+  }
+  return BigInt(decimal);
+}
+
+function chartBarWidth(value: bigint, maxMagnitude: bigint) {
+  if (maxMagnitude === 0n) return "0.00%";
+  const hundredthsOfPercent = (value * 5000n) / maxMagnitude;
+  const integerPart = hundredthsOfPercent / 100n;
+  const fraction = (hundredthsOfPercent % 100n).toString().padStart(2, "0");
+  return `${integerPart}.${fraction}%`;
+}
+
+export type ChartWithTableFallbackProps = {
+  title: string;
+  description?: string;
+  data: readonly ChartDataPoint[];
+  labelHeading: string;
+  valueHeading: string;
+  tableCaption: string;
+  emptyMessage: string;
+  insufficientDataMessage: string;
+  formatValue: (value: bigint) => string;
+  className?: string;
+};
+
+export function ChartWithTableFallback({
+  title,
+  description,
+  data,
+  labelHeading,
+  valueHeading,
+  tableCaption,
+  emptyMessage,
+  insufficientDataMessage,
+  formatValue,
+  className,
+}: ChartWithTableFallbackProps) {
+  const headingId = useId();
+  const descriptionId = `${headingId}-description`;
+  const entries = data.map((point, index) => {
+    const value = parseChartValue(point.value);
+    return {
+      ...point,
+      value,
+      magnitude: value < 0n ? -value : value,
+      color:
+        point.color ?? chartColorPalette[index % chartColorPalette.length] ?? "brand",
+    };
+  });
+  const maxMagnitude = entries.reduce(
+    (maximum, entry) => (entry.magnitude > maximum ? entry.magnitude : maximum),
+    0n,
+  );
+  const hasChart = entries.length >= 2 && maxMagnitude > 0n;
+
+  return (
+    <section
+      className={cn("chart-with-table", className)}
+      aria-labelledby={headingId}
+      aria-describedby={description ? descriptionId : undefined}
+    >
+      <h2 id={headingId}>{title}</h2>
+      {description && <p id={descriptionId}>{description}</p>}
+
+      {entries.length === 0 ? (
+        <p className="chart-empty" role="status">
+          {emptyMessage}
+        </p>
+      ) : (
+        <>
+          {hasChart ? (
+            <div className="chart-visual" aria-hidden="true">
+              <ul className="chart-legend">
+                {entries.map((entry) => (
+                  <li key={entry.id} className={`chart-tone-${entry.color}`}>
+                    <span className="chart-legend-swatch" />
+                    <span>{entry.label}</span>
+                  </li>
+                ))}
+              </ul>
+              <ul className="chart-bars">
+                {entries.map((entry) => (
+                  <li key={entry.id} className="chart-bar-row">
+                    <span className="chart-bar-label">{entry.label}</span>
+                    <span className="chart-bar-track">
+                      <span
+                        className={cn(
+                          "chart-bar",
+                          `chart-tone-${entry.color}`,
+                          entry.value < 0n
+                            ? "chart-bar-negative"
+                            : "chart-bar-positive",
+                        )}
+                        style={{ width: chartBarWidth(entry.magnitude, maxMagnitude) }}
+                      />
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <p className="chart-empty" role="status">
+              {insufficientDataMessage}
+            </p>
+          )}
+
+          <div className="chart-table-wrap">
+            <table className="chart-data-table">
+              <caption className="sr-only">{tableCaption}</caption>
+              <thead>
+                <tr>
+                  <th scope="col">{labelHeading}</th>
+                  <th scope="col">{valueHeading}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {entries.map((entry) => (
+                  <tr key={entry.id}>
+                    <th scope="row">{entry.label}</th>
+                    <td>{formatValue(entry.value)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
+    </section>
+  );
+}

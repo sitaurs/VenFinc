@@ -1,5 +1,6 @@
 import {
   Button,
+  ChartWithTableFallback,
   DialogClose,
   DialogContent,
   DialogDescription,
@@ -19,6 +20,7 @@ import {
   TabsTrigger,
   TextField,
   Toast,
+  formatRupiah,
 } from "../../packages/ui/src";
 import "./ui-components.css";
 
@@ -128,6 +130,61 @@ export default function UiComponentFixture() {
           <MoneyText amountMinor="-3250" />
           <MoneyText amountMinor="4000000" masked />
         </div>
+      </section>
+
+      <section aria-labelledby="gallery-chart">
+        <h2 id="gallery-chart">Padanan grafik dan tabel</h2>
+        <p>Seluruh angka berikut adalah data uji sintetis.</p>
+        <ChartWithTableFallback
+          title="Arus kas uji"
+          description="Grafik visual dilengkapi tabel berisi nilai yang tepat."
+          data={[
+            {
+              id: "income",
+              label: "Pemasukan",
+              value: "9007199254740993",
+              color: "teal",
+            },
+            {
+              id: "expense",
+              label: "Pengeluaran",
+              value: "-4000000000000000",
+              color: "pink",
+            },
+            {
+              id: "adjustment",
+              label: "Penyesuaian",
+              value: "0",
+              color: "orange",
+            },
+          ]}
+          labelHeading="Arus kas"
+          valueHeading="Nominal"
+          tableCaption="Nilai tepat arus kas uji"
+          emptyMessage="Belum ada data uji."
+          insufficientDataMessage="Grafik memerlukan dua nilai pembanding."
+          formatValue={(value) => formatRupiah(value)}
+        />
+        <ChartWithTableFallback
+          title="Grafik satu titik"
+          data={[{ id: "only", label: "Satu nilai", value: "0" }]}
+          labelHeading="Kategori"
+          valueHeading="Nilai"
+          tableCaption="Satu nilai uji"
+          emptyMessage="Belum ada data uji."
+          insufficientDataMessage="Grafik memerlukan dua nilai pembanding."
+          formatValue={(value) => formatRupiah(value)}
+        />
+        <ChartWithTableFallback
+          title="Grafik kosong"
+          data={[]}
+          labelHeading="Kategori"
+          valueHeading="Nilai"
+          tableCaption="Data grafik uji"
+          emptyMessage="Belum ada nilai untuk ditampilkan."
+          insufficientDataMessage="Grafik memerlukan dua nilai pembanding."
+          formatValue={(value) => formatRupiah(value)}
+        />
       </section>
     </main>
   );

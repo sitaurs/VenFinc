@@ -117,7 +117,9 @@ test("P4-002 exact money, masked privacy, status, toast, and skeleton semantics"
 }) => {
   await openComponentFixture(page);
 
-  await expect(page.getByText(/9\.007\.199\.254\.740\.993/)).toBeVisible();
+  await expect(
+    page.locator(".component-money-values").getByText(/9\.007\.199\.254\.740\.993/),
+  ).toBeVisible();
   await expect(
     page.locator('.money[aria-label="Jumlah disembunyikan"]'),
   ).toHaveText("Rp ••••••");
@@ -135,6 +137,49 @@ test("P4-002 exact money, masked privacy, status, toast, and skeleton semantics"
   await expect
     .poll(() => skeleton.evaluate((element) => element.getBoundingClientRect().height))
     .toBeGreaterThan(0);
+});
+
+test("P4-006 charts expose exact values in a semantic table", async ({ page }) => {
+  await openComponentFixture(page);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+
+  const chart = page.getByRole("region", { name: "Arus kas uji" });
+  const table = chart.getByRole("table", { name: "Nilai tepat arus kas uji" });
+  await expect(chart.locator(".chart-visual")).toHaveAttribute("aria-hidden", "true");
+  await expect(chart.locator(".chart-legend li").nth(0)).toHaveClass(
+    /chart-tone-teal/,
+  );
+  await expect(chart.locator(".chart-legend li").nth(1)).toHaveClass(
+    /chart-tone-pink/,
+  );
+  await expect(table.getByRole("columnheader", { name: "Arus kas" })).toBeVisible();
+  await expect(table.getByRole("columnheader", { name: "Nominal" })).toBeVisible();
+  await expect(
+    table.getByRole("row", { name: /Pemasukan.*9\.007\.199\.254\.740\.993/ }),
+  ).toBeVisible();
+  await expect(
+    table.getByRole("row", {
+      name: /Pengeluaran.*[-−].*4\.000\.000\.000\.000\.000/,
+    }),
+  ).toBeVisible();
+
+  const bars = chart.locator(".chart-bar");
+  await expect(bars.nth(0)).toHaveAttribute("style", /width: 50%/);
+  await expect(bars.nth(1)).toHaveAttribute("style", /width: 22\.2%/);
+  await expect(bars.nth(1)).toHaveClass(/chart-bar-negative/);
+  await expect(bars.nth(2)).toHaveAttribute("style", /width: 0%/);
+  await expect(bars.first()).toHaveCSS("animation-name", "none");
+
+  const singlePointChart = page.getByRole("region", { name: "Grafik satu titik" });
+  await expect(
+    singlePointChart.getByText("Grafik memerlukan dua nilai pembanding."),
+  ).toBeVisible();
+  await expect(singlePointChart.locator(".chart-visual")).toHaveCount(0);
+  await expect(singlePointChart.getByRole("table", { name: "Satu nilai uji" })).toBeVisible();
+
+  const emptyChart = page.getByRole("region", { name: "Grafik kosong" });
+  await expect(emptyChart.getByText("Belum ada nilai untuk ditampilkan.")).toBeVisible();
+  await expect(emptyChart.getByRole("table")).toHaveCount(0);
 });
 
 for (const width of [320, 390, 1440]) {

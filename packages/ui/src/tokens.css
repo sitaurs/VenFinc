@@ -638,6 +638,180 @@ svg {
   letter-spacing: -0.035em;
 }
 
+.chart-with-table {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.chart-with-table > p {
+  color: var(--muted);
+  font-size: var(--font-size-secondary);
+}
+
+.chart-visual {
+  display: grid;
+  gap: var(--space-4);
+  min-width: 0;
+  padding: var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-field);
+  background: var(--surface);
+}
+
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chart-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: var(--font-size-secondary);
+}
+
+.chart-legend-swatch {
+  width: 10px;
+  height: 10px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--chart-color);
+}
+
+.chart-bars {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chart-bar-row {
+  display: grid;
+  grid-template-columns: minmax(96px, 1fr) minmax(96px, 2fr);
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.chart-bar-label {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: var(--font-size-secondary);
+}
+
+.chart-bar-track {
+  position: relative;
+  min-width: 0;
+  height: 14px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--line);
+}
+
+.chart-bar-track::before {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  background: var(--muted);
+  content: "";
+}
+
+.chart-bar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 999px;
+  background: var(--chart-color);
+}
+
+.chart-bar-positive {
+  left: 50%;
+}
+
+.chart-bar-negative {
+  right: 50%;
+}
+
+.chart-tone-brand {
+  --chart-color: var(--brand);
+}
+
+.chart-tone-info {
+  --chart-color: var(--info);
+}
+
+.chart-tone-success {
+  --chart-color: var(--success);
+}
+
+.chart-tone-warning {
+  --chart-color: var(--warning);
+}
+
+.chart-tone-orange {
+  --chart-color: var(--orange);
+}
+
+.chart-tone-teal {
+  --chart-color: var(--teal);
+}
+
+.chart-tone-pink {
+  --chart-color: var(--rose);
+}
+
+.chart-tone-rose {
+  --chart-color: var(--rose);
+}
+
+.chart-empty {
+  padding: var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-field);
+  color: var(--muted);
+}
+
+.chart-table-wrap {
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.chart-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  text-align: start;
+}
+
+.chart-data-table th,
+.chart-data-table td {
+  padding: 9px 10px;
+  border-bottom: 1px solid var(--line);
+  overflow-wrap: anywhere;
+  vertical-align: top;
+}
+
+.chart-data-table th:first-child {
+  width: 46%;
+  overflow-wrap: normal;
+  text-align: start;
+}
+
+.chart-data-table td:last-child {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
 input,
 select,
 textarea {
