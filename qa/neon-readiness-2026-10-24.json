@@ -200,13 +200,19 @@
       "usedByWorker": false,
       "passwordRotatedAfterDiscovery": true,
       "revokeAttempt": "denied by Neon: permission denied to revoke role neon_superuser",
-      "cleanupRequiresOwnerApproval": true
+      "ownerApprovalReceived": true,
+      "cleanupStatus": "deleted_and_verified_absent",
+      "deletedAt": "2026-10-24T08:01:28Z",
+      "stagingBranchId": "br-aged-mode-b4rcy9i0",
+      "verifiedBy": "Neon MCP list_postgres_roles",
+      "productionBranchId": "br-rapid-band-b4jw3tlq",
+      "productionBranchModified": false
     }
   },
   "productionReady": false,
   "productionMigrationApplied": false,
   "secretsPersisted": false,
-  "note": "POC Neon Auth + Hono Worker + RLS berjalan hanya pada branch staging. A/B isolation, anonymous/tampered JWT denial, dan forged-owner denial lulus via Neon Data API. P0-005 tetap blocked: JWT replay setelah sign-out masih diterima hingga token expiry (900 detik, tanpa sid). Production branch tidak dimutasi. Ada role staging bawaan MCP dengan BYPASSRLS/neon_superuser yang tidak digunakan; penghapusan memerlukan approval owner.",
+  "note": "POC Neon Auth + Hono Worker + RLS berjalan hanya pada branch staging. A/B isolation, anonymous/tampered JWT denial, dan forged-owner denial lulus via Neon Data API. P0-005 tetap blocked: JWT replay setelah sign-out masih diterima hingga token expiry (900 detik, tanpa sid). Role venfinance_p0_runtime staging yang tidak digunakan telah dihapus setelah approval owner dan terverifikasi tidak ada di branch staging; branch production tidak dimutasi.",
   "accessPath": "MCP",
   "cliLoginRequired": false,
   "cliFallbackWithdrawn": true,

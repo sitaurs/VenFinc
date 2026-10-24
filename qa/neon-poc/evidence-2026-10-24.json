@@ -82,7 +82,9 @@
     "usedByWorker": false,
     "passwordRotatedAfterDiscovery": true,
     "revokeAttempt": "denied by Neon: permission denied to revoke role neon_superuser",
-    "cleanup": "Role remains in the staging branch. Deleting it uses a destructive Neon operation and requires owner approval."
+    "ownerApprovalReceived": true,
+    "cleanup": "Deleted from staging branch br-aged-mode-b4rcy9i0 after explicit owner approval; Neon MCP list_postgres_roles verified it absent. Production branch br-rapid-band-b4jw3tlq was not modified.",
+    "deletedAt": "2026-10-24T08:01:28Z"
   },
   "secretHandling": {
     "credentialsInRepository": false,
@@ -95,7 +97,7 @@
     "Session revocation is not immediate; a signed-out JWT remained usable until expiry.",
     "Operator MFA/step-up and production email verification/deliverability are not proven.",
     "Direct @neondatabase/serverless role access to auth.user_id() is blocked by auth schema ownership; Data API is only a staging POC adapter pending architecture review.",
-    "The unintended privileged staging role venfinance_p0_runtime needs owner-approved cleanup."
+    "The unintended privileged staging role venfinance_p0_runtime was deleted and verified absent after owner approval."
   ],
   "productionReady": false,
   "deploymentPerformed": false
