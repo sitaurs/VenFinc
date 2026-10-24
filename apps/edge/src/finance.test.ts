@@ -371,6 +371,19 @@ describe("private finance routes", () => {
 describe("role-gated operator routes", () => {
   const operatorPath = (path: string) => `https://finance.test/api/v1/${path}`;
 
+  it("rejects anonymous operator requests before resolving a platform role", async () => {
+    const upstream = vi.fn();
+    const setup = await testBindings(async () => {
+      upstream();
+      return Response.json("superuser");
+    });
+
+    const response = await app.request(operatorPath("system/maintenance"), undefined, setup.bindings);
+
+    expect(response.status).toBe(401);
+    expect(upstream).not.toHaveBeenCalled();
+  });
+
   it("rejects a user who forges browser role headers or bearer claims", async () => {
     let roleLookupAuthorization = "";
     const setup = await testBindings(async (url, init) => {
