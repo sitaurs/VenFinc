@@ -61,7 +61,7 @@ test("password recovery uses one-use OTP and matching confirmation without expos
     calls.push({ path: new URL(route.request().url()).pathname, body: route.request().postDataJSON() });
     await route.fulfill({ json: { success: true } });
   });
-  await page.route("**/api/auth/email-otp/passcode", async (route) => {
+  await page.route("**/api/auth/email-otp/reset-password", async (route) => {
     calls.push({ path: new URL(route.request().url()).pathname, body: route.request().postDataJSON() });
     await route.fulfill({ json: { success: true } });
   });
@@ -89,7 +89,7 @@ test("password recovery uses one-use OTP and matching confirmation without expos
   await expect(page.getByRole("status")).toContainText("berhasil diperbarui");
   expect(calls).toEqual([
     { path: "/api/auth/forget-password/email-otp", body: { email: "qa@example.invalid" } },
-    { path: "/api/auth/email-otp/passcode", body: { email: "qa@example.invalid", otp: "654321", password: "Synthetic-QA-Password-02" } },
+    { path: "/api/auth/email-otp/reset-password", body: { email: "qa@example.invalid", otp: "654321", password: "Synthetic-QA-Password-02" } },
   ]);
 });
 

@@ -60,7 +60,14 @@
     },
     "neonAuthEnabled": true,
     "authProvisioned": true,
-    "applicationMigrationApplied": false,
+    "applicationMigrationApplied": true,
+    "applicationMigrationTags": [
+      "0000_core",
+      "0001_ledger-controls",
+      "0002_rls-ledger-functions",
+      "0003_read-models",
+      "0004_platform-role-default-deny"
+    ],
     "autoExpiryConfigured": false
   },
   "readOnlyMcpRecheck": {
@@ -106,7 +113,7 @@
     "branchId": "br-aged-mode-b4rcy9i0",
     "productionBranchExcluded": true
   },
-  "state": "staging_poc_partial_session_revocation_blocked",
+  "state": "staging_schema_migrations_applied_identity_gate_blocked",
   "stagingPocExecution": {
     "lastUpdatedAt": "2026-10-24T07:51:36Z",
     "branchId": "br-aged-mode-b4rcy9i0",
@@ -212,7 +219,7 @@
   "productionReady": false,
   "productionMigrationApplied": false,
   "secretsPersisted": false,
-  "note": "POC Neon Auth + Hono Worker + RLS berjalan hanya pada branch staging. A/B isolation, anonymous/tampered JWT denial, dan forged-owner denial lulus via Neon Data API. P0-005 tetap blocked: JWT replay setelah sign-out masih diterima hingga token expiry (900 detik, tanpa sid). Role venfinance_p0_runtime staging yang tidak digunakan telah dihapus setelah approval owner dan terverifikasi tidak ada di branch staging; branch production tidak dimutasi.",
+  "note": "POC Neon Auth + Hono Worker + RLS serta migrasi aplikasi Drizzle 0000-0004 berada hanya pada branch staging. A/B isolation, anonymous/tampered JWT denial, dan forged-owner denial lulus via Neon Data API. P0-005 tetap blocked: replay JWT secara langsung ke jalur Neon Data API POC setelah sign-out masih diterima hingga expiry token 900 detik (tanpa sid); jalur produksi Data API belum diaktifkan. Migrasi 0004 diterapkan dan diverifikasi pada staging, tetapi fresh migrate/rollback disposable-database test dan Worker identity/revocation end-to-end tetap belum lulus. Role venfinance_p0_runtime staging yang tidak digunakan telah dihapus setelah approval owner dan terverifikasi tidak ada; branch production tidak dimutasi.",
   "accessPath": "MCP",
   "cliLoginRequired": false,
   "cliFallbackWithdrawn": true,
@@ -224,5 +231,68 @@
     "sqlWritesPerformed": false,
     "endpointStateObservedAtFinalRead": "active",
     "endpointActionTaken": false
+  },
+  "latestStagingReadback": {
+    "verifiedAtUtc": "2026-10-24T11:37:35Z",
+    "branchId": "br-aged-mode-b4rcy9i0",
+    "projectId": "hidden-unit-95812377",
+    "authEnabled": true,
+    "applicationSchemaInventoryObserved": true,
+    "financeRowsRead": false,
+    "appliedMigrationRows": [
+      {
+        "tag": "0000_core",
+        "hash": "bbadb9e27a8d6e05bd45f644d27b57a7fb3ff94863ca21dd0040887f0e5a1741",
+        "createdAt": 1792832492734
+      },
+      {
+        "tag": "0001_ledger-controls",
+        "hash": "745c2664cb911a874d05d0ae3828145593860af496b65959d9b94bd2c345550e",
+        "createdAt": 1792832557416
+      },
+      {
+        "tag": "0002_rls-ledger-functions",
+        "hash": "1c58160e287eebef5b660d50c0ab5cd5f8e44e8ee92fdfdc093583766659ab0f",
+        "createdAt": 1792833046358
+      },
+      {
+        "tag": "0003_read-models",
+        "hash": "902c1fccd447a202f3adee3f4d7cd52bee7ebbdac2cecd27accb1bebdba5c283",
+        "createdAt": 1792833430657
+      },
+      {
+        "tag": "0004_platform-role-default-deny",
+        "hash": "8e884e8903951530b050cfd642d9fb376e6e276f9b03ca58f8d7b297010a33ff",
+        "createdAt": 1792837546782
+      }
+    ],
+    "roleTable": {
+      "rlsEnabled": true,
+      "forceRlsEnabled": true,
+      "policies": [
+        "platform_roles_default_user_insert",
+        "platform_roles_self_select"
+      ],
+      "authenticatedSelect": false,
+      "authenticatedInsert": false,
+      "mutatorSelect": true,
+      "mutatorInsert": true,
+      "mutatorUpdate": false,
+      "mutatorDelete": false
+    },
+    "migrationAction": {
+      "migration": "0004_platform-role-default-deny.sql",
+      "scope": "staging branch only",
+      "appliedVia": "Neon MCP SQL transaction",
+      "drizzleHistoryRecorded": true,
+      "freshRollbackSimulationPassed": false
+    },
+    "computeCleanup": {
+      "endpointId": "ep-rapid-flower-b46lkbp1",
+      "state": "idle",
+      "suspendedAt": "2026-10-24T11:37:32Z"
+    },
+    "productionBranchModified": false,
+    "r2SapAccessed": false
   }
 }

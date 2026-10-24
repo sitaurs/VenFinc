@@ -4,7 +4,7 @@
 
 ## 1. Shared conventions
 
-- Public `GET /`, `/demo`, `/legal/*`, `/status` static/edge. Auth via **Neon Managed Auth** standard SDK / session; Worker verifies auth identity server-side before private route, never accepts caller-supplied role or user_id.
+- Public `GET /`, `/demo`, `/legal/*`, `/status` static/edge. Browser auth uses the same-origin `/api/auth/*` allowlist; the Edge proxy forwards only approved Neon Managed Auth operations and keeps the opaque session in an `HttpOnly` cookie. Every private request resolves the cookie with Neon Auth, verifies the returned JWT against configured issuer/JWKS, and ignores browser-supplied bearer tokens, roles, and user IDs. Browser code never calls Neon Data API directly.
 - For **state-changing finance commands**, require `Idempotency-Key` UUID (client-generated, stable across retry) and optional `If-Match: <entityVersion>` for conflict detection. Server enforces unique key **scoped to authenticated user and operation** and stores a canonical payload hash in `command_idempotency` in the same DB transaction. Reused key with different payload ⇒ `409 IDEMPOTENCY_KEY_REUSED`.
 - JSON money format: `"amountMinor":"10000"`, `"currency":"IDR"`; no floats, no formatted `"Rp10.000"` in API. Timestamps ISO 8601 with offset/UTC plus separate `localDate` and user IANA `timezone` as applicable.
 - Standard entity fields: `id`, `version`, `createdAt`, `updatedAt`, `status`, and owner implicitly derived from session. Client may receive `ownerId` on its own export, but never choose owner of a new record.
@@ -34,6 +34,10 @@
 | Method + path | Role | Request → result / notes |
 |---|---|---|
 | `GET /api/v1/config/public` | guest | Safe feature availability, public status, locale; no endpoints/secrets |
+| `GET /api/v1/security/sessions` | user+ | List current owner's safe session metadata only; never expose provider token, IP address or owner ID |
+| `POST /api/v1/security/sessions/revoke` | user+ | Exact `{sessionId}`; owner-scoped resolve then revoke; hidden/foreign IDs return 404 |
+| `POST /api/v1/security/sessions/revoke-others` | user+ | Exact empty object; retains current session |
+| `POST /api/v1/security/sessions/revoke-all` | user+ | Exact empty object; revokes current session and expires the app cookie |
 | `GET /api/v1/me` | user+ | Profile, own role, service availability, consent flags; no other users |
 | `PATCH /api/v1/me` | user+ | name, locale, timezone, privacy preferences; `If-Match` |
 | `GET /api/v1/onboarding` | user+ | current step, options, setup state |
@@ -94,6 +98,10 @@
 | `POST /api/v1/sync/mutations` | owner | batch device mutations with stable IDs, returns per-item status |
 | `GET /api/v1/sync/status` | owner | queue/conflict server summary |
 | `POST /api/v1/sync/conflicts/:id/resolve` | owner | `server/local/merge` with preview and audit |
+
+### Same-origin auth proxy allowlist
+
+`/api/auth/*` is not a pass-through proxy. The only currently implemented methods are `GET /get-session` and `POST /sign-in/email`, `/sign-out`, `/sign-up/email`, `/email-otp/send-verification-otp`, `/email-otp/verify-email`, `/forget-password/email-otp`, and `/email-otp/reset-password`. Unknown path/method, cross-origin mutation, unapproved body field, oversized body, redirect, unverified email, and disabled signup fail closed. Provider session/JWT fields and response headers are stripped; only a validated opaque cookie is returned to the same origin. Successful inbox/OTP and reset-password flows are not yet live-tested, so this contract does not enable public signup by itself.
 
 ### Finance create example
 

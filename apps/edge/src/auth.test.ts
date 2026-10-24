@@ -199,9 +199,9 @@ describe("same-origin Neon Auth boundary", () => {
     expect(fetcher).toHaveBeenCalledTimes(1);
   });
 
-  it("uses Neon Auth SDK's managed emailOtp.resetPassword route", async () => {
+  it("uses the staging-confirmed reset route and rejects the broken SDK alias", async () => {
     const fetcher = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
-      expect(String(input)).toBe(`${authBase}/email-otp/passcode`);
+      expect(String(input)).toBe(`${authBase}/email-otp/reset-password`);
       expect(String(init?.body)).toBe(JSON.stringify({
         email: "person@example.invalid",
         otp: "123456",
@@ -211,7 +211,7 @@ describe("same-origin Neon Auth boundary", () => {
     });
     vi.stubGlobal("fetch", fetcher);
     const response = await app.request(
-      "https://finance.test/api/auth/email-otp/passcode",
+      "https://finance.test/api/auth/email-otp/reset-password",
       {
         method: "POST",
         headers: { Origin: appOrigin, "Content-Type": "application/json" },
@@ -227,7 +227,7 @@ describe("same-origin Neon Auth boundary", () => {
     expect(fetcher).toHaveBeenCalledTimes(1);
 
     const uncontractedRoute = await app.request(
-      "https://finance.test/api/auth/email-otp/reset-password",
+      "https://finance.test/api/auth/email-otp/passcode",
       { method: "POST", headers: { Origin: appOrigin, "Content-Type": "application/json" }, body: "{}" },
       bindings(),
     );
@@ -346,6 +346,53 @@ describe("same-origin Neon Auth boundary", () => {
     );
     expect(response.status).toBe(503);
     expect(fetcher).not.toHaveBeenCalled();
+  });
+
+  it("denies a replayed cookie and browser-supplied bearer after provider sign-out", async () => {
+    const provider = vi.fn(async (input: RequestInfo | URL) => {
+      const url = new URL(String(input));
+      if (url.pathname.endsWith("/sign-out")) return Response.json({ success: true });
+      if (url.pathname.endsWith("/get-session")) {
+        return Response.json({ session: null, user: null });
+      }
+      throw new Error("unexpected provider route");
+    });
+    vi.stubGlobal("fetch", provider);
+
+    const cookie = "__Secure-neonauth.session_token=revoked-cookie-canary";
+    const signOut = await app.request(
+      "https://finance.test/api/auth/sign-out",
+      {
+        method: "POST",
+        headers: {
+          Origin: appOrigin,
+          Cookie: cookie,
+          "Content-Type": "application/json",
+        },
+        body: "{}",
+      },
+      bindings(),
+    );
+    expect(signOut.status).toBe(200);
+
+    const replay = await app.request(
+      "https://finance.test/api/v1/session",
+      {
+        headers: {
+          Cookie: cookie,
+          Authorization: "Bearer stale-browser-jwt-canary",
+        },
+      },
+      bindings(),
+    );
+    const body = await replay.text();
+    expect(replay.status).toBe(401);
+    expect(body).not.toContain("stale-browser-jwt-canary");
+    expect(body).not.toContain("revoked-cookie-canary");
+    expect(provider.mock.calls.map(([input]) => new URL(String(input)).pathname)).toEqual([
+      "/neondb/auth/sign-out",
+      "/neondb/auth/get-session",
+    ]);
   });
 });
 

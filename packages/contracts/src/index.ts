@@ -187,6 +187,21 @@ export const privateSessionSchema = z.strictObject({
   userId: z.string().min(1),
   expiresAt: effectiveAtSchema,
 });
+export const authDeviceSessionSchema = z.strictObject({
+  id: z.string().min(1).max(255),
+  createdAt: effectiveAtSchema,
+  expiresAt: effectiveAtSchema,
+  userAgent: z.string().max(180).nullable(),
+  current: z.boolean(),
+});
+export const authDeviceSessionListSchema = z.array(authDeviceSessionSchema).max(100);
+export const authSessionMutationSchema = z.strictObject({
+  revoked: z.literal(true),
+  currentSessionRevoked: z.boolean(),
+});
+export const authSessionRevokeRequestSchema = z.strictObject({
+  sessionId: z.string().trim().min(1).max(255),
+});
 export const profileReadResultSchema = z.strictObject({
   profile: userProfileSchema.nullable(),
   role: roleSchema,

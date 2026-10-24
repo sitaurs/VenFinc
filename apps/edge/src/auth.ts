@@ -20,6 +20,9 @@ export type VerifiedNeonSession = {
   subject: string;
   expiresAt: number;
   emailVerified: true;
+  providerSessionId: string;
+  /** Server-only opaque cookie, used only for owner-scoped auth operations. */
+  authCookie: string;
   /** Server-only bearer used to establish the Neon RLS context. Never return it to a client. */
   providerJwt: string;
 };
@@ -49,10 +52,11 @@ const allowedAuthRoutes = new Map<string, string>([
   ["POST /email-otp/send-verification-otp", "verification-otp-send"],
   ["POST /email-otp/verify-email", "verification-otp-verify"],
   ["POST /forget-password/email-otp", "password-reset-otp-send"],
-  // @neondatabase/auth 0.7 exposes emailOtp.resetPassword via the Managed Auth
-  // `email-otp/passcode` route (the Better Auth plugin's lower-level route is
-  // different, so do not proxy that uncontracted endpoint).
-  ["POST /email-otp/passcode", "password-reset-otp-apply"],
+  // A validation-only probe on the VenFinance staging branch returned 404 for
+  // `email-otp/passcode` and 400 VALIDATION_ERROR for this existing route.
+  // @neondatabase/auth 0.7 currently maps resetPassword to the broken alias, so
+  // the Edge proxy uses this exact, bounded provider request instead.
+  ["POST /email-otp/reset-password", "password-reset-otp-apply"],
 ]);
 
 const emailPattern = /^[^\s@<>]+@[^\s@<>.]+(?:\.[^\s@<>.]+)+$/u;
@@ -75,7 +79,7 @@ function jsonError(
   });
 }
 
-function trustedAuthBase(env: NeonAuthBindings): URL | null {
+export function trustedAuthBase(env: NeonAuthBindings): URL | null {
   if (env.AUTH_PROXY_ENABLED !== "1" || !env.NEON_AUTH_URL) return null;
   try {
     const value = new URL(env.NEON_AUTH_URL);
@@ -98,7 +102,7 @@ function trustedAuthBase(env: NeonAuthBindings): URL | null {
   }
 }
 
-function appOrigin(request: Request, env: NeonAuthBindings): string {
+export function appOrigin(request: Request, env: NeonAuthBindings): string {
   try {
     const configured = env.APP_ORIGIN ? new URL(env.APP_ORIGIN) : new URL(request.url);
     if (
@@ -226,7 +230,7 @@ function responseHeaders(
   return headers;
 }
 
-function authTarget(base: URL, route: string): URL {
+export function authTarget(base: URL, route: string): URL {
   const target = new URL(base);
   target.pathname = `${base.pathname}${route}`;
   return target;
@@ -320,7 +324,7 @@ function normalizedAuthBody(route: string, bytes: Uint8Array): string | null {
         : null;
     case "/forget-password/email-otp":
       return exactKeys(["email"]) ? JSON.stringify({ email: normalizedEmail }) : null;
-    case "/email-otp/passcode":
+    case "/email-otp/reset-password":
       return exactKeys(["email", "otp", "password"]) && typeof otp === "string" &&
         otpPattern.test(otp) && typeof password === "string" &&
         password.length >= 8 && password.length <= 128
@@ -367,7 +371,7 @@ function safeProviderFailure(
   if (route === "/sign-in/email") {
     return jsonError("AUTH_REQUIRED", "Email atau kata sandi belum cocok.", requestId, 401);
   }
-  if (route === "/email-otp/verify-email" || route === "/email-otp/passcode") {
+  if (route === "/email-otp/verify-email" || route === "/email-otp/reset-password") {
     return jsonError("INVALID_INPUT", "Kode tidak valid atau sudah kedaluwarsa.", requestId, 400);
   }
   return jsonError("INVALID_INPUT", "Permintaan autentikasi tidak dapat diproses.", requestId, 400);
@@ -547,7 +551,7 @@ async function readJson(response: Response): Promise<unknown> {
   }
 }
 
-function getActiveUser(value: unknown): { id: string; emailVerified: boolean } | null {
+function getActiveUser(value: unknown): { id: string; emailVerified: boolean; sessionId: string } | null {
   if (!value || typeof value !== "object") return null;
   const record = value as Record<string, unknown>;
   const nested = record.data && typeof record.data === "object"
@@ -564,8 +568,10 @@ function getActiveUser(value: unknown): { id: string; emailVerified: boolean } |
   ) return null;
   const userRecord = user as Record<string, unknown>;
   const id = userRecord.id;
+  const sessionId = (session as Record<string, unknown>).id;
   return typeof id === "string" && id.length > 0 && id.length <= 255
-    ? { id, emailVerified: userRecord.emailVerified === true }
+    && typeof sessionId === "string" && sessionId.length > 0 && sessionId.length <= 255
+    ? { id, emailVerified: userRecord.emailVerified === true, sessionId }
     : null;
 }
 
@@ -637,12 +643,18 @@ export async function resolveNeonSession(
     ) {
       return { ok: true, session: null, refreshedCookies };
     }
+    const rotatedCookie = refreshedCookies
+      .map((value) => value.split(";", 1)[0] ?? "")
+      .map((value) => getNeonSessionCookie(value))
+      .find((value): value is string => value !== null);
     return {
       ok: true,
       session: {
         subject: payload.sub,
         expiresAt: payload.exp,
         emailVerified: true,
+        providerSessionId: activeUser.sessionId,
+        authCookie: rotatedCookie ?? cookie,
         providerJwt,
       },
       refreshedCookies,

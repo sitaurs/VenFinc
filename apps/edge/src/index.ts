@@ -1,6 +1,9 @@
-import { Hono } from "hono";
+import { Hono, type Context } from "hono";
 import { secureHeaders } from "hono/secure-headers";
 import {
+  authDeviceSessionListSchema,
+  authSessionMutationSchema,
+  authSessionRevokeRequestSchema,
   errorEnvelope,
   healthSchema,
   publicConfigSchema,
@@ -10,7 +13,9 @@ import {
   proxyNeonAuth,
   resolveNeonSession,
   type NeonAuthBindings,
+  type VerifiedNeonSession,
 } from "./auth";
+import { manageNeonSessions } from "./session-management";
 import financeRoutes from "./finance";
 import type { DataApiBindings } from "./database";
 
@@ -18,15 +23,59 @@ type Env = {
   Bindings: NeonAuthBindings & DataApiBindings & { APP_ENV: string; DATABASE_URL?: string };
   Variables: {
     requestId: string;
-    identity: {
-      subject: string;
-      expiresAt: number;
-      emailVerified: true;
-      providerJwt: string;
-    };
+    identity: VerifiedNeonSession;
   };
 };
 export const app = new Hono<Env>();
+
+async function readSessionCommand(request: Request): Promise<unknown | null> {
+  if (request.headers.get("Content-Type")?.split(";", 1)[0]?.trim().toLowerCase() !== "application/json") {
+    return null;
+  }
+  if (Number(request.headers.get("Content-Length") ?? 0) > 4096) return null;
+  const reader = request.body?.getReader();
+  if (!reader) return null;
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  try {
+    while (true) {
+      const result = await reader.read();
+      if (result.done) break;
+      size += result.value.byteLength;
+      if (size > 4096) {
+        await reader.cancel();
+        return null;
+      }
+      chunks.push(result.value);
+    }
+  } catch {
+    return null;
+  } finally {
+    reader.releaseLock();
+  }
+  const bytes = new Uint8Array(size);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  try {
+    return JSON.parse(new TextDecoder().decode(bytes)) as unknown;
+  } catch {
+    return null;
+  }
+}
+
+function sessionManagementError(c: Context<Env>, reason: "not_found" | "unavailable") {
+  return c.json(
+    errorEnvelope(
+      reason === "not_found" ? "NOT_FOUND" : "DEPENDENCY_UNAVAILABLE",
+      reason === "not_found" ? "Sesi tidak ditemukan." : "Pengaturan sesi sementara tidak dapat dimuat.",
+      c.get("requestId"),
+    ),
+    reason === "not_found" ? 404 : 503,
+  );
+}
 
 app.use("/api/*", secureHeaders());
 app.use("/api/*", async (c, next) => {
@@ -91,6 +140,68 @@ app.use("/api/v1/*", async (c, next) => {
   }
   c.set("identity", resolution.session);
   return next();
+});
+
+app.get("/api/v1/security/sessions", async (c) => {
+  const result = await manageNeonSessions(c.req.raw, c.env, c.get("identity"), { type: "list" });
+  if (!result.ok) return sessionManagementError(c, result.reason);
+  if (result.kind !== "list") return sessionManagementError(c, "unavailable");
+  return c.json(
+    successEnvelope(authDeviceSessionListSchema.parse(result.sessions), c.get("requestId")),
+  );
+});
+
+app.post("/api/v1/security/sessions/revoke", async (c) => {
+  const parsed = authSessionRevokeRequestSchema.safeParse(await readSessionCommand(c.req.raw));
+  if (!parsed.success) {
+    return c.json(errorEnvelope("INVALID_INPUT", "Perangkat yang dipilih tidak valid.", c.get("requestId")), 400);
+  }
+  const result = await manageNeonSessions(c.req.raw, c.env, c.get("identity"), {
+    type: "revoke",
+    sessionId: parsed.data.sessionId,
+  });
+  if (!result.ok) return sessionManagementError(c, result.reason);
+  if (result.kind !== "mutation") return sessionManagementError(c, "unavailable");
+  if (result.clearCookie) c.header("Set-Cookie", result.clearCookie, { append: true });
+  return c.json(
+    successEnvelope(authSessionMutationSchema.parse({
+      revoked: result.revoked,
+      currentSessionRevoked: result.currentSessionRevoked,
+    }), c.get("requestId")),
+  );
+});
+
+app.post("/api/v1/security/sessions/revoke-others", async (c) => {
+  const parsed = await readSessionCommand(c.req.raw);
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed) || Object.keys(parsed).length !== 0) {
+    return c.json(errorEnvelope("INVALID_INPUT", "Permintaan tidak valid.", c.get("requestId")), 400);
+  }
+  const result = await manageNeonSessions(c.req.raw, c.env, c.get("identity"), { type: "revoke-others" });
+  if (!result.ok) return sessionManagementError(c, result.reason);
+  if (result.kind !== "mutation") return sessionManagementError(c, "unavailable");
+  return c.json(
+    successEnvelope(authSessionMutationSchema.parse({
+      revoked: result.revoked,
+      currentSessionRevoked: result.currentSessionRevoked,
+    }), c.get("requestId")),
+  );
+});
+
+app.post("/api/v1/security/sessions/revoke-all", async (c) => {
+  const parsed = await readSessionCommand(c.req.raw);
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed) || Object.keys(parsed).length !== 0) {
+    return c.json(errorEnvelope("INVALID_INPUT", "Permintaan tidak valid.", c.get("requestId")), 400);
+  }
+  const result = await manageNeonSessions(c.req.raw, c.env, c.get("identity"), { type: "revoke-all" });
+  if (!result.ok) return sessionManagementError(c, result.reason);
+  if (result.kind !== "mutation") return sessionManagementError(c, "unavailable");
+  if (result.clearCookie) c.header("Set-Cookie", result.clearCookie, { append: true });
+  return c.json(
+    successEnvelope(authSessionMutationSchema.parse({
+      revoked: result.revoked,
+      currentSessionRevoked: result.currentSessionRevoked,
+    }), c.get("requestId")),
+  );
 });
 
 app.get("/api/v1/health", (c) =>

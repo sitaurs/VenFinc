@@ -27,5 +27,47 @@
     }
   ],
   "sapAccessed": false,
-  "mutations": false
+  "mutations": false,
+  "latestReadOnlyInventory": {
+    "recordedAtUtc": "2026-10-24T11:36:53Z",
+    "zone": {
+      "name": "venlab.tech",
+      "status": "active"
+    },
+    "requestedHostDns": {
+      "finance.venlab.tech": false,
+      "gowa.venlab.tech": false,
+      "9r.venlab.tech": false
+    },
+    "worker": {
+      "name": "venfinance",
+      "exists": false,
+      "readStatus": 404
+    },
+    "accessApplications": {
+      "finance.venlab.tech": 0
+    },
+    "r2Ven": {
+      "name": "ven",
+      "location": "APAC",
+      "storageClass": "Standard",
+      "r2DevEnabled": false,
+      "corsConfigured": false,
+      "lifecycle": [
+        {
+          "id": "Default Multipart Abort Rule",
+          "enabled": true,
+          "maxAgeSeconds": 604800
+        }
+      ],
+      "bucketLockRules": 0,
+      "objectContentsListed": false
+    },
+    "errors": {
+      "r2CorsRead": "404: CORS configuration does not exist",
+      "workerRead": "404: Worker does not exist"
+    },
+    "sapAccessed": false,
+    "mutations": false
+  }
 }

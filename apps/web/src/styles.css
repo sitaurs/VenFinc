@@ -3391,6 +3391,368 @@
   font-size: 13px;
 }
 
+.settings-page {
+  width: min(100%, 1180px);
+  margin-inline: auto;
+}
+
+.settings-account-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 22px;
+  margin-bottom: 28px;
+  background: linear-gradient(115deg, var(--brand-soft), var(--surface) 72%);
+}
+
+.settings-account-avatar {
+  width: 58px;
+  height: 58px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--brand);
+  background: color-mix(in srgb, var(--brand) 15%, var(--surface));
+  font-size: 24px;
+  font-weight: 750;
+}
+
+.settings-account-card > div,
+.settings-directory-card > span:nth-child(2) {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+}
+
+.settings-account-card > div span,
+.settings-directory-card small {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.settings-section-title {
+  margin-bottom: 14px;
+  font-size: 17px;
+}
+
+.settings-directory {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 13px;
+}
+
+.settings-directory-card {
+  min-height: 104px;
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) 22px;
+  align-items: center;
+  gap: 13px;
+  padding: 17px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+  color: var(--text);
+  transition: border-color 150ms ease, transform 150ms ease;
+}
+
+.settings-directory-card:hover {
+  border-color: color-mix(in srgb, var(--brand) 42%, var(--line));
+  transform: translateY(-1px);
+}
+
+.settings-directory-card > svg:last-child {
+  color: var(--brand);
+}
+
+.settings-directory-icon,
+.security-device-icon,
+.security-hero-icon {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  color: var(--brand);
+  background: var(--brand-soft);
+}
+
+.settings-directory-icon-muted {
+  color: var(--info);
+  background: var(--info-soft);
+}
+
+.settings-directory-icon-help {
+  color: var(--success);
+  background: var(--success-soft);
+}
+
+.settings-directory-card strong {
+  font-size: 14px;
+}
+
+.security-hero-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 22px;
+  margin-bottom: 18px;
+}
+
+.security-hero-icon {
+  width: 72px;
+  height: 72px;
+  flex: 0 0 auto;
+  border-radius: 20px;
+}
+
+.security-hero-card h2,
+.security-card-heading h2,
+.security-password-card h2,
+.security-mfa-notice h2,
+.security-tips-card h2 {
+  font-size: 16px;
+}
+
+.security-hero-card p,
+.security-card-heading p,
+.security-password-card p,
+.security-mfa-notice p {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.security-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
+  align-items: start;
+  gap: 17px;
+}
+
+.security-session-card {
+  min-width: 0;
+  padding: 20px;
+}
+
+.security-card-heading {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding-bottom: 17px;
+  border-bottom: 1px solid var(--line);
+}
+
+.security-session-list {
+  display: grid;
+}
+
+.security-session-row {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.security-device-icon {
+  width: 42px;
+  height: 42px;
+  color: var(--text);
+  background: var(--bg);
+}
+
+.security-session-copy {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.security-session-copy strong {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.security-session-copy > span,
+.security-session-copy small {
+  overflow-wrap: anywhere;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.security-session-copy small {
+  font-size: 11px;
+}
+
+.security-current-badge,
+.security-current-label {
+  color: var(--success);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.security-current-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.security-current-label > span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentcolor;
+}
+
+.security-session-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 16px;
+}
+
+.security-confirmation {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+  padding-top: 8px;
+}
+
+.security-confirmation p {
+  width: 100%;
+  color: var(--error);
+  font-size: 12px;
+}
+
+.security-global-confirm {
+  padding: 13px;
+  margin-top: 13px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--bg);
+}
+
+.security-side-column {
+  display: grid;
+  gap: 14px;
+}
+
+.security-password-card,
+.security-mfa-notice {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr);
+  align-items: start;
+  gap: 13px;
+  padding: 18px;
+}
+
+.security-password-card .button {
+  margin-top: 12px;
+}
+
+.security-mfa-notice strong {
+  display: inline-block;
+  margin-top: 10px;
+  color: var(--warning);
+  font-size: 12px;
+}
+
+.security-tips-card {
+  padding: 18px 20px;
+  color: var(--brand);
+  background: var(--brand-soft);
+}
+
+.security-tips-card ul {
+  display: grid;
+  gap: 8px;
+  padding-left: 19px;
+  margin: 12px 0 0;
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+@media (width <= 900px) {
+  .security-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .security-side-column {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .security-tips-card {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (width <= 760px) {
+  .settings-directory {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .settings-account-card {
+    padding: 16px;
+    margin-bottom: 23px;
+  }
+
+  .settings-directory-card {
+    min-height: 88px;
+    padding: 13px;
+  }
+
+  .security-hero-card {
+    align-items: flex-start;
+    gap: 13px;
+    padding: 16px;
+  }
+
+  .security-hero-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 16px;
+  }
+
+  .security-hero-icon svg {
+    width: 24px;
+  }
+
+  .security-session-card {
+    padding: 15px;
+  }
+
+  .security-session-row {
+    grid-template-columns: 38px minmax(0, 1fr);
+    align-items: start;
+    gap: 10px;
+  }
+
+  .security-device-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .security-session-row > .button,
+  .security-session-row > .security-current-label {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .security-side-column {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 .finance-heading,
 .private-section-heading,
 .private-form-heading {

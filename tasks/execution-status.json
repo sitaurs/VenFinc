@@ -106,7 +106,7 @@
       "blockers": [
         {
           "gate": "G-IDENTITY",
-          "reason": "Staging Neon Auth + Hono Worker + RLS POC proves A/B isolation, anonymous and tampered-JWT denial, and forged-owner denial through the staging Data API. Sign-out does not invalidate the already-issued 900-second JWT: replay returned HTTP 200, and the token has no sid claim. Direct @neondatabase/serverless access as the NOBYPASSRLS worker role cannot call auth.user_id() because schema auth is owned by cloud_admin. Operator MFA/email verification remain release blockers. The separate unused staging role with BYPASSRLS and neon_superuser membership was deleted after explicit owner approval and verified absent; production was not modified."
+          "reason": "Staging Neon Auth + Hono POC proves A/B isolation, anonymous/tampered-JWT denial, and forged-owner denial through its staging Data API test path. Direct replay to that Neon Data API after sign-out still returns HTTP 200 for the remaining 900-second JWT (no sid claim); this does not test the current app Hono cookie-to-get-session boundary, whose local revoked-cookie/stale-bearer test now denies access. The live app Worker+RLS revocation path is unverified. Direct @neondatabase/serverless with the NOBYPASSRLS worker role cannot call auth.user_id() because schema auth is owned by cloud_admin. Operator MFA/email verification remain release blockers. The separate unused staging role with BYPASSRLS and neon_superuser membership was deleted after explicit owner approval and verified absent; production was not modified."
         }
       ],
       "minimum_verification": "PoC user A/B, session revoke, role JWT + akses data ditolak; dokumentasi masalah."
@@ -325,10 +325,11 @@
       "evidence": [
         "infra/NEON-STAGING-PLAN.md",
         "infra/neon-scope.json",
-        "qa/local-postgres-evidence.json"
+        "qa/local-postgres-evidence.json",
+        "qa/neon-readiness-2026-10-24.json"
       ],
       "blockers": [
-        "P0-008 is unresolved. Correct project and isolated branch exist, but staging compute/Auth, real Worker identity propagation/RLS and Drizzle migration/rollback are not verified. Local PostgreSQL probe does not close these dependencies."
+        "P0-008 remains unresolved: live Worker owner-checked R2 access, effective quota limits and usage alerts are not verified. Staging Neon Auth and migrations 0000-0004 are now verified, but a fresh disposable migration plus rollback rehearsal and real Worker identity/RLS path are still missing; local PostgreSQL tooling is unavailable."
       ],
       "minimum_verification": "Fresh migrate/rollback simulation lulus."
     },
@@ -921,9 +922,15 @@
       "dependencies": [
         "P1-007"
       ],
-      "status": "todo",
-      "evidence": [],
-      "blockers": [],
+      "status": "blocked",
+      "evidence": [
+        "packages/db/src/schema.ts",
+        "packages/db/migrations/0004_platform-role-default-deny.sql",
+        "qa/neon-readiness-2026-10-24.json"
+      ],
+      "blockers": [
+        "Dependency P1-007 has not completed the fresh migrate/rollback rehearsal. Staging verified forced RLS and default-user-only role policies, but zero-public-superuser verification and adversarial migration tests remain outstanding."
+      ],
       "minimum_verification": "Migration tests and zero public superuser assignments."
     },
     {
@@ -936,9 +943,16 @@
         "P0-005",
         "P2-001"
       ],
-      "status": "todo",
-      "evidence": [],
-      "blockers": [],
+      "status": "blocked",
+      "evidence": [
+        "apps/edge/src/auth.ts",
+        "apps/edge/src/auth.test.ts",
+        "apps/edge/src/index.ts",
+        "qa/neon-readiness-2026-10-24.json"
+      ],
+      "blockers": [
+        "P0-005 still lacks a live post-signout Worker/JWT/RLS revocation proof; the staging POC's direct Data API replay remained accepted. P2-001 is blocked on P1-007's fresh migration/rollback and role-assignment checks. Local Edge tests now cover revoked-cookie and stale-browser-bearer denial, but mocks do not close the staging dependency."
+      ],
       "minimum_verification": "Anonymous, expired, invalid user impersonation rejected."
     },
     {
@@ -949,9 +963,15 @@
       "dependencies": [
         "P2-002"
       ],
-      "status": "todo",
-      "evidence": [],
-      "blockers": [],
+      "status": "blocked",
+      "evidence": [
+        "packages/db/migrations/0002_rls-ledger-functions.sql",
+        "apps/edge/src/finance.test.ts",
+        "qa/neon-readiness-2026-10-24.json"
+      ],
+      "blockers": [
+        "P2-002 remains blocked pending live identity propagation. Staging A/B isolation passed in the separate POC, but the current Hono finance Worker and all migrated ledger RPCs have not been exercised against staging with two actual provider identities."
+      ],
       "minimum_verification": "Two-user hostile SQL/API tests no cross-tenant read/write."
     },
     {
@@ -1003,9 +1023,17 @@
       "dependencies": [
         "P2-002"
       ],
-      "status": "todo",
-      "evidence": [],
-      "blockers": [],
+      "status": "blocked",
+      "evidence": [
+        "apps/edge/src/auth.ts",
+        "apps/web/src/auth-flows.tsx",
+        "apps/edge/src/auth.test.ts",
+        "qa/e2e/auth-flows.spec.ts",
+        "qa/QA-HANDOFF.md"
+      ],
+      "blockers": [
+        "P2-002 remains blocked and no app Worker staging origin or tester-owned synthetic inbox is available. Neon staging auth is configured with shared email transport, but live signup/OTP delivery and account status enforcement have not been verified; public signup remains closed."
+      ],
       "minimum_verification": "Buktikan AC-IAM-001-A dan AC-IAM-001-B yang relevan: **Diberikan** identitas, status akun, dan kewenangan telah diperiksa, **ketika** pengguna menjalankan kemampuan \"Daftar publik dengan email dan password, disertai verifikasi email.\", **maka** Akun baru selalu `user`, status belum terverifikasi dibatasi, password disimpan oleh provider auth tepercaya. Negative/boundary: Orang yang tidak berhak, akun belum sah, atau sesi kedaluwarsa tidak memperoleh akses privat; respons tidak membocorkan informasi akun. Tes dua tenant + retry/idempotency jika operasi menyentuh data pengguna."
     },
     {
@@ -1016,9 +1044,17 @@
       "dependencies": [
         "P2-002"
       ],
-      "status": "todo",
-      "evidence": [],
-      "blockers": [],
+      "status": "blocked",
+      "evidence": [
+        "apps/edge/src/auth.ts",
+        "apps/web/src/auth-flows.tsx",
+        "apps/edge/src/auth.test.ts",
+        "qa/neon-auth-reset-route-probe-2026-10-24.json",
+        "qa/QA-HANDOFF.md"
+      ],
+      "blockers": [
+        "P2-002 remains blocked. The Neon reset route has validation-only staging evidence but no successful inbox/OTP/password-reset test; email change and verification resend also lack end-to-end staging evidence."
+      ],
       "minimum_verification": "Buktikan AC-IAM-002-A dan AC-IAM-002-B yang relevan: **Diberikan** identitas, status akun, dan kewenangan telah diperiksa, **ketika** pengguna menjalankan kemampuan \"Login, logout, lupa password, reset password, ganti email, verifikasi ulang email.\", **maka** Sesi lama yang relevan dapat dicabut setelah tindakan keamanan kritis. Negative/boundary: Orang yang tidak berhak, akun belum sah, atau sesi kedaluwarsa tidak memperoleh akses privat; respons tidak membocorkan informasi akun. Tes dua tenant + retry/idempotency jika operasi menyentuh data pengguna."
     },
     {
@@ -1042,9 +1078,19 @@
       "dependencies": [
         "P2-002"
       ],
-      "status": "todo",
-      "evidence": [],
-      "blockers": [],
+      "status": "blocked",
+      "evidence": [
+        "apps/edge/src/session-management.ts",
+        "apps/edge/src/index.ts",
+        "apps/edge/src/finance.test.ts",
+        "apps/edge/src/auth.test.ts",
+        "apps/web/src/finance-app.tsx",
+        "qa/e2e/session-management.spec.ts",
+        "qa/QA-HANDOFF.md"
+      ],
+      "blockers": [
+        "P2-002 remains blocked pending a live Worker session-revocation proof. Local provider/API mocks cover list, revoke-one, revoke-other, revoke-all, stale-cookie and token-redaction behavior; no app Worker staging hostname or live multi-device QA accounts are available."
+      ],
       "minimum_verification": "Buktikan AC-IAM-004-A dan AC-IAM-004-B yang relevan: **Diberikan** identitas, status akun, dan kewenangan telah diperiksa, **ketika** pengguna menjalankan kemampuan \"Session management mandiri: daftar perangkat aktif, revoke sesi, logout semua perangkat.\", **maka** Operasi tidak membocorkan token atau rincian autentikasi. Negative/boundary: Orang yang tidak berhak, akun belum sah, atau sesi kedaluwarsa tidak memperoleh akses privat; respons tidak membocorkan informasi akun. Tes dua tenant + retry/idempotency jika operasi menyentuh data pengguna."
     },
     {

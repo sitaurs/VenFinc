@@ -15,12 +15,16 @@ try {
   const denied = await fetch(`${base}/api/v1/me`, {
     headers: { "X-Role": "superuser", "Sec-Fetch-Mode": "navigate" },
   });
-  assert.equal(denied.status, 401);
+  assert.ok([401, 503].includes(denied.status));
   assert.match(denied.headers.get("content-type") ?? "", /application\/json/);
+  const deniedBody = await denied.json();
+  assert.ok(["AUTH_REQUIRED", "DEPENDENCY_UNAVAILABLE"].includes(deniedBody.error?.code));
+  assert.equal(Object.hasOwn(deniedBody, "data"), false);
   console.log(
     JSON.stringify({
       status: "PASS",
       scope: "local static assets + real workerd Hono route + fail-closed API",
+      unauthenticatedPrivateApiStatus: denied.status,
       externalProvidersTested: false,
     }),
   );

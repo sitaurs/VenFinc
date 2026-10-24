@@ -41,6 +41,8 @@
 
 ## Known architectural tradeoffs to record, not hide
 
+- **2026-10-24, Neon reset path probe (staging only):** `POST /email-otp/passcode` returned 404; `POST /email-otp/reset-password` returned 400 `VALIDATION_ERROR` for `{}`. Evidence: [`qa/neon-auth-reset-route-probe-2026-10-24.json`](../qa/neon-auth-reset-route-probe-2026-10-24.json). The Edge allowlist uses the latter, but correct OTP/password change still needs an authorized inbox test. This aligns with [Neon SDK issue #229](https://github.com/neondatabase/neon-js/issues/229); it is not production reset proof.
+
 - **Tiga hostname utama** mengikuti keputusan pengguna. Cloudflare Tunnel dapat mencocokkan path ingress, sehingga `gowa.venlab.tech/internal/v1/*` diarahkan ke Finance Worker dan sisanya ke GOWA. Kontrol Cloudflare Access terpisah per path, HMAC, anti-replay, dan tes negatif path-bypass wajib lulus P0 (`G-INFRA`). Jika dashboard-managed tunnel/Access policy tidak memungkinkan isolasi seperti kontrak ini, hentikan rilis jalur internal dan ajukan ADR untuk hostname keempat; jangan mengekspos endpoint tanpa proteksi.
 - Free-tier Neon storage/compute, R2 overage and email-delivery cost can undermine the all-free goal. Multiuser public abuse throttled first; do not present as unlimited.
 - RLS with Neon Managed Auth via serverless HTTP + Drizzle requires genuine integration proof; `user_id` query parameter is not authority.

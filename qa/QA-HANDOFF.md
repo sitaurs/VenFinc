@@ -14,42 +14,92 @@ Ini rencana tes, bukan bukti kelulusan produksi. Catat `PASS`, `FAIL`, `BLOCKED`
 - Jangan deploy, migrasi production, mengubah DNS/Tunnel/Access, mengirim WA, mendaftarkan nomor, mengubah role live, atau memicu provider berbayar. Integrasi yang belum berizin/prasyaratnya hilang tetap `BLOCKED`.
 - Jangan lampirkan secret/token/cookie/JWT, isi bukti, note transaksi atau pesan WA di laporan. Redaksi screenshot/trace/log.
 
+## Keadaan infrastruktur yang sudah dibaca
+
+Inventory MCP terakhir untuk VenFinance tidak melakukan mutasi. Zone `venlab.tech` aktif, tetapi Worker `venfinance` belum ada, DNS untuk `finance.venlab.tech`, `gowa.venlab.tech`, dan `9r.venlab.tech` belum ada, dan belum ada aplikasi Cloudflare Access untuk hostname finance. Bucket R2 `ven` tersedia di APAC, `r2.dev` mati, CORS belum dikonfigurasi, object lock kosong; tidak ada objek yang dibaca/ditulis. Bucket `sap` tidak diakses. Rincian aman ada di [`cloudflare-reconnection-evidence.json`](./cloudflare-reconnection-evidence.json).
+
+Neon staging `venfinance-p0-auth-20261024` sudah mengaktifkan Managed Better Auth dan migrasi aplikasi `0000`–`0004` terverifikasi; compute terakhir disuspend dan `idle`. Production branch belum diberi Neon Auth atau migrasi. Tidak ada app Worker staging, inbox QA sintetis, atau tes delivery OTP yang siap dipakai. Direct JWT replay ke jalur Data API POC setelah sign-out tetap merupakan gate P0, walaupun batas app Hono lokal sekarang menguji penolakan cookie revoked dan bearer lama. Bukti lengkap: [`neon-readiness-2026-10-24.json`](./neon-readiness-2026-10-24.json).
+
 ## Menjalankan suite lokal
 
 Node `24.22.1`; pnpm mengikuti versi yang dipin dalam `package.json`:
 
 ```sh
 corepack enable
-pnpm install --frozen-lockfile
-pnpm lint
-pnpm typecheck
-pnpm test
-pnpm test:contracts
-pnpm test:security
-pnpm build
-pnpm test:e2e
-pnpm test:visual
-pnpm db:test:local
+./tools/pnpm.sh install --frozen-lockfile
+./tools/pnpm.sh lint
+./tools/pnpm.sh typecheck
+./tools/pnpm.sh test
+./tools/pnpm.sh test:contracts
+./tools/pnpm.sh test:security
+./tools/pnpm.sh build
+./tools/pnpm.sh test:e2e
+./tools/pnpm.sh test:visual
+./tools/pnpm.sh db:test:local
 ```
 
-Jika browser belum terpasang: `pnpm exec playwright install chromium`. Tes visual saat ini memeriksa beberapa layout dasar; belum membandingkan seluruh 180 PNG desain. `pnpm test:integration` dan `pnpm db:check` memang melaporkan `BLOCKED` tanpa Neon/R2 staging fixtures; jangan alihkan target ke production. `pnpm infra:smoke` memerlukan app lokal pada `127.0.0.1:5173`.
+Gunakan wrapper `tools/pnpm.sh` agar runtime repo-pinned Node 24 dipilih bila tersedia di `.tools/node`; direct `node` pada mesin QA bisa berbeda. Jika browser belum terpasang: `./tools/pnpm.sh exec playwright install chromium`. Tes visual memeriksa layout dan overflow, bukan pixel-diff seluruh 180 PNG desain. `./tools/pnpm.sh test:integration` dan `./tools/pnpm.sh db:check` memang melaporkan `BLOCKED` tanpa Neon/R2 staging fixtures; jangan alihkan target ke production. `./tools/pnpm.sh infra:smoke` memerlukan app lokal pada `127.0.0.1:5173`.
 
 ### Bukti otomatis terakhir yang tercatat
 
 | Perintah/suite | Hasil terakhir | Batas |
 |---|---:|---|
-| `pnpm lint`, `pnpm typecheck` | PASS | Tidak membuktikan provider cloud |
-| `pnpm test` | 82/82 PASS | Unit tests |
-| `pnpm test:contracts` | 21/21 PASS | Contract tests |
-| `pnpm test:security` | 9/9 PASS + client bundle scan | Scan heuristic, bukan audit/RLS proof |
-| `pnpm test:e2e` | 20/20 PASS, Chromium, local app + mocked APIs | Tidak menguji provider nyata; termasuk 2 skenario offline pribadi |
-| `pnpm test:visual` | 12/12 PASS pada 320–1920px + component gallery | Pemeriksaan layout dasar; belum dibandingkan dengan 180 PNG sumber |
+| `./tools/pnpm.sh lint`, `typecheck` | PASS, Node 24.22.1 / pnpm 11.25.0 | Tidak membuktikan provider cloud |
+| `./tools/pnpm.sh test` | 93/93 PASS | Unit tests; provider auth route dan session management memakai mocks; tambahan replay revoked-cookie/stale-bearer ditolak pada Hono test fixture |
+| `./tools/pnpm.sh test:contracts` | 21/21 PASS | Contract tests |
+| `./tools/pnpm.sh test:security` | 9/9 PASS + client bundle scan | Scan heuristic, bukan audit/RLS proof |
+| `./tools/pnpm.sh build` | PASS | Worker + PWA build disajikan ulang dari preview yang baru dimulai; belum deploy |
+| `./tools/pnpm.sh test:e2e` | 25/25 PASS, Chromium 156.0.8078.4, local app + mocked APIs | Tidak menguji provider nyata; termasuk auth, 2 alur offline, transaksi lokal/demo dan 3 interaksi session management |
+| `./tools/pnpm.sh test:visual` | 14/14 PASS pada 320–1920px | Layout/overflow dan screen auth/settings; tidak dibandingkan pixel-per-pixel dengan 180 PNG sumber |
+| `./tools/pnpm.sh infra:smoke` | PASS, preview Worker/Hono loopback yang baru dibangun | Tanpa provider; unauthenticated `/api/v1/me` menghasilkan 503 karena Auth lokal tidak dikonfigurasi dan tidak mengembalikan data privat |
 | Neon staging role-policy probe | PASS; `qa/staging-role-policy-probe-2026-10-24.json` | A/B sintetis, claims disetel SQL, DDL/fixture di-rollback; tidak menguji Worker/JWT nyata |
+| Neon staging migration `0000`–`0004` | PASS untuk apply dan readback policy di branch `venfinance-p0-auth-20261024` | `0004` diterapkan via MCP transaction; tidak menguji fresh database, rollback, atau Worker identity live; P1-007 tetap blocked |
 | `tools/verify-local-postgres.py` (P0 generic probe) | 22/22 PASS pada bukti lokal sebelumnya | Probe schema generik P0-005, bukan migration aplikasi Drizzle/P3 |
-| `pnpm db:test:local` | BLOCKED, exit 2 | `VENFINANCE_PG_BIN`/PostgreSQL server tools tidak tersedia saat run; `packages/db` migration contract lokal belum lulus di run ini |
-| `pnpm docs:check` | PASS; 177 REQ, 90 screen, 373 task tervalidasi | Hanya validator dokumen |
+| `./tools/pnpm.sh db:test:local` | BLOCKED, exit 2 | `VENFINANCE_PG_BIN`/PostgreSQL server tools tidak tersedia saat run; `packages/db` migration contract lokal belum lulus di run ini |
+| `./tools/pnpm.sh db:check`, `test:integration` | BLOCKED, exit 2 | Tidak ada disposable Neon/R2 integration fixture; production tidak disentuh |
+| `./tools/pnpm.sh docs:check` | PASS; 177 REQ, 90 screen, 373 task tervalidasi | Hanya validator dokumen |
 
 Ulangi semuanya pada commit SHA yang diuji. Cantumkan versi browser, environment dan exit code aktual.
+
+Lint dan typecheck juga PASS pada Node 24.22.1/pnpm 11.25.0. E2E berjalan pada Chromium headless lokal. Hasil ini membuktikan perubahan lokal, bukan signoff produk atau rilis.
+
+### Tambahan tes autentikasi untuk tester — `IAM-001/002/005`, `TRUST-011/012`
+
+Otomatis tersedia di `qa/e2e/auth-flows.spec.ts` dan `apps/edge/src/auth.test.ts`: signup mengirim email ternormalisasi dan tidak menerima callback URL browser; halaman privat baru terbuka setelah sesi aplikasi sah; reset tidak membocorkan keberadaan email; konfirmasi kata sandi yang berbeda tidak mengirim request reset. Probe validasi di branch staging memberi 404 untuk alias SDK `email-otp/passcode` dan 400 `VALIDATION_ERROR` untuk `email-otp/reset-password`; Edge memakai path kedua dengan payload ketat. Probe tidak menggunakan akun, email, atau OTP, sehingga reset kata sandi valid masih harus diuji QA staging. Tes proxy memeriksa allowlist endpoint, Origin, bentuk payload ketat, error generik, cookie dan redaksi token.
+
+Tambahan unit `apps/edge/src/auth.test.ts` mensimulasikan Neon Auth yang sudah sign-out: pemanggilan ulang memakai cookie revoked dan bearer JWT lama dari browser menghasilkan `401` di Hono sebelum Data API dipanggil. Ini menutup regresi pada batas aplikasi yang sekarang menukar cookie opaque dengan sesi provider aktif setiap request; tes mock tersebut **tidak** mengubah bukti P0: raw JWT yang dikirim langsung ke Neon Data API staging masih dapat direplay sampai expiry.
+
+**Status live provider: BLOCKED untuk tester.** Auth Neon berada pada branch staging, memakai shared email provider, `verify_email_on_sign_up=false`, dan trusted origin hanya loopback. Worker staging belum memiliki origin yang bisa dipakai teman QA; inbox uji berizin dan SMTP transaksional produksi belum tersedia. Signup aplikasi tetap tertutup. Jangan jalankan skenario live ke production atau memakai email/akun pribadi.
+
+Setelah Worker staging dan inbox sintetis milik tester tersedia, jalankan urutan berikut dengan akun A/B:
+
+1. `QA-IAM-001`: daftar akun A dengan email baru dan variasi huruf besar/spasi; pastikan hanya role `user`, verifikasi diperlukan, dan `/api/v1/me` tertutup sebelum kode sah. Coba daftar ulang email sama serta payload role/callback tambahan.
+2. `QA-IAM-001-OTP`: masukkan kode salah, format salah, OTP kedaluwarsa, lalu OTP benar. Coba pakai ulang kode; ulangi kirim sebelum cooldown dan setelah provider memberi 429. Pesan gagal tidak boleh menyebut apakah alamat terdaftar.
+3. `QA-IAM-002-RESET`: minta reset untuk email A dan email yang tidak terdaftar; bandingkan status dan bentuk respons. Pakai OTP A dengan email B, kode salah/kedaluwarsa, password di bawah batas dan konfirmasi berbeda; semuanya harus gagal tanpa mengubah password.
+4. `QA-IAM-002-RESET-OK`: terapkan OTP benar dan password baru; login dengan password lama harus gagal, password baru berhasil. Verifikasi sesi lama setelah reset tidak membuka data privat. Catatan auth tidak boleh mengandung OTP/token.
+5. `QA-IAM-005-ORIGIN`: coba Origin asing/null, body callback URL, role/user ID/key tambahan, metode/path auth yang tidak di-allowlist; tidak boleh diteruskan ke Neon. Periksa response/cookie/browser storage/log agar tak ada JWT atau bearer token.
+6. `QA-TRUST-AB`: login A dan B pada dua konteks browser; A tidak boleh mengganti cookie/session atau owner request untuk membaca data B. Logout A lalu pastikan app menutup cache privat A.
+
+Catat environment, status HTTP tanpa body sensitif, scenario/AC, `PASS/FAIL/BLOCKED`, serta screenshot/trace teredaksi. Jangan mencatat inbox nyata, OTP, cookie atau JWT. Ganti email dan sesi multi-perangkat memerlukan implementasi/proof terpisah; jangan laporkan lulus dari alur ini.
+
+### P2-IAM-004 — Daftar perangkat dan pencabutan sesi
+
+Implementasi lokal sudah memiliki endpoint Edge same-origin di `/api/v1/security/sessions`: daftar, cabut satu sesi berdasarkan ID aman, cabut sesi lain, dan cabut semua sesi. Browser tidak pernah mengirim atau menerima token provider. Unit/Edge suite memakai data canary dan membuktikan metadata token/IP tidak keluar, ID milik tenant lain ditolak, Origin asing ditolak, logout semua menghapus cookie, dan endpoint tetap tertutup untuk anonymous. E2E lokal menguji konfirmasi UI untuk revoke satu, revoke sesi lain, dan logout semua; visual/responsif diuji di 320, 361, 768, 1440, dan 1920 px. Ini bukti kode terhadap mock/provider response sintetis, belum bukti API Neon staging.
+
+**Manual staging: BLOCKED sampai tester memiliki app Worker staging, akun A/B sintetis milik tester, dan tiga konteks browser.** Jangan gunakan akun/ledger pribadi atau production. Sebelum mulai, catat hostname/origin yang disetujui di ADR; jangan menambahkan hostname ke-4 diam-diam. Tes live memakai branch Neon staging VenFinance dan harus memastikan binding `NEON_AUTH_URL`, issuer/JWKS, cookie domain dan APP_ORIGIN menunjuk origin staging yang sama.
+
+| ID / skenario | Langkah tester | Hasil yang wajib |
+|---|---|---|
+| `QA-IAM-004-01` — daftar sesi sendiri | Login akun A di browser 1 dan 2, lalu akun B di browser 3. Buka SET-04 di A1 dan B1. | A1 hanya melihat sesi akun A; B hanya melihat sesi B. Current device ditandai benar. Daftar menampilkan browser/perangkat dan waktu yang provider sediakan, tanpa IP, user ID, cookie, token, atau secret. |
+| `QA-IAM-004-02` — cabut satu perangkat | Dari A1, cabut sesi A2 dan konfirmasi. Coba buka route privat dari A2, lalu refresh A1. | A2 tidak bisa membaca data privat setelah provider menyelesaikan revoke. A1 tetap aktif. Daftar A1 tak lagi menampilkan A2. Saldo/cache A2 tidak tampak sebagai data terverifikasi setelah sesi dicabut. |
+| `QA-IAM-004-03` — ID lintas-tenant | Salin hanya session ID aman milik A dari QA sheet tester; login B, kirim ID itu ke endpoint revoke B secara langsung. Jangan menyalin token provider. | Respons generik `404`; sesi A tidak dicabut; B tidak melihat keberadaan/user A; tidak ada pemanggilan revoke provider untuk target asing. Ulangi dengan ID acak dan ID lama. |
+| `QA-IAM-004-04` — keluar dari perangkat lain | Di A1, pilih “Logout dari perangkat lain” lalu konfirmasi. Uji A2 dan A1. | A2 tidak lagi masuk; A1 tetap aktif. Daftar kemudian hanya menyisakan A1. Jangan menyamakan tombol ini dengan “Logout dari semua perangkat”. |
+| `QA-IAM-004-05` — keluar dari semua perangkat | Di A1, pilih “Logout dari semua perangkat” lalu konfirmasi. Uji ketiga browser dan panggil satu API privat dari masing-masing. | Semua sesi A ditolak termasuk A1; browser yang melakukan aksi diarahkan ke login dan cookie sesi HttpOnly kedaluwarsa. Tidak ada API privat yang mengembalikan data setelah revoke. |
+| `QA-IAM-004-06` — replay / sesi expired | Setelah revoke dari A1, gunakan ulang cookie browser A2 yang masih tersimpan hanya di browser; coba panggil `/api/v1/session`, `/api/v1/wallets`, dan `/api/v1/transactions`, sertakan stale `Authorization: Bearer` bila harness QA menyediakan token sintetis. Ulangi memakai akun yang sudah expired. Jangan panggil Neon Data API langsung dari skenario aplikasi ini. | Tidak ada data privat (`401` untuk sesi invalid/expired; `503` hanya jika provider tak tersedia). Bearer browser diabaikan; raw Data API stale-JWT replay tetap P0 blocker yang dilacak terpisah. Jangan menyalin cookie/token ke report, curl log, chat atau screenshot. |
+| `QA-IAM-004-07` — CSRF dan payload | Coba POST revoke dari Origin asing/null, body tanpa `sessionId`, ID terlalu panjang, object dengan `token`, `userId` atau field tambahan, JSON oversized, dan method/path yang tidak dikenal. | Ditolak sebelum revoke provider; tidak mengubah sesi; tidak membocorkan detail provider. |
+| `QA-IAM-004-08` — provider down / rotasi cookie | Saat QA menyetujui simulasi outage, matikan jalur provider atau gunakan fault injection staging; ulangi daftar/revoke. Lalu uji saat get-session mengeluarkan cookie rotasi yang valid. | Outage menghasilkan error fail-closed tanpa stale list/private data; retry memulihkan tampilan. Daftar/revoke memakai cookie rotasi yang berlaku dan tidak menampilkan nilai cookie. |
+
+Tester tidak perlu mengirim kredensial ke chat. Kirim balik hasil per ID dengan `PASS/FAIL/BLOCKED`, build SHA, branch/environment, perangkat/browser, waktu lokal, status HTTP saja, dan bukti visual teredaksi. Jangan sertakan email, OTP, URL bertoken, token/JWT/cookie, IP, ledger asli, atau trace mentah. MFA operator, SMTP deliverability dan pengujian Worker-JWT-RLS tetap release gates terpisah.
 
 ## Kasus offline yang sudah otomatis
 

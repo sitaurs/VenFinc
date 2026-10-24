@@ -4,10 +4,12 @@ import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tansta
 import {
   ArrowDownLeft, ArrowLeftRight, ArrowRight, ArrowUpRight, Banknote,
   ChartNoAxesCombined, CircleHelp, Eye, EyeOff, Home, List, LoaderCircle,
-  CloudOff, LogOut, Plus, RefreshCw, WalletCards, X,
+  CloudOff, ChevronRight, KeyRound, LaptopMinimal, LogOut, Plus, RefreshCw,
+  Settings, ShieldCheck, Smartphone, WalletCards, X,
 } from "lucide-react";
 import {
-  categorySchema, financeEventPageSchema, financePostResultSchema, financePostSchema,
+  authDeviceSessionListSchema, authSessionMutationSchema, categorySchema,
+  financeEventPageSchema, financePostResultSchema, financePostSchema,
   privateSessionSchema, publicConfigSchema, profileCreateResultSchema,
   profileReadResultSchema, walletSchema, type FinanceEvent,
   type FinanceEventPage, type UserProfile, type Wallet,
@@ -28,6 +30,13 @@ import { usePreferences } from "./preferences";
 
 const walletArraySchema = walletSchema.array();
 const categoryArraySchema = categorySchema.array();
+type AuthDeviceSession = {
+  id: string;
+  createdAt: string;
+  expiresAt: string;
+  userAgent: string | null;
+  current: boolean;
+};
 type EventPage = FinanceEventPage;
 type EventKind = "income" | "expense" | "transfer" | "opening";
 
@@ -159,7 +168,8 @@ function FinanceShell({ profile, ownerId }: { profile: UserProfile; ownerId: str
   const active = location.pathname.endsWith("/transactions") || location.pathname.includes("/transactions/")
     ? "transactions"
     : location.pathname.includes("/wallets") ? "wallets"
-      : location.pathname.includes("/offline") ? "offline" : "home";
+      : location.pathname.includes("/offline") ? "offline"
+        : location.pathname.includes("/settings") ? "settings" : "home";
   async function signOut() {
     setSignOutError(false);
     try {
@@ -181,6 +191,7 @@ function FinanceShell({ profile, ownerId }: { profile: UserProfile; ownerId: str
           <NavLink to="/app/transactions" className={({ isActive }) => isActive ? "active" : ""}><List size={19} />{t("Transaksi", "Transactions")}</NavLink>
           <NavLink to="/app/wallets" className={({ isActive }) => isActive ? "active" : ""}><WalletCards size={19} />{t("Dompet", "Wallets")}</NavLink>
           <NavLink to="/app/offline" className={({ isActive }) => isActive ? "active" : ""}><CloudOff size={19} />{t("Draf offline", "Offline drafts")}</NavLink>
+          <NavLink to="/app/settings" className={({ isActive }) => isActive ? "active" : ""}><Settings size={19} />{t("Pengaturan", "Settings")}</NavLink>
         </nav>
         <div className="private-sidebar-bottom">
           <Link to="/faq"><CircleHelp size={18} />{t("Pusat bantuan", "Help center")}</Link>
@@ -203,6 +214,8 @@ function FinanceShell({ profile, ownerId }: { profile: UserProfile; ownerId: str
             <Route path="transactions/new" element={<TransactionsPage profile={profile} ownerId={ownerId} />} />
             <Route path="wallets" element={<WalletsPage ownerId={ownerId} />} />
             <Route path="offline" element={<OfflineVaultPage ownerId={ownerId} allowSetup />} />
+            <Route path="settings" element={<MoreSettingsPage profile={profile} />} />
+            <Route path="settings/security" element={<SecuritySessionsPage ownerId={ownerId} profile={profile} />} />
             <Route path="*" element={<PrivateNotFound />} />
           </Routes>
         </main>
@@ -211,10 +224,131 @@ function FinanceShell({ profile, ownerId }: { profile: UserProfile; ownerId: str
           <NavLink to="/app/transactions" className={active === "transactions" ? "active" : ""}><List size={20} /><span>{t("Transaksi", "Transactions")}</span></NavLink>
           <Link className="private-add-button" to="/app/transactions/new" aria-label={t("Catat transaksi", "Record transaction")}><Plus size={22} /><span>{t("Catat", "Record")}</span></Link>
           <NavLink to="/app/wallets" className={active === "wallets" ? "active" : ""}><WalletCards size={20} /><span>{t("Dompet", "Wallets")}</span></NavLink>
-          <NavLink to="/app/offline" className={active === "offline" ? "active" : ""}><CloudOff size={19} /><span>{t("Lainnya", "More")}</span></NavLink>
+          <NavLink to="/app/settings" className={active === "settings" ? "active" : ""}><Settings size={19} /><span>{t("Lainnya", "More")}</span></NavLink>
         </nav>
       </div>
     </div>
+  );
+}
+
+function MoreSettingsPage({ profile }: { profile: UserProfile }) {
+  const { t } = usePreferences();
+  return (
+    <section className="settings-page" aria-label={t("Pusat pengaturan", "Settings center")}>
+      <FinanceHeading title={t("Lainnya", "More")} description={t("Pengaturan akun dan akses ke fitur pribadimu.", "Account settings and access to your personal features.")} />
+      <Card className="settings-account-card">
+        <span className="settings-account-avatar" aria-hidden="true">{profile.displayName?.slice(0, 1).toUpperCase() ?? "V"}</span>
+        <div><strong>{profile.displayName ?? t("Akun pribadi", "Personal account")}</strong><span>{t("Pengaturan dan keamanan VenFinance kamu.", "Your VenFinance settings and security.")}</span></div>
+      </Card>
+      <h2 className="settings-section-title">{t("Pengaturan dan fitur", "Settings and features")}</h2>
+      <div className="settings-directory">
+        <Link className="settings-directory-card" to="/app/settings/security">
+          <span className="settings-directory-icon"><ShieldCheck size={22} /></span>
+          <span><strong>{t("Keamanan & perangkat", "Security & devices")}</strong><small>{t("Tinjau sesi aktif dan keluarkan perangkat.", "Review active sessions and sign devices out.")}</small></span>
+          <ChevronRight size={20} />
+        </Link>
+        <Link className="settings-directory-card" to="/app/offline">
+          <span className="settings-directory-icon settings-directory-icon-muted"><CloudOff size={22} /></span>
+          <span><strong>{t("Draf offline", "Offline drafts")}</strong><small>{t("Kelola draf terenkripsi di perangkat ini.", "Manage encrypted drafts on this device.")}</small></span>
+          <ChevronRight size={20} />
+        </Link>
+        <Link className="settings-directory-card" to="/faq">
+          <span className="settings-directory-icon settings-directory-icon-help"><CircleHelp size={22} /></span>
+          <span><strong>{t("Pusat bantuan", "Help center")}</strong><small>{t("Baca panduan dan pertanyaan umum.", "Read guides and frequently asked questions.")}</small></span>
+          <ChevronRight size={20} />
+        </Link>
+      </div>
+    </section>
+  );
+}
+
+type SessionAction =
+  | { type: "revoke"; sessionId: string }
+  | { type: "revoke-others" }
+  | { type: "revoke-all" };
+
+function SecuritySessionsPage({ ownerId, profile }: { ownerId: string; profile: UserProfile }) {
+  const { t, locale } = usePreferences();
+  const queryClient = useQueryClient();
+  const [confirmAction, setConfirmAction] = useState<SessionAction | null>(null);
+  const sessions = useQuery({
+    queryKey: ["auth-device-sessions", ownerId],
+    queryFn: () => apiData("/api/v1/security/sessions", authDeviceSessionListSchema),
+    retry: false,
+    staleTime: 0,
+  });
+  const mutation = useMutation({
+    mutationFn: async (action: SessionAction) => {
+      const path = action.type === "revoke"
+        ? "revoke"
+        : action.type === "revoke-others" ? "revoke-others" : "revoke-all";
+      const body = action.type === "revoke" ? { sessionId: action.sessionId } : {};
+      return apiData(`/api/v1/security/sessions/${path}`, authSessionMutationSchema, {
+        method: "POST",
+        body: JSON.stringify(body),
+      });
+    },
+    onSuccess: async (result) => {
+      setConfirmAction(null);
+      if (result.currentSessionRevoked) {
+        queryClient.clear();
+        lockOfflineVault();
+        window.location.assign("/login");
+        return;
+      }
+      await queryClient.invalidateQueries({ queryKey: ["auth-device-sessions", ownerId] });
+    },
+  });
+  const formatDate = (value: string) => new Intl.DateTimeFormat(locale, {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: profile.timezone,
+  }).format(new Date(value));
+
+  return (
+    <section className="settings-page security-page" aria-label={t("Keamanan akun", "Account security")}>
+      <FinanceHeading title={t("Keamanan & perangkat", "Security & devices")} description={t("Kelola sesi masuk dan lindungi akses ke akunmu.", "Manage sign-in sessions and protect access to your account.")} />
+      <Card className="security-hero-card">
+        <span className="security-hero-icon"><ShieldCheck size={30} /></span>
+        <div><h2>{t("Jaga akun tetap aman", "Keep your account secure")}</h2><p>{t("Keluarkan perangkat yang tidak kamu kenali. Token sesi tidak ditampilkan di halaman ini.", "Sign out devices you do not recognize. Session tokens are never shown here.")}</p></div>
+      </Card>
+
+      <div className="security-layout">
+        <Card className="security-session-card">
+          <div className="security-card-heading"><span className="settings-directory-icon"><Smartphone size={22} /></span><div><h2>{t("Perangkat yang masuk", "Signed-in devices")}</h2><p>{t("Daftar sesi aktif yang dilaporkan penyedia autentikasi.", "Active sessions reported by the authentication provider.")}</p></div></div>
+          {sessions.isPending ? loadingPanel(t("Memuat sesi perangkat…", "Loading device sessions…")) : null}
+          {sessions.isError ? <EmptyState icon={<CircleHelp />} title={t("Sesi belum dapat dimuat", "Sessions are unavailable")} action={<Button variant="secondary" onClick={() => void sessions.refetch()}><RefreshCw size={17} />{t("Coba lagi", "Try again")}</Button>}>{t("Daftar perangkat tidak ditampilkan sampai server berhasil memverifikasinya.", "Devices stay hidden until the server can verify the session list.")}</EmptyState> : null}
+          {sessions.data?.length === 0 ? <EmptyState icon={<Smartphone />} title={t("Tidak ada sesi aktif", "No active sessions")}>{t("Segarkan halaman setelah masuk kembali.", "Refresh after signing in again.")}</EmptyState> : null}
+          {sessions.data?.length ? <div className="security-session-list">
+            {sessions.data.map((session: AuthDeviceSession) => (
+              <article className="security-session-row" key={session.id}>
+                <span className="security-device-icon">{session.userAgent?.toLowerCase().includes("mobile") || session.userAgent?.toLowerCase().includes("android") || session.userAgent?.toLowerCase().includes("iphone") ? <Smartphone size={20} /> : <LaptopMinimal size={20} />}</span>
+                <div className="security-session-copy">
+                  <strong>{session.current ? t("Perangkat ini", "This device") : t("Perangkat lain", "Other device")} {session.current ? <span className="security-current-badge">{t("Saat ini", "Current")}</span> : null}</strong>
+                  <span>{session.userAgent ?? t("Perangkat atau browser tidak dilaporkan", "Device or browser not reported")}</span>
+                  <small>{t("Masuk", "Signed in")} {formatDate(session.createdAt)} · {t("berlaku sampai", "expires")} {formatDate(session.expiresAt)}</small>
+                  {confirmAction?.type === "revoke" && confirmAction.sessionId === session.id ? <div className="security-confirmation" role="group" aria-label={t("Konfirmasi keluarkan perangkat", "Confirm device sign-out")}><p>{session.current ? t("Kamu akan keluar dari perangkat ini.", "You will sign out on this device.") : t("Sesi perangkat ini akan dicabut.", "This device session will be revoked.")}</p><Button size="small" loading={mutation.isPending} onClick={() => mutation.mutate(confirmAction)}>{t("Ya, keluarkan", "Yes, sign out")}</Button><Button size="small" variant="secondary" onClick={() => setConfirmAction(null)}>{t("Batal", "Cancel")}</Button></div> : null}
+                </div>
+                {!session.current ? <Button size="small" variant="secondary" disabled={mutation.isPending} onClick={() => setConfirmAction({ type: "revoke", sessionId: session.id })}>{t("Keluarkan", "Sign out")}</Button> : null}
+                {session.current ? <span className="security-current-label"><span aria-hidden="true" />{t("Aktif", "Active")}</span> : null}
+              </article>
+            ))}
+          </div> : null}
+          {mutation.isError ? <p className="form-error" role="alert">{t("Perubahan sesi belum berhasil. Coba muat ulang daftar dan ulangi.", "The session change failed. Refresh the list and try again.")}</p> : null}
+          {sessions.data && sessions.data.filter((session: AuthDeviceSession) => !session.current).length > 0 ? <div className="security-session-actions">
+            <Button variant="secondary" disabled={mutation.isPending} onClick={() => setConfirmAction({ type: "revoke-others" })}><LogOut size={17} />{t("Logout dari perangkat lain", "Sign out other devices")}</Button>
+            <Button variant="ghost" disabled={mutation.isPending} onClick={() => setConfirmAction({ type: "revoke-all" })}>{t("Logout dari semua perangkat", "Sign out all devices")}</Button>
+          </div> : null}
+          {confirmAction?.type === "revoke-others" || confirmAction?.type === "revoke-all" ? <div className="security-confirmation security-global-confirm" role="group" aria-label={t("Konfirmasi pencabutan sesi", "Confirm session revocation")}><p>{confirmAction.type === "revoke-all" ? t("Semua perangkat, termasuk perangkat ini, akan keluar.", "All devices, including this one, will be signed out.") : t("Semua perangkat lain akan keluar. Sesi perangkat ini tetap aktif.", "All other devices will be signed out. This device stays active.")}</p><Button size="small" loading={mutation.isPending} onClick={() => mutation.mutate(confirmAction)}>{t("Konfirmasi", "Confirm")}</Button><Button size="small" variant="secondary" onClick={() => setConfirmAction(null)}>{t("Batal", "Cancel")}</Button></div> : null}
+        </Card>
+
+        <div className="security-side-column">
+          <Card className="security-password-card"><span className="settings-directory-icon"><KeyRound size={22} /></span><div><h2>{t("Kata sandi", "Password")}</h2><p>{t("Minta kode pemulihan melalui email untuk mengganti kata sandi.", "Request an email recovery code to change your password.")}</p><Button asChild variant="secondary" size="small"><Link to="/forgot-password">{t("Atur ulang kata sandi", "Reset password")}</Link></Button></div></Card>
+          <Card className="security-mfa-notice"><span className="settings-directory-icon"><ShieldCheck size={22} /></span><div><h2>{t("Verifikasi dua langkah", "Two-step verification")}</h2><p>{t("Belum tersedia melalui provider autentikasi saat ini. Akun operator tetap dibatasi sampai MFA terverifikasi.", "Not available through the current authentication provider. Operator accounts remain restricted until MFA is verified.")}</p><strong>{t("Belum aktif", "Not active")}</strong></div></Card>
+          <Card className="security-tips-card"><h2>{t("Tips menjaga keamanan akun", "Account security tips")}</h2><ul><li>{t("Gunakan kata sandi yang unik.", "Use a unique password.")}</li><li>{t("Jangan bagikan kode verifikasi atau kata sandi.", "Never share verification codes or your password.")}</li><li>{t("Keluarkan perangkat yang tidak kamu kenali.", "Sign out devices you do not recognize.")}</li></ul></Card>
+        </div>
+      </div>
+    </section>
   );
 }
 

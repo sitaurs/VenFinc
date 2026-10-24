@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "checked_at_utc": "2026-10-24 11:17:14 UTC",
+  "scope": {
+    "project_id": "hidden-unit-95812377",
+    "branch_id": "br-aged-mode-b4rcy9i0",
+    "branch_name": "venfinance-p0-auth-20261024"
+  },
+  "request": {
+    "method": "POST",
+    "content_type": "application/json",
+    "origin": "http://127.0.0.1:5173",
+    "body": {},
+    "session_cookie_sent": false,
+    "account_or_otp_used": false,
+    "email_sent": false
+  },
+  "observed": [
+    {
+      "path": "/email-otp/passcode",
+      "status": 404,
+      "result": "route_not_found"
+    },
+    {
+      "path": "/email-otp/reset-password",
+      "status": 400,
+      "provider_code": "VALIDATION_ERROR",
+      "result": "route_exists_and_rejected_empty_body"
+    }
+  ],
+  "interpretation": "The current @neondatabase/auth SDK alias is broken against this staging branch. The Edge proxy uses the existing reset-password path with the exact validated email/otp/password payload. This probe does not prove a valid OTP changes a password; an authorized synthetic-account test remains blocked on staging app origin and inbox delivery.",
+  "production_modified": false
+}

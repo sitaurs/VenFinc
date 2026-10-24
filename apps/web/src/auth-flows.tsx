@@ -272,7 +272,7 @@ export function ResetPasswordPage(props: AuthFlowProps) {
     }
     setBusy(true);
     try {
-      await authPost("email-otp/passcode", {
+      await authPost("email-otp/reset-password", {
         email: email.trim().toLowerCase(),
         otp: otp.trim(),
         password,
