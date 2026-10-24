@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "task_id": "P4-006",
+  "title": "Implement chart accessible equivalents",
+  "result": "PASS",
+  "verified_at_utc": "2026-10-24 06:50:33 UTC",
+  "scope": "Reusable ChartWithTableFallback component with labeled semantic colors, exact signed integer values, a readable data table, reduced-motion-safe static bars, and explicit empty/insufficient-data states. The insights screen itself is outside this task.",
+  "runtime": {
+    "project_node": "24.22.1",
+    "pnpm": "11.25.0",
+    "selection": "Project pins in .nvmrc, .node-version, and package.json were verified; project commands used Node 24.22.1 through tools/pnpm.sh."
+  },
+  "changed_files": [
+    "packages/ui/src/index.tsx",
+    "packages/ui/src/tokens.css",
+    "qa/e2e/ui-components.spec.ts",
+    "qa/fixtures/ui-components.tsx",
+    "tasks/execution-status.json"
+  ],
+  "checks": [
+    {
+      "command": "PATH=/tmp/venfinance-node24/bin:$PATH ./tools/pnpm.sh lint",
+      "exit_code": 0,
+      "result": "PASS",
+      "output": "ESLint and Stylelint completed."
+    },
+    {
+      "command": "PATH=/tmp/venfinance-node24/bin:$PATH ./tools/pnpm.sh typecheck",
+      "exit_code": 0,
+      "result": "PASS",
+      "output": "TypeScript completed with no diagnostics."
+    },
+    {
+      "command": "PATH=/tmp/venfinance-node24/bin:$PATH ./tools/pnpm.sh test",
+      "exit_code": 0,
+      "result": "PASS",
+      "output": "7 test files; 59 tests passed."
+    },
+    {
+      "command": "PATH=/tmp/venfinance-node24/bin:$PATH XDG_CONFIG_HOME=/tmp/venfinance-xdg ./tools/pnpm.sh build",
+      "exit_code": 0,
+      "result": "PASS",
+      "output": "Cloudflare Worker, client, and PWA service worker built."
+    },
+    {
+      "command": "PATH=/tmp/venfinance-node24/bin:$PATH ./tools/pnpm.sh test:security",
+      "exit_code": 0,
+      "result": "PASS",
+      "output": "9 security tests passed; heuristic client artifact scan checked 8 files with no findings."
+    },
+    {
+      "command": "PATH=/tmp/venfinance-node24/bin:$PATH ./tools/pnpm.sh test:e2e",
+      "exit_code": 0,
+      "result": "PASS",
+      "output": "16 Playwright tests passed, including exact chart table values above Number.MAX_SAFE_INTEGER, negative values, labeled color tokens, empty/single-point states, and reduced-motion behavior."
+    },
+    {
+      "command": "PATH=/tmp/venfinance-node24/bin:$PATH ./tools/pnpm.sh test:visual",
+      "exit_code": 0,
+      "result": "PASS",
+      "output": "12 visual captures passed: app widths 320, 360, 361, 390, 768, 1024, 1211, 1440, 1920 px and component fixture widths 320, 390, 1440 px."
+    },
+    {
+      "command": "PATH=/tmp/venfinance-node24/bin:$PATH ./tools/pnpm.sh exec playwright test --project=chromium --grep \"component gallery\"",
+      "exit_code": 0,
+      "result": "PASS",
+      "output": "3 component captures passed at 320, 390, and 1440 px after the final mobile table-width adjustment."
+    },
+    {
+      "command": "PATH=/tmp/venfinance-node24/bin:$PATH ./tools/pnpm.sh docs:check",
+      "exit_code": 0,
+      "result": "PASS",
+      "output": "177 requirement IDs, 373 task records, 90 screen IDs, and tracked reference hashes validated; production_ready remains false."
+    },
+    {
+      "command": "if rg -l -F -e 'Arus kas uji' -e 'Grafik memerlukan dua nilai pembanding' apps/web/dist/client/assets; then echo 'QA chart fixture leaked into client bundle'; exit 1; else echo 'PASS: QA chart fixture absent from production client assets'; fi",
+      "exit_code": 0,
+      "result": "PASS",
+      "output": "Unique chart QA fixture strings are absent from production client assets."
+    }
+  ],
+  "design_review": {
+    "references_inspected": [
+      "reference-design/full/VenFinance_UIUX_ImageGen/screens/mobile/FIN-UI-15__laporan-insight.png",
+      "reference-design/full/VenFinance_UIUX_ImageGen/screens/web/FIN-UI-15__laporan-insight.png"
+    ],
+    "finding": "The component follows the reference palette and labeled-bar language while adding a text table for exact values. P4-006 does not implement the /app/insights screen or claim full screen comparison acceptance.",
+    "visual_gate": "G-VISUAL remains open."
+  },
+  "visual_evidence": {
+    "captures": [
+      "test-results/ui-components--visual-P4-002-component-gallery-fits-320px-chromium/ui-components-320.png",
+      "test-results/ui-components--visual-P4-002-component-gallery-fits-1440px-chromium/ui-components-1440.png"
+    ],
+    "status": "Local test captures, not production screenshots."
+  },
+  "security_and_release_limitations": [
+    "Values remain exact bigint/integer strings; derived bar width uses integer arithmetic and is visual only.",
+    "The chart QA samples are synthetic and isolated to the dev-only /__qa/ui-components route; their strings are absent from the production client bundle.",
+    "This task did not connect charts to Neon data, implement /app/insights, or verify auth, RLS, ledger semantics, or production deployment.",
+    "The client artifact scan is heuristic and does not replace a security audit; overall production readiness remains false."
+  ],
+  "commit": {
+    "sha": "0e23c6ac833c0c01c55a53b673f15d17d22ace9b",
+    "branch": "main",
+    "remote": "https://github.com/sitaurs/VenFinc.git",
+    "remote_ref_sha_verified": "0e23c6ac833c0c01c55a53b673f15d17d22ace9b"
+  }
+}

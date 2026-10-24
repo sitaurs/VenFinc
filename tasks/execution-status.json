@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-24 06:39:43 UTC",
+  "updated_at": "2026-10-24 06:50:33 UTC",
   "source_of_truth": "Execution status only; task source markdown keeps the original baseline wording. A blocked external gate is not done.",
   "status_values": [
     "todo",
@@ -1985,8 +1985,10 @@
       "dependencies": [
         "P4-002"
       ],
-      "status": "in_progress",
-      "evidence": [],
+      "status": "done",
+      "evidence": [
+        "qa/p4-006-chart-accessibility-evidence.json"
+      ],
       "blockers": [],
       "minimum_verification": "Screen reader can access values without chart shape/color."
     },
