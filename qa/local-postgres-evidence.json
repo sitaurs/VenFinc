@@ -1,0 +1,136 @@
+{
+  "checkedAt": "2026-10-24T05:17:46.990382+00:00",
+  "status": "PASS_LOCAL_POSTGRES_ONLY",
+  "postgresVersion": "postgres (PostgreSQL) 18.6 (Ubuntu 18.6-0ubuntu0.26.04.1)",
+  "schemaSha256": "8229400957964770d84570719952750932e79ce720ed41a1a44687d46697aad2",
+  "harnessSha256": "1b2e159a07d630511ac6a81385b5e091daca911ea356f66247f9d19632b099cd",
+  "command": "PG_BIN=<official-local-postgres-bin> python3 tools/verify-local-postgres.py",
+  "exitCode": 0,
+  "passed": 22,
+  "cases": [
+    {
+      "name": "fresh schema transaction rollback leaves no objects",
+      "status": "PASS",
+      "durationMs": 64
+    },
+    {
+      "name": "runtime roles have no superuser, BYPASSRLS or executor membership",
+      "status": "PASS",
+      "durationMs": 20
+    },
+    {
+      "name": "all four tables enable and force RLS",
+      "status": "PASS",
+      "durationMs": 19
+    },
+    {
+      "name": "tenant A cannot read tenant B account even with explicit owner filter",
+      "status": "PASS",
+      "durationMs": 17
+    },
+    {
+      "name": "tenant B sees only its own two accounts",
+      "status": "PASS",
+      "durationMs": 18
+    },
+    {
+      "name": "runtime direct event insert denied",
+      "status": "PASS",
+      "durationMs": 15
+    },
+    {
+      "name": "anonymous fixture cannot read or execute posting function",
+      "status": "PASS",
+      "durationMs": 32
+    },
+    {
+      "name": "tenant cannot adopt the executor or another tenant identity",
+      "status": "PASS",
+      "durationMs": 30
+    },
+    {
+      "name": "forged claim setting cannot switch database fixture identity",
+      "status": "PASS",
+      "durationMs": 18
+    },
+    {
+      "name": "table owner is still constrained by FORCE RLS",
+      "status": "PASS",
+      "durationMs": 18
+    },
+    {
+      "name": "unbalanced command writes no event, posting or idempotency claim",
+      "status": "PASS",
+      "durationMs": 60
+    },
+    {
+      "name": "deferred constraint rejects event without postings at commit",
+      "status": "PASS",
+      "durationMs": 19
+    },
+    {
+      "name": "cross-tenant foreign key rolls back entire command",
+      "status": "PASS",
+      "durationMs": 67
+    },
+    {
+      "name": "BIGINT overflow rolls back entire command",
+      "status": "PASS",
+      "durationMs": 56
+    },
+    {
+      "name": "JSON numeric amount rejected instead of rounded",
+      "status": "PASS",
+      "durationMs": 58
+    },
+    {
+      "name": "unknown event kind rolls back idempotency and event",
+      "status": "PASS",
+      "durationMs": 57
+    },
+    {
+      "name": "zero and duplicate account postings rejected",
+      "status": "PASS",
+      "durationMs": 109
+    },
+    {
+      "name": "100 concurrent retries post once, preserve exact large IDR, conflict and owner scope",
+      "status": "PASS",
+      "durationMs": 1234
+    },
+    {
+      "name": "transfer and debt principal affect accounts without consumption entries",
+      "status": "PASS",
+      "durationMs": 135
+    },
+    {
+      "name": "every committed event has at least two postings and zero exact sum",
+      "status": "PASS",
+      "durationMs": 20
+    },
+    {
+      "name": "runtime cannot update, delete, truncate ledger or invoke helper",
+      "status": "PASS",
+      "durationMs": 64
+    },
+    {
+      "name": "synthetic dump restore retains counts, balance and tenant isolation",
+      "status": "PASS",
+      "durationMs": 385
+    }
+  ],
+  "concurrentReplaySubmissions": 100,
+  "localSocketOnly": true,
+  "temporaryClusterRemoved": true,
+  "productionReady": false,
+  "neonAuthVerified": false,
+  "cloudflareIdentityPropagationVerified": false,
+  "productionMigration": false,
+  "remoteResourcesAccessed": false,
+  "limitations": [
+    "Fixture PostgreSQL login roles are not Neon JWT identities.",
+    "Generic balanced-posting probe does not implement business commands, negative-balance policy, budgets, void/restore or account lifecycle.",
+    "Synthetic local dump/restore is not an encrypted production backup/restore rehearsal.",
+    "P0-005, P1-007 and P3 tasks remain blocked by their actual dependencies."
+  ]
+}

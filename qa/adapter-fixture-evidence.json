@@ -1,0 +1,6 @@
+{
+  "command": "./tools/pnpm.sh exec vitest run qa/fixtures/adapters.test.ts",
+  "exitCode": 0,
+  "output": "\n RUN  v5.0.5 /home/zamn/VenFinance\n\n\n Test Files  1 passed (1)\n      Tests  4 passed (4)\n   Start at  11:40:35\n   Duration  1.84s (tests 32%, import 30%, transform 25%, worker 12%)\n\n",
+  "scope": "Synthetic fixtures only; no Neon RLS or upstream GOWA/9router parity claim."
+}

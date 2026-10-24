@@ -1,0 +1,31 @@
+{
+  "checkedAt": "2026-10-24T05:24:13.475Z",
+  "mode": "read_only_reconnection_check",
+  "accountId": "2fc0560ffb9a6f811898ebaeb2d63edd",
+  "results": [
+    {
+      "check": "ven_bucket",
+      "status": 200,
+      "success": true,
+      "result": {
+        "name": "ven",
+        "creation_date": "2026-10-24T03:14:35.704Z",
+        "location": "APAC",
+        "storage_class": "Standard",
+        "jurisdiction": "default"
+      },
+      "errors": []
+    },
+    {
+      "check": "ven_r2_dev",
+      "status": 200,
+      "success": true,
+      "result": {
+        "enabled": false
+      },
+      "errors": []
+    }
+  ],
+  "sapAccessed": false,
+  "mutations": false
+}

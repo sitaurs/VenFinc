@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "task_id": "P4-001",
+  "title": "Apply semantic tokens and fonts",
+  "result": "PASS",
+  "verified_at_utc": "2026-10-24 05:56:40 UTC",
+  "scope": "Semantic CSS tokens, font-family wiring, and normal-text contrast only.",
+  "runtime": {
+    "project_node": "24.22.1",
+    "pnpm": "11.25.0",
+    "selection": "The project wrapper tools/pnpm.sh puts .tools/node/bin first; validated commands also used the verified Node 24.22.1 runtime from /tmp.",
+    "direct_shell_node": "22.23.3 (not used for project checks)"
+  },
+  "changed_files": [
+    "packages/ui/src/tokens.css",
+    "apps/web/src/styles.css",
+    "qa/e2e/app.spec.ts",
+    "qa/e2e/design-tokens.spec.ts"
+  ],
+  "checks": [
+    {
+      "command": "PATH=/tmp/venfinance-node24/bin:$PATH ./tools/pnpm.sh lint",
+      "exit_code": 0,
+      "result": "PASS",
+      "output": "ESLint and Stylelint completed."
+    },
+    {
+      "command": "PATH=/tmp/venfinance-node24/bin:$PATH ./tools/pnpm.sh typecheck",
+      "exit_code": 0,
+      "result": "PASS",
+      "output": "TypeScript completed with no diagnostics."
+    },
+    {
+      "command": "PATH=/tmp/venfinance-node24/bin:$PATH ./tools/pnpm.sh test",
+      "exit_code": 0,
+      "result": "PASS",
+      "output": "6 test files, 56 tests passed."
+    },
+    {
+      "command": "PATH=/tmp/venfinance-node24/bin:$PATH XDG_CONFIG_HOME=/tmp/venfinance-xdg ./tools/pnpm.sh build",
+      "exit_code": 0,
+      "result": "PASS",
+      "output": "Worker, client, and PWA service worker built."
+    },
+    {
+      "command": "PATH=/tmp/venfinance-node24/bin:$PATH ./tools/pnpm.sh test:security",
+      "exit_code": 0,
+      "result": "PASS",
+      "output": "9 security tests passed; heuristic built-artifact scan checked 8 files with no findings."
+    },
+    {
+      "command": "PATH=/tmp/venfinance-node24/bin:$PATH ./tools/pnpm.sh test:e2e",
+      "exit_code": 0,
+      "result": "PASS",
+      "output": "9 Playwright tests passed, including computed token values and 4.5:1 normal-text contrast."
+    },
+    {
+      "command": "PATH=/tmp/venfinance-node24/bin:$PATH ./tools/pnpm.sh test:visual",
+      "exit_code": 0,
+      "result": "PASS",
+      "output": "9 responsive capture tests passed at 320, 360, 361, 390, 768, 1024, 1211, 1440, and 1920 px; no horizontal overflow."
+    },
+    {
+      "command": "python3 tools/audit_visual_sources.py",
+      "exit_code": 0,
+      "result": "PASS",
+      "output": "180 source screen images, 90 mobile/web pairs, and 59 assets verified."
+    }
+  ],
+  "design_review": {
+    "status": "G-VISUAL remains open",
+    "finding": "Compared the 390px local landing capture with the user-provided PUB-01 reference. Layout and copy differences remain; this token task does not claim visual acceptance.",
+    "evidence_capture": "Playwright output is local under ignored test-results/ and is not included in the commit."
+  },
+  "security_and_release_limitations": [
+    "The client scan is heuristic and does not replace Worker auth/RLS or a security audit.",
+    "No live auth, ledger, Neon RLS, owner-checked R2, WhatsApp, AI, Armbian worker, or production deployment was verified by this task.",
+    "Overall project readiness remains false; external gates remain blocked as tracked in tasks/execution-status.json and qa/ACCEPTANCE-MATRIX.md."
+  ]
+}

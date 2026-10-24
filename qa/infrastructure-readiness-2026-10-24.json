@@ -1,0 +1,109 @@
+{
+  "checkedAt": "2026-10-24T03:25:34Z",
+  "timezone": "Asia/Jakarta",
+  "scope": "Read-only infrastructure analysis authorized by the owner",
+  "externalMutationsPerformed": false,
+  "secretsRecorded": false,
+  "cloudflare": {
+    "source": "Authenticated Cloudflare MCP API GET requests",
+    "accountId": "2fc0560ffb9a6f811898ebaeb2d63edd",
+    "zone": {
+      "id": "7ccb1ab867276b4d6ea5ad523bedb2b9",
+      "name": "venlab.tech",
+      "status": "active",
+      "type": "full",
+      "websitePlan": "Free Website",
+      "workersPlan": "NOT_VERIFIED"
+    },
+    "r2": {
+      "allowedBucket": "ven",
+      "excludedBucket": "sap",
+      "excludedBucketInspected": false,
+      "bucketGetStatus": 200,
+      "creationDate": "2026-10-24T03:14:35.704Z",
+      "location": "APAC",
+      "storageClass": "Standard",
+      "jurisdiction": "default",
+      "publicR2DevEnabled": false,
+      "customDomains": [],
+      "cors": "NOT_CONFIGURED_HTTP_404_10059",
+      "lifecycleRules": [
+        {
+          "id": "Default Multipart Abort Rule",
+          "enabled": true,
+          "abortIncompleteMultipartAfterSeconds": 604800
+        }
+      ],
+      "finalizedProofRetentionRuleObserved": false,
+      "objectMetadataProbe": {
+        "perPage": 1,
+        "status": 200,
+        "returnedObjectCount": 0,
+        "objectContentsRead": false
+      },
+      "applicationOwnerAuthorizationTest": "NOT_RUN"
+    },
+    "dns": {
+      "finance.venlab.tech": {"status": 200, "exactRecordCount": 0},
+      "gowa.venlab.tech": {"status": 200, "exactRecordCount": 0},
+      "9r.venlab.tech": {"status": 200, "exactRecordCount": 0}
+    },
+    "workers": {
+      "scriptsListStatus": 200,
+      "accountScriptCount": 2,
+      "accountSettingsReadStatus": 200,
+      "defaultUsageModel": "standard",
+      "venfinanceNamedScriptFound": false,
+      "targetHostnameCustomDomains": [],
+      "targetHostnameOrZoneWildcardRoutes": [],
+      "unrelatedScriptContentsInspected": false
+    },
+    "tunnel": {
+      "candidateName": "arm",
+      "ownershipForVenFinanceConfirmed": false,
+      "status": "down",
+      "connectionCount": 0,
+      "remoteConfig": true,
+      "configVersion": 13,
+      "ingressCount": 7,
+      "venfinanceTargetHostnameIngress": [],
+      "hasCatchAll404": true,
+      "unrelatedIngressDetailsRecorded": false,
+      "pathAccessAndHmacBypassTests": "NOT_RUN"
+    },
+    "access": {
+      "accountApplicationsListStatus": 200,
+      "zoneApplicationsListStatus": 200,
+      "venlabApplicationsFound": [],
+      "serviceTokenAndPathIsolationTests": "NOT_RUN"
+    },
+    "billing": {
+      "subscriptionsReadStatus": 403,
+      "reason": "OAuth connection cannot access this billing endpoint; Billing Read or Billing Write API-token permission is required",
+      "paidSubscriptionsVerified": false,
+      "notificationPoliciesListStatus": 200,
+      "enabledBudgetAlertObserved": true,
+      "budgetAlertType": "billing_budget_alert",
+      "budgetAlertTotalSpendDollars": "10",
+      "venSpecificBudgetAlertFilterObserved": false,
+      "usageCapsAndAlertsVerified": false,
+      "credentialsRequested": false
+    }
+  },
+  "neon": {
+    "ownerReportedNewlyCreated": true,
+    "liveProjectInspection": "PENDING_CONNECTOR_RECONNECTION",
+    "projectId": null,
+    "branches": "NOT_VERIFIED",
+    "schema": "NOT_VERIFIED",
+    "auth": "NOT_VERIFIED",
+    "rls": "NOT_RUN"
+  },
+  "taskEvidenceLimits": {
+    "P0-008": "PARTIAL: R2 metadata and public-exposure settings only; quotas, billing controls and application tenant authorization remain unverified",
+    "P0-007": "NOT_RUN: no VenFinance tunnel ingress or Access application observed",
+    "P0-005": "NOT_RUN: Neon project, sessions and actual Worker RLS path not inspected",
+    "tasksMarkedDone": [],
+    "productionReadiness": "NOT_ESTABLISHED"
+  }
+}

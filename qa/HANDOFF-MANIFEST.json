@@ -1,0 +1,22 @@
+{
+  "requirements": 177,
+  "screens": 90,
+  "manifest_images": 180,
+  "tasks": 373,
+  "tasks_per_phase": {
+    "P0": 10,
+    "P1": 12,
+    "P2": 24,
+    "P3": 52,
+    "P4": 111,
+    "P5": 22,
+    "P6": 8,
+    "P7": 33,
+    "P8": 35,
+    "P9": 29,
+    "P10": 37
+  },
+  "unknown_deps": 0,
+  "cycles": 0,
+  "prds": 11
+}

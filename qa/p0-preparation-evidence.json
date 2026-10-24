@@ -1,0 +1,25 @@
+{
+  "task": "P0-001",
+  "status": "done",
+  "checks": [
+    {
+      "command": "python3 tools/validate_handoff.py --json qa/consistency-report.json",
+      "exit_code": 0,
+      "result": "PASS",
+      "screens_sha256_verified": 180,
+      "assets_sha256_verified": 59
+    },
+    {
+      "command": "python3 tools/check_execution.py",
+      "exit_code": 0,
+      "result": "PASS",
+      "decisions": 14,
+      "gates_with_owner_and_status": 11
+    }
+  ],
+  "external_gates_passed": [],
+  "notes": [
+    "Only decision/blocker preparation is complete; live identity, RLS, ARM, Vision and production readiness remain unverified.",
+    "Documentation is canonical at repository root; legacy handoff paths remain via directory symlinks."
+  ]
+}

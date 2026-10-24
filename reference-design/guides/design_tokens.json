@@ -1,0 +1,51 @@
+{
+  "color": {
+    "brand": "#6D4CE8",
+    "brand_dark": "#B8A4FF",
+    "background": "#F7F7FC",
+    "surface": "#FFFFFF",
+    "lavender": "#EEE9FF",
+    "text": "#202334",
+    "muted": "#62677B",
+    "dark_background": "#13151F",
+    "dark_surface": "#1D2030",
+    "dark_text": "#F3F4FA",
+    "success": "#16724A",
+    "warning": "#885500",
+    "error": "#B4233A",
+    "info": "#155B94"
+  },
+  "spacing": [
+    4,
+    8,
+    12,
+    16,
+    20,
+    24,
+    32,
+    40,
+    48,
+    64
+  ],
+  "radius": {
+    "card": 24,
+    "field": 12,
+    "modal": 24
+  },
+  "typography": {
+    "heading": "Plus Jakarta Sans",
+    "body": "Inter, system-ui",
+    "body_px": 16,
+    "secondary_px": 14,
+    "heading_mobile_px": [
+      24,
+      28
+    ],
+    "money_px": [
+      28,
+      36
+    ]
+  },
+  "touch_target_min_px": 44,
+  "status_requires_text_and_icon": true
+}

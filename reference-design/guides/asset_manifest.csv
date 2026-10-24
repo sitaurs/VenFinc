@@ -1,0 +1,60 @@
+﻿name,family,file,width,height,transparent,usage
+home,icons/navigation,assets/icons/navigation/home.png,219,205,True,Ikon raster antarmuka; gunakan pada ukuran kecil dengan label.
+receipt,icons/navigation,assets/icons/navigation/receipt.png,170,209,True,Ikon raster antarmuka; gunakan pada ukuran kecil dengan label.
+add,icons/navigation,assets/icons/navigation/add.png,204,204,True,Ikon raster antarmuka; gunakan pada ukuran kecil dengan label.
+budget,icons/navigation,assets/icons/navigation/budget.png,214,217,True,Ikon raster antarmuka; gunakan pada ukuran kecil dengan label.
+wallet,icons/navigation,assets/icons/navigation/wallet.png,224,184,True,Ikon raster antarmuka; gunakan pada ukuran kecil dengan label.
+target,icons/navigation,assets/icons/navigation/target.png,228,234,True,Ikon raster antarmuka; gunakan pada ukuran kecil dengan label.
+debt,icons/navigation,assets/icons/navigation/debt.png,214,214,True,Ikon raster antarmuka; gunakan pada ukuran kecil dengan label.
+recurring-bill,icons/navigation,assets/icons/navigation/recurring-bill.png,215,224,True,Ikon raster antarmuka; gunakan pada ukuran kecil dengan label.
+report,icons/navigation,assets/icons/navigation/report.png,207,175,True,Ikon raster antarmuka; gunakan pada ukuran kecil dengan label.
+inbox,icons/navigation,assets/icons/navigation/inbox.png,221,187,True,Ikon raster antarmuka; gunakan pada ukuran kecil dengan label.
+chat,icons/navigation,assets/icons/navigation/chat.png,211,204,True,Ikon raster antarmuka; gunakan pada ukuran kecil dengan label.
+settings,icons/navigation,assets/icons/navigation/settings.png,204,217,True,Ikon raster antarmuka; gunakan pada ukuran kecil dengan label.
+security,icons/navigation,assets/icons/navigation/security.png,183,209,True,Ikon raster antarmuka; gunakan pada ukuran kecil dengan label.
+upload,icons/navigation,assets/icons/navigation/upload.png,194,182,True,Ikon raster antarmuka; gunakan pada ukuran kecil dengan label.
+calendar,icons/navigation,assets/icons/navigation/calendar.png,196,209,True,Ikon raster antarmuka; gunakan pada ukuran kecil dengan label.
+help,icons/navigation,assets/icons/navigation/help.png,209,204,True,Ikon raster antarmuka; gunakan pada ukuran kecil dengan label.
+welcome-wallet,illustrations,assets/illustrations/welcome-wallet.png,457,394,True,Ilustrasi dekoratif transparan; bukan grafik atau data finansial.
+empty-notebook,illustrations,assets/illustrations/empty-notebook.png,441,359,True,Ilustrasi dekoratif transparan; bukan grafik atau data finansial.
+receipt-review,illustrations,assets/illustrations/receipt-review.png,365,366,True,Ilustrasi dekoratif transparan; bukan grafik atau data finansial.
+offline-draft,illustrations,assets/illustrations/offline-draft.png,438,355,True,Ilustrasi dekoratif transparan; bukan grafik atau data finansial.
+savings-goal,illustrations,assets/illustrations/savings-goal.png,355,442,True,Ilustrasi dekoratif transparan; bukan grafik atau data finansial.
+success-check,illustrations,assets/illustrations/success-check.png,387,345,True,Ilustrasi dekoratif transparan; bukan grafik atau data finansial.
+food,icons/categories,assets/icons/categories/food.png,235,229,True,Ikon kategori pastel untuk permukaan kartu terang.
+transport,icons/categories,assets/icons/categories/transport.png,235,229,True,Ikon kategori pastel untuk permukaan kartu terang.
+snacks,icons/categories,assets/icons/categories/snacks.png,237,229,True,Ikon kategori pastel untuk permukaan kartu terang.
+other,icons/categories,assets/icons/categories/other.png,235,229,True,Ikon kategori pastel untuk permukaan kartu terang.
+bank,icons/categories,assets/icons/categories/bank.png,238,232,True,Ikon kategori pastel untuk permukaan kartu terang.
+cash,icons/categories,assets/icons/categories/cash.png,235,232,True,Ikon kategori pastel untuk permukaan kartu terang.
+e-wallet,icons/categories,assets/icons/categories/e-wallet.png,237,234,True,Ikon kategori pastel untuk permukaan kartu terang.
+savings,icons/categories,assets/icons/categories/savings.png,235,234,True,Ikon kategori pastel untuk permukaan kartu terang.
+water,icons/categories,assets/icons/categories/water.png,238,238,True,Ikon kategori pastel untuk permukaan kartu terang.
+laundry,icons/categories,assets/icons/categories/laundry.png,235,238,True,Ikon kategori pastel untuk permukaan kartu terang.
+mobile-data,icons/categories,assets/icons/categories/mobile-data.png,237,238,True,Ikon kategori pastel untuk permukaan kartu terang.
+home,icons/categories,assets/icons/categories/home.png,238,238,True,Ikon kategori pastel untuk permukaan kartu terang.
+education,icons/categories,assets/icons/categories/education.png,238,234,True,Ikon kategori pastel untuk permukaan kartu terang.
+health,icons/categories,assets/icons/categories/health.png,238,232,True,Ikon kategori pastel untuk permukaan kartu terang.
+shopping,icons/categories,assets/icons/categories/shopping.png,237,232,True,Ikon kategori pastel untuk permukaan kartu terang.
+gift,icons/categories,assets/icons/categories/gift.png,238,232,True,Ikon kategori pastel untuk permukaan kartu terang.
+venfinance-mark-violet,brand,assets/brand/venfinance-mark-violet.png,268,253,True,Identitas raster VenFinance; jangan ubah proporsi atau susunan mark.
+venfinance-mark-white,brand,assets/brand/venfinance-mark-white.png,266,252,True,Identitas raster VenFinance; jangan ubah proporsi atau susunan mark.
+venfinance-wordmark-dark,brand,assets/brand/venfinance-wordmark-dark.png,667,151,True,Identitas raster VenFinance; jangan ubah proporsi atau susunan mark.
+venfinance-wordmark-white,brand,assets/brand/venfinance-wordmark-white.png,673,151,True,Identitas raster VenFinance; jangan ubah proporsi atau susunan mark.
+venfinance-app-icon,brand,assets/brand/venfinance-app-icon.png,316,315,True,Identitas raster VenFinance; jangan ubah proporsi atau susunan mark.
+venfinance-mark-dark,brand,assets/brand/venfinance-mark-dark.png,266,253,True,Identitas raster VenFinance; jangan ubah proporsi atau susunan mark.
+saldo-violet,backgrounds,assets/backgrounds/saldo-violet.png,627,627,False,Tekstur dekoratif opsional; teks/angka ditambahkan oleh aplikasi.
+lavender-light,backgrounds,assets/backgrounds/lavender-light.png,627,627,False,Tekstur dekoratif opsional; teks/angka ditambahkan oleh aplikasi.
+mint-light,backgrounds,assets/backgrounds/mint-light.png,627,627,False,Tekstur dekoratif opsional; teks/angka ditambahkan oleh aplikasi.
+navy-dark,backgrounds,assets/backgrounds/navy-dark.png,627,627,False,Tekstur dekoratif opsional; teks/angka ditambahkan oleh aplikasi.
+saldo-card,components,assets/components/saldo-card.png,240,151,False,POTONGAN REFERENSI VISUAL. Bangun ulang komponen dengan teks/data hidup; jangan dipakai sebagai tombol/grafik fungsional.
+budget-summary,components,assets/components/budget-summary.png,230,151,False,POTONGAN REFERENSI VISUAL. Bangun ulang komponen dengan teks/data hidup; jangan dipakai sebagai tombol/grafik fungsional.
+primary-action,components,assets/components/primary-action.png,153,46,False,POTONGAN REFERENSI VISUAL. Bangun ulang komponen dengan teks/data hidup; jangan dipakai sebagai tombol/grafik fungsional.
+desktop-sidebar,components,assets/components/desktop-sidebar.png,195,867,False,POTONGAN REFERENSI VISUAL. Bangun ulang komponen dengan teks/data hidup; jangan dipakai sebagai tombol/grafik fungsional.
+mobile-bottom-navigation,components,assets/components/mobile-bottom-navigation.png,361,78,False,POTONGAN REFERENSI VISUAL. Bangun ulang komponen dengan teks/data hidup; jangan dipakai sebagai tombol/grafik fungsional.
+review-notice,components,assets/components/review-notice.png,337,66,False,POTONGAN REFERENSI VISUAL. Bangun ulang komponen dengan teks/data hidup; jangan dipakai sebagai tombol/grafik fungsional.
+daily-budget-card,components,assets/components/daily-budget-card.png,169,106,False,POTONGAN REFERENSI VISUAL. Bangun ulang komponen dengan teks/data hidup; jangan dipakai sebagai tombol/grafik fungsional.
+landing-hero,extracted,assets/extracted/landing-hero.png,641,492,False,"Potongan ilustrasi dari screen, dengan latar bawaan. Pakai di latar serupa; bukan file transparan."
+login-wallet,extracted,assets/extracted/login-wallet.png,570,415,False,"Potongan ilustrasi dari screen, dengan latar bawaan. Pakai di latar serupa; bukan file transparan."
+support-headset,extracted,assets/extracted/support-headset.png,340,170,False,"Potongan ilustrasi dari screen, dengan latar bawaan. Pakai di latar serupa; bukan file transparan."
+student-template,extracted,assets/extracted/student-template.png,211,152,False,"Potongan ilustrasi dari screen, dengan latar bawaan. Pakai di latar serupa; bukan file transparan."

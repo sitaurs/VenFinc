@@ -1,0 +1,15 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "venfinance",
+  "main": "../apps/edge/src/index.ts",
+  "compatibility_date": "2026-10-24",
+  "workers_dev": false,
+  "preview_urls": false,
+  "assets": {
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+  "r2_buckets": [{ "binding": "PROOFS", "bucket_name": "ven", "preview_bucket_name": "ven", "remote": false }],
+  "vars": { "APP_ENV": "local" },
+  "observability": { "enabled": true }
+}

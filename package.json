@@ -1,0 +1,47 @@
+{
+  "name": "venfinance",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.25.0",
+  "engines": {
+    "node": ">=24.22.1 <25",
+    "pnpm": "11.25.0"
+  },
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "preview": "vite preview --host 127.0.0.1",
+    "lint": "eslint apps packages qa/e2e qa/fixtures tools/*.mjs *.ts && stylelint 'packages/ui/src/**/*.css' 'apps/web/src/**/*.css' --allow-empty-input",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "build": "vite build",
+    "test:integration": "node tools/integration-gate.mjs",
+    "test:e2e": "playwright test --project=chromium --grep-invert @visual",
+    "test:visual": "playwright test --grep @visual",
+    "test:security": "vitest run apps/edge/src/security.test.ts && node tools/scan-client.mjs",
+    "test:contracts": "vitest run packages/contracts/src",
+    "db:check": "node tools/integration-gate.mjs db",
+    "infra:smoke": "node tools/infra-smoke.mjs",
+    "docs:check": "python3 tools/validate_handoff.py && python3 tools/check_execution.py"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "1.65.0",
+    "@eslint/js": "10.0.1",
+    "@playwright/test": "1.64.1",
+    "@tailwindcss/vite": "4.3.3",
+    "@types/node": "24.19.2",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.1.2",
+    "eslint": "10.13.0",
+    "stylelint": "17.0.0",
+    "stylelint-config-standard": "40.0.0",
+    "tailwindcss": "4.3.3",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.72.0",
+    "vite": "8.3.5",
+    "vite-plugin-pwa": "2.0.0",
+    "vitest": "5.0.5",
+    "wrangler": "4.152.0"
+  }
+}

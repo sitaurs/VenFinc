@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "scope": "Local built Worker/assets, CSP, service-worker boundary, mobile sample entry and private-route denial only",
+  "errors": [],
+  "cachedUrls": [
+    "/registerSW.js",
+    "/manifest.webmanifest",
+    "/index.html",
+    "/illustrations/landing-hero.png",
+    "/brand/venfinance-wordmark-white.png",
+    "/brand/venfinance-wordmark-dark.png",
+    "/brand/venfinance-mark-white.png",
+    "/brand/venfinance-mark-violet.png",
+    "/brand/venfinance-mark-dark.png",
+    "/brand/venfinance-app-icon.png",
+    "/assets/plus-jakarta-sans-latin-wght-normal-eXO_dkmS.woff2",
+    "/assets/inter-latin-wght-normal-Dx4kXJAl.woff2",
+    "/assets/index-DplLhfNF.js",
+    "/assets/index-Bv96S35S.css"
+  ],
+  "privateCacheEntries": [],
+  "apiStatus": 401,
+  "apiCode": "AUTH_REQUIRED",
+  "mobileSampleBalanceAfter": "640000",
+  "productionDeployed": false
+}

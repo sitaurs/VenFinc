@@ -1,0 +1,446 @@
+{
+  "generatedAt": "2026-10-24T04:48:05.063035+00:00",
+  "status": "LOCAL_FOUNDATION_READY_PRODUCTION_BLOCKED",
+  "fullPrdScopePreserved": true,
+  "productionReady": false,
+  "environment": {
+    "os": "Linux",
+    "architecture": "x86_64",
+    "node": "24.22.1",
+    "pnpm": "11.25.0"
+  },
+  "testResults": {
+    "unitContractsSecurity": {
+      "passed": 56,
+      "failed": 0,
+      "files": 6,
+      "evidence": "qa/unit-test-evidence.json"
+    },
+    "browserFunctional": {
+      "startTime": "2026-10-24T04:37:13.035Z",
+      "duration": 145405.344,
+      "expected": 8,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "layoutCapture": {
+      "startTime": "2026-10-24T04:40:36.805Z",
+      "duration": 201815.611,
+      "expected": 9,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "layoutWidths": [
+      320,
+      360,
+      361,
+      390,
+      768,
+      1024,
+      1211,
+      1440,
+      1920
+    ],
+    "actualPixelAcceptanceOfAll90Screens": false,
+    "builtPreview": "PASS"
+  },
+  "taskStatusCounts": {
+    "done": 9,
+    "blocked": 13,
+    "todo": 351
+  },
+  "completedTasks": [
+    "P0-001",
+    "P1-001",
+    "P1-002",
+    "P1-003",
+    "P1-004",
+    "P1-005",
+    "P1-006",
+    "P1-010",
+    "P1-011"
+  ],
+  "blockedTasks": [
+    {
+      "id": "P0-002",
+      "reasons": [
+        {
+          "gate": "G-INFRA",
+          "reason": "ARM64 device ownership/access and reproducible RAM/CPU/storage/uptime benchmarks are not established."
+        }
+      ]
+    },
+    {
+      "id": "P0-003",
+      "reasons": [
+        {
+          "gate": "G-GOWA-API",
+          "reason": "Pinned GOWA build, approved owner test devices and restart/HMAC contract evidence are missing."
+        }
+      ]
+    },
+    {
+      "id": "P0-004",
+      "reasons": [
+        {
+          "gate": "G-9ROUTER-VISION",
+          "reason": "Approved user-owned 9router test model and actual novel-image forwarding/ground-truth evidence are missing."
+        }
+      ]
+    },
+    {
+      "id": "P0-005",
+      "reasons": [
+        {
+          "gate": "G-IDENTITY",
+          "reason": "Neon project scope/connector and real Worker A/B session/revoke/RLS proof are not available; operator MFA decision remains open."
+        }
+      ]
+    },
+    {
+      "id": "P0-006",
+      "reasons": [
+        {
+          "gate": "G-EMAIL",
+          "reason": "Production mail transport, authorized inbox and SPF/DKIM/deliverability/cost proof are missing."
+        }
+      ]
+    },
+    {
+      "id": "P0-007",
+      "reasons": [
+        {
+          "gate": "G-INFRA",
+          "reason": "No VenFinance ingress/Access application or live path/HMAC/replay/bypass test evidence; existing arm tunnel ownership not confirmed."
+        }
+      ]
+    },
+    {
+      "id": "P0-008",
+      "reasons": [
+        {
+          "gate": "G-COST",
+          "reason": "R2 ven metadata inspected only; actual Worker owner checks, Neon quota, billing/caps and alerts remain unverified."
+        }
+      ]
+    },
+    {
+      "id": "P0-009",
+      "reasons": [
+        {
+          "gate": "G-WHATSAPP-POLICY",
+          "reason": "Explicit product-owner/legal GO/NO-GO for public unofficial WhatsApp processing is pending."
+        }
+      ]
+    },
+    {
+      "id": "P0-010",
+      "reasons": [
+        {
+          "gate": "G-VISUAL",
+          "reason": "Original raster integrity can be verified locally; external font/non-brand licensing inventory and rendered UI comparisons remain pending."
+        }
+      ]
+    },
+    {
+      "id": "P1-007",
+      "reasons": [
+        "P0-008 unresolved: disposable Neon scope, auth propagation and RLS proof unavailable. Project ID still required by connector."
+      ]
+    },
+    {
+      "id": "P1-008",
+      "reasons": [
+        "P0-002 unresolved: ARM host ownership/resource baseline not verified; no live Compose deployment attempted."
+      ]
+    },
+    {
+      "id": "P1-009",
+      "reasons": [
+        "GitHub remote/hosted workflow execution unavailable. Local failure behavior verified; no claim of a completed hosted CI run."
+      ]
+    },
+    {
+      "id": "P1-012",
+      "reasons": [
+        "P0-010 / G-VISUAL unresolved: integrity and license inventory pass, but full source comparison and approved deviations are not complete."
+      ]
+    }
+  ],
+  "liveChecks": {
+    "database": "BLOCKED",
+    "integration": "BLOCKED",
+    "exitCode": 2,
+    "evidence": "qa/live-gate-evidence.json"
+  },
+  "r2": {
+    "bucket": "ven",
+    "mode": "local emulation",
+    "remoteOperationsAttempted": false,
+    "sapAccessed": false
+  },
+  "neon": {
+    "ownerSuppliedBranchId": "br-rapid-band-b4jw3tlq",
+    "projectId": null,
+    "branchVerifiedByApi": false,
+    "nextRequiredInput": "Parent Project ID or a token-free Neon console project URL"
+  },
+  "operatorMfa": {
+    "direction": "Keep Neon Managed Auth candidate for users; evaluate Cloudflare Access with an MFA-enforcing IdP, trusted identity binding and step-up for operators",
+    "implementedInProduction": false,
+    "adr": "research/adr/ADR-0001-OPERATOR-MFA.md"
+  },
+  "productionActions": {
+    "deployment": false,
+    "migration": false,
+    "billingChange": false,
+    "whatsappPairingOrMessages": false,
+    "publicPolicyPublication": false
+  },
+  "sourceSnapshotSha256": "1a6bd1a61782cc1bccf01a14ee4c484ba398b2056eb119ceb749a3e7d1fdb395",
+  "sources": [
+    {
+      "path": ".github/workflows/quality.yml",
+      "sha256": "5a8de2f14cb983bc74ad8c3d2c506411544eaf9c9051012ba11379a98ff4df56"
+    },
+    {
+      "path": ".node-version",
+      "sha256": "d9f318747a126ce2247661af67852b185def7789492eabfad7bba322be087c33"
+    },
+    {
+      "path": ".npmrc",
+      "sha256": "a6b535050ffed7bf041c71335beb770abb893edc91eb663b0e54955cf9170758"
+    },
+    {
+      "path": "apps/edge/package.json",
+      "sha256": "345385a69486bef34045d47b56760ee1526ca5060c265a74f23f9ad2b9b1c318"
+    },
+    {
+      "path": "apps/edge/src/index.ts",
+      "sha256": "6e88af87171b94317ffcf424fa048495adb61963a7a2f2b29c2c990406a3df4e"
+    },
+    {
+      "path": "apps/edge/src/security.test.ts",
+      "sha256": "6032dd71b47ff12d2bc73242a4e6b1652a4d125934516c6f12efddf465f4250d"
+    },
+    {
+      "path": "apps/finance-worker/README.md",
+      "sha256": "6b89993de190088ae22c77144726d91fdfcf7bc1def1b3675429920be4e26acc"
+    },
+    {
+      "path": "apps/finance-worker/package.json",
+      "sha256": "719f1aaa69a081992e1f73ab4702ca37992ba7dc66592698544169d336cbbe1e"
+    },
+    {
+      "path": "apps/web/index.html",
+      "sha256": "b51aee95f1a4b3e0833769f9b4eea1cb4c887e0a36f6d88785653b1e41cb24af"
+    },
+    {
+      "path": "apps/web/package.json",
+      "sha256": "664df62a7da0a99660043f1111148a2a2a7afb0c586ab9daead5219008032f8c"
+    },
+    {
+      "path": "apps/web/public/_headers",
+      "sha256": "cb7c39b2dc33ef5e141991f45b25cad1f3e7a5f5f1f5c1fd10b2813f0ab75e96"
+    },
+    {
+      "path": "apps/web/public/brand/venfinance-app-icon.png",
+      "sha256": "e999b2eed5cb562eb8285c2ec362e93e0fa6aecdc9c1e9c4ab6858d6736174f7"
+    },
+    {
+      "path": "apps/web/public/brand/venfinance-mark-dark.png",
+      "sha256": "6f722ad04e0ef02a5704f6ac391915e9d226c13ee3792798d51397dbfb8c699d"
+    },
+    {
+      "path": "apps/web/public/brand/venfinance-mark-violet.png",
+      "sha256": "f3ae3d99fd9a0bd4ba519badb0c053c6d8ecc5438217f6c530263aeb24f92c78"
+    },
+    {
+      "path": "apps/web/public/brand/venfinance-mark-white.png",
+      "sha256": "7f0c1f9b529834e3d607a2561221f483c09d58f30b3e8ac30bab1c190215fdbe"
+    },
+    {
+      "path": "apps/web/public/brand/venfinance-wordmark-dark.png",
+      "sha256": "360c948f98d09e9eba5a46df66037bcff4cd4adfdbfa5b1e39c0229646986121"
+    },
+    {
+      "path": "apps/web/public/brand/venfinance-wordmark-white.png",
+      "sha256": "618f1ebcb10e534e19d265bc7c45f3674247f89b7cb35e530f8b7d710bdae831"
+    },
+    {
+      "path": "apps/web/public/illustrations/landing-hero.png",
+      "sha256": "81705d981fa16c1f19e8d966d4b9bbab6e10c878fe30340c8a9514b0eb549935"
+    },
+    {
+      "path": "apps/web/public/licenses/inter.txt",
+      "sha256": "3b0a5fca3d17942cde889069889dedbbbd075e9b599968c82a95f4d944e9b345"
+    },
+    {
+      "path": "apps/web/public/licenses/lucide.txt",
+      "sha256": "b495047bd93a9b06913511076f504daba17d5bbeb3e0650f3bb53a4220329c57"
+    },
+    {
+      "path": "apps/web/public/licenses/plus-jakarta-sans.txt",
+      "sha256": "e07fd1167c2aaaa6fb965dd66e1e73b13c9c95b76b2d648b6e938780f30b37af"
+    },
+    {
+      "path": "apps/web/src/app.tsx",
+      "sha256": "a1a978d172652ae1312ddb4b47d0b5d51befd71f037810a7860b2b3c42447974"
+    },
+    {
+      "path": "apps/web/src/demo/demo.tsx",
+      "sha256": "f32ff94bcc3844f042e7b9976f2c8bf3e287d3436366a59122af3d9e42a6e804"
+    },
+    {
+      "path": "apps/web/src/demo/model.test.ts",
+      "sha256": "a804ad8e2c45221fca5a47fb3b7f48bbcacec123b17367e622901bb14519a22d"
+    },
+    {
+      "path": "apps/web/src/demo/model.ts",
+      "sha256": "1ace415ab34c43cbf04252fae8b2f005c4a029c0c373b006aea3621157b72254"
+    },
+    {
+      "path": "apps/web/src/main.tsx",
+      "sha256": "1010a0d2980dccdecfcfc1c7734e4c5b513725c749c03518b900a5d0b1bc90e6"
+    },
+    {
+      "path": "apps/web/src/preferences.tsx",
+      "sha256": "264c3a8ee561a90ec8db1caefdf07a643ae117202870da324a287858c8f5bf7c"
+    },
+    {
+      "path": "apps/web/src/styles.css",
+      "sha256": "f9af7551c65f52153473bf5d6e76919e273016dbf233da18bd6ab6683de6751d"
+    },
+    {
+      "path": "eslint.config.mjs",
+      "sha256": "c514b3c3303bea596f7ac6155204fc54139bd6bcd32eaccbaa8d1099bd23b679"
+    },
+    {
+      "path": "infra/wrangler.jsonc",
+      "sha256": "7983ea452117b7d0ff11d185c9d5e522a505b6e37923d55f7fa6e1ef52b4a5ab"
+    },
+    {
+      "path": "package.json",
+      "sha256": "e1bd3a7951c469f0455478b99098d0db9ff2ea98a44a7740616d6ffd0617fadd"
+    },
+    {
+      "path": "packages/contracts/package.json",
+      "sha256": "dd4b8d16049afae74d535bbbd920f91503a1f7e63789202bedfbd729281225e7"
+    },
+    {
+      "path": "packages/contracts/src/contracts.test.ts",
+      "sha256": "40a61441f4f86291fae2b61d33a1888a2d0cc08a9a4aefb22669d8dfe1afc470"
+    },
+    {
+      "path": "packages/contracts/src/index.ts",
+      "sha256": "e13e62f802ce38a5e55b07d3c9fc52ab37018680d00536c6ec896555190ae7fc"
+    },
+    {
+      "path": "packages/db/README.md",
+      "sha256": "dc571f9ed005409bb383c716e560a41a23fee5477c1378724362693c61fbd31b"
+    },
+    {
+      "path": "packages/db/package.json",
+      "sha256": "21974251cfc893c56913ac0394ac23362348b73b162b56f689c5ff130b0da8ac"
+    },
+    {
+      "path": "packages/domain/package.json",
+      "sha256": "0306f8373ba0b560b02607add63730ef13d2127948e03e40d781bed648f0fee3"
+    },
+    {
+      "path": "packages/domain/src/health.test.ts",
+      "sha256": "7e1b5ab44013f53f828eb7f4e396e898661269102f602da0b8cb761fb335ba5c"
+    },
+    {
+      "path": "packages/domain/src/index.ts",
+      "sha256": "40a5592ef6642f223e1f7c8fdca810873e5d6b366709bf0798033e5b7c0c958b"
+    },
+    {
+      "path": "packages/domain/src/money.test.ts",
+      "sha256": "15ef632f829730f961dc4cea75c86498e0bf50ffe4b830f4a5277337acdfc990"
+    },
+    {
+      "path": "packages/ui/package.json",
+      "sha256": "92e34d84eda2941cc872615b91aac5858b04ef9605ab56ee7a19fe77bb26e037"
+    },
+    {
+      "path": "packages/ui/src/index.tsx",
+      "sha256": "07669c87e66256354c97b61055935b5cc28fbdd3528bbef9856b4d5c0c5831bf"
+    },
+    {
+      "path": "packages/ui/src/tokens.css",
+      "sha256": "87c5ac887be10f9ed37b5b7f429927c328451702edd1a65e2a83c24a23c2e23c"
+    },
+    {
+      "path": "playwright.config.ts",
+      "sha256": "6f91cde4ddb621136260c88034148b0bbb1e6f62eab5c33e6687571ffaf9d908"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "6ddbb169312d45c212d7fea26f0f391859a021ba37f6808917b036b19ab28477"
+    },
+    {
+      "path": "pnpm-workspace.yaml",
+      "sha256": "e85d41ad3119c02eea3dbf98774fd1786a1e3f18e932b4fe32e2b311363df4bf"
+    },
+    {
+      "path": "stylelint.config.mjs",
+      "sha256": "3f571a1ee0ccb0f0c000a20895eccf3cc0e843ef16b6b0545317072f711edace"
+    },
+    {
+      "path": "tools/audit_visual_sources.py",
+      "sha256": "0d6f5f4ef16d380f3a137719432fc468ac7cd8dfe0c2f8b730caea27d4dcf2ae"
+    },
+    {
+      "path": "tools/check_execution.py",
+      "sha256": "ce4df0a2ed7dc664c8d46e83016cfc56790d0eb3fc602a8c50a5d9c14b52a3d6"
+    },
+    {
+      "path": "tools/infra-smoke.mjs",
+      "sha256": "6351b8173ec2d11d3ea10e0105ce828f4c7de4bd61587d3792bc14513c349f10"
+    },
+    {
+      "path": "tools/integration-gate.mjs",
+      "sha256": "460943e9429d3365ea7a11ad07a53391281bd40ba8d1a1a862e1f1dcd7d1ac27"
+    },
+    {
+      "path": "tools/pnpm.sh",
+      "sha256": "f17d37a1ad3ae94eeb36a74c340fb87bf576d51ecafd63526a6401afac30a354"
+    },
+    {
+      "path": "tools/scan-client.mjs",
+      "sha256": "9481e867090e264b7d1eb0e1f777a009385fc48f27b7d9a31c194ece31a419e6"
+    },
+    {
+      "path": "tools/validate_handoff.py",
+      "sha256": "c5fc9b6ef3e8a0bb87652251597e6725f923135fc6ab9ac9f9ce7d9291d360e0"
+    },
+    {
+      "path": "tools/verify-built-preview.mjs",
+      "sha256": "7bbfeb4140c634d2ed4a23026a11f25c9f3e4a193e8707f93a6571a650199ed7"
+    },
+    {
+      "path": "tools/verify-frozen-install.py",
+      "sha256": "e189ef3e69dc1d158e376f9eee5e2a770d7ae52a14ddf57db6adb92579c920db"
+    },
+    {
+      "path": "tools/verify-test-gates.py",
+      "sha256": "70366d2a5d3ed691f117943c4c973a584b2d3a4e7776544695b0745d9164b5e2"
+    },
+    {
+      "path": "tsconfig.json",
+      "sha256": "1765e20ffe3ce5367cf7eac41968289e33a83b1a8b41c01141d295037e3e6600"
+    },
+    {
+      "path": "vite.config.ts",
+      "sha256": "659a45d4a8bac978e156517e8b3d8d1f547104f3ed3b2b429387fb6210790f01"
+    },
+    {
+      "path": "vitest.config.ts",
+      "sha256": "977bf4d795aa6836ff6e3bd2eb166542a8b3edb5d3a352985540ba09a778d65c"
+    }
+  ],
+  "handoff": "qa/P1-LOCAL-HANDOFF.md"
+}

@@ -1,0 +1,1005 @@
+[
+  {
+    "name": "home",
+    "family": "icons/navigation",
+    "file": "assets/icons/navigation/home.png",
+    "width": 219,
+    "height": 205,
+    "transparent": true,
+    "usage": "Ikon raster antarmuka; gunakan pada ukuran kecil dengan label.",
+    "source": "navigation-icons.png",
+    "crop_box": [
+      61,
+      90,
+      280,
+      295
+    ],
+    "sha256": "44a2af33e55e7fc315948df59473b1bfbc21306e29902e3571abeba5c7f58292"
+  },
+  {
+    "name": "receipt",
+    "family": "icons/navigation",
+    "file": "assets/icons/navigation/receipt.png",
+    "width": 170,
+    "height": 209,
+    "transparent": true,
+    "usage": "Ikon raster antarmuka; gunakan pada ukuran kecil dengan label.",
+    "source": "navigation-icons.png",
+    "crop_box": [
+      394,
+      88,
+      564,
+      297
+    ],
+    "sha256": "95ccfde0e3c552ea8e31160411945e202f7725e53dcc354d899944a9f3fdbc93"
+  },
+  {
+    "name": "add",
+    "family": "icons/navigation",
+    "file": "assets/icons/navigation/add.png",
+    "width": 204,
+    "height": 204,
+    "transparent": true,
+    "usage": "Ikon raster antarmuka; gunakan pada ukuran kecil dengan label.",
+    "source": "navigation-icons.png",
+    "crop_box": [
+      680,
+      93,
+      884,
+      297
+    ],
+    "sha256": "f2e7a52391d1ca7e30b84505c4bd496694cca1565137cfd06565983e4992a69a"
+  },
+  {
+    "name": "budget",
+    "family": "icons/navigation",
+    "file": "assets/icons/navigation/budget.png",
+    "width": 214,
+    "height": 217,
+    "transparent": true,
+    "usage": "Ikon raster antarmuka; gunakan pada ukuran kecil dengan label.",
+    "source": "navigation-icons.png",
+    "crop_box": [
+      979,
+      83,
+      1193,
+      300
+    ],
+    "sha256": "e15848cc394deacda8ff944813dc2fa962bd524315e615988a02f34637543182"
+  },
+  {
+    "name": "wallet",
+    "family": "icons/navigation",
+    "file": "assets/icons/navigation/wallet.png",
+    "width": 224,
+    "height": 184,
+    "transparent": true,
+    "usage": "Ikon raster antarmuka; gunakan pada ukuran kecil dengan label.",
+    "source": "navigation-icons.png",
+    "crop_box": [
+      61,
+      409,
+      285,
+      593
+    ],
+    "sha256": "fb85900aa0c57931fced3582606a12fdc5537191769cb804c8ea49e2cb9551f5"
+  },
+  {
+    "name": "target",
+    "family": "icons/navigation",
+    "file": "assets/icons/navigation/target.png",
+    "width": 228,
+    "height": 234,
+    "transparent": true,
+    "usage": "Ikon raster antarmuka; gunakan pada ukuran kecil dengan label.",
+    "source": "navigation-icons.png",
+    "crop_box": [
+      370,
+      379,
+      598,
+      613
+    ],
+    "sha256": "bf649aa333d7a7bbaa0a5cc50ebfe8ba605f052881ea8c397352c2c4ffc8bb88"
+  },
+  {
+    "name": "debt",
+    "family": "icons/navigation",
+    "file": "assets/icons/navigation/debt.png",
+    "width": 214,
+    "height": 214,
+    "transparent": true,
+    "usage": "Ikon raster antarmuka; gunakan pada ukuran kecil dengan label.",
+    "source": "navigation-icons.png",
+    "crop_box": [
+      673,
+      392,
+      887,
+      606
+    ],
+    "sha256": "97f4990ed5df13c315b5bbd9efca8b6da015a1cb5017cbc38ba83576a9b808df"
+  },
+  {
+    "name": "recurring-bill",
+    "family": "icons/navigation",
+    "file": "assets/icons/navigation/recurring-bill.png",
+    "width": 215,
+    "height": 224,
+    "transparent": true,
+    "usage": "Ikon raster antarmuka; gunakan pada ukuran kecil dengan label.",
+    "source": "navigation-icons.png",
+    "crop_box": [
+      993,
+      382,
+      1208,
+      606
+    ],
+    "sha256": "c678763a41bb93fa49ae4199f15a653ed846dd64988f4c9aec49a82191c04f30"
+  },
+  {
+    "name": "report",
+    "family": "icons/navigation",
+    "file": "assets/icons/navigation/report.png",
+    "width": 207,
+    "height": 175,
+    "transparent": true,
+    "usage": "Ikon raster antarmuka; gunakan pada ukuran kecil dengan label.",
+    "source": "navigation-icons.png",
+    "crop_box": [
+      58,
+      712,
+      265,
+      887
+    ],
+    "sha256": "0f624e64e22dccab43268235bcc3988026700c2bc829a616e2cdce9d97bc3727"
+  },
+  {
+    "name": "inbox",
+    "family": "icons/navigation",
+    "file": "assets/icons/navigation/inbox.png",
+    "width": 221,
+    "height": 187,
+    "transparent": true,
+    "usage": "Ikon raster antarmuka; gunakan pada ukuran kecil dengan label.",
+    "source": "navigation-icons.png",
+    "crop_box": [
+      367,
+      712,
+      588,
+      899
+    ],
+    "sha256": "efa937a681d64cfd9e0dcb6a0f7ad2d2960994d946688346f343d49d6c5be146"
+  },
+  {
+    "name": "chat",
+    "family": "icons/navigation",
+    "file": "assets/icons/navigation/chat.png",
+    "width": 211,
+    "height": 204,
+    "transparent": true,
+    "usage": "Ikon raster antarmuka; gunakan pada ukuran kecil dengan label.",
+    "source": "navigation-icons.png",
+    "crop_box": [
+      673,
+      697,
+      884,
+      901
+    ],
+    "sha256": "df54e8f62876673bc0ef523f8f4e7469623d467cdd0942061e9a0e74f3160407"
+  },
+  {
+    "name": "settings",
+    "family": "icons/navigation",
+    "file": "assets/icons/navigation/settings.png",
+    "width": 204,
+    "height": 217,
+    "transparent": true,
+    "usage": "Ikon raster antarmuka; gunakan pada ukuran kecil dengan label.",
+    "source": "navigation-icons.png",
+    "crop_box": [
+      984,
+      692,
+      1188,
+      909
+    ],
+    "sha256": "187599faabf1b9ac70a893b3bbec7c375f3a3ad13aba911c728c54a147e42184"
+  },
+  {
+    "name": "security",
+    "family": "icons/navigation",
+    "file": "assets/icons/navigation/security.png",
+    "width": 183,
+    "height": 209,
+    "transparent": true,
+    "usage": "Ikon raster antarmuka; gunakan pada ukuran kecil dengan label.",
+    "source": "navigation-icons.png",
+    "crop_box": [
+      73,
+      979,
+      256,
+      1188
+    ],
+    "sha256": "de76399abe360d1a4dcf7aecd50e5ee912697301c198d6414bc20c6dc368bd67"
+  },
+  {
+    "name": "upload",
+    "family": "icons/navigation",
+    "file": "assets/icons/navigation/upload.png",
+    "width": 194,
+    "height": 182,
+    "transparent": true,
+    "usage": "Ikon raster antarmuka; gunakan pada ukuran kecil dengan label.",
+    "source": "navigation-icons.png",
+    "crop_box": [
+      382,
+      1001,
+      576,
+      1183
+    ],
+    "sha256": "83616c5d95c06f836f4af4e51b3fa20bda4d3cb13c729371d46d32f6944d618e"
+  },
+  {
+    "name": "calendar",
+    "family": "icons/navigation",
+    "file": "assets/icons/navigation/calendar.png",
+    "width": 196,
+    "height": 209,
+    "transparent": true,
+    "usage": "Ikon raster antarmuka; gunakan pada ukuran kecil dengan label.",
+    "source": "navigation-icons.png",
+    "crop_box": [
+      683,
+      979,
+      879,
+      1188
+    ],
+    "sha256": "7df7c7b5e84f87d77cb98da49bb2b86643a7ea05c2c0814c811e29280437ef01"
+  },
+  {
+    "name": "help",
+    "family": "icons/navigation",
+    "file": "assets/icons/navigation/help.png",
+    "width": 209,
+    "height": 204,
+    "transparent": true,
+    "usage": "Ikon raster antarmuka; gunakan pada ukuran kecil dengan label.",
+    "source": "navigation-icons.png",
+    "crop_box": [
+      989,
+      989,
+      1198,
+      1193
+    ],
+    "sha256": "7054565948752cb9f201fbf141ca648ebe83452db2faf92b2ea0350d52082ded"
+  },
+  {
+    "name": "welcome-wallet",
+    "family": "illustrations",
+    "file": "assets/illustrations/welcome-wallet.png",
+    "width": 457,
+    "height": 394,
+    "transparent": true,
+    "usage": "Ilustrasi dekoratif transparan; bukan grafik atau data finansial.",
+    "source": "illustrations.png",
+    "crop_box": [
+      0,
+      0,
+      512,
+      512
+    ],
+    "sha256": "88a17c499d41f6b3174a66e558612a0b80fb84c7989855d2be097655144aa827"
+  },
+  {
+    "name": "empty-notebook",
+    "family": "illustrations",
+    "file": "assets/illustrations/empty-notebook.png",
+    "width": 441,
+    "height": 359,
+    "transparent": true,
+    "usage": "Ilustrasi dekoratif transparan; bukan grafik atau data finansial.",
+    "source": "illustrations.png",
+    "crop_box": [
+      512,
+      0,
+      1024,
+      512
+    ],
+    "sha256": "2dbb5420c39c8cbd3e670e557e697a7bffeb610d4a24055826675a0f04c65576"
+  },
+  {
+    "name": "receipt-review",
+    "family": "illustrations",
+    "file": "assets/illustrations/receipt-review.png",
+    "width": 365,
+    "height": 366,
+    "transparent": true,
+    "usage": "Ilustrasi dekoratif transparan; bukan grafik atau data finansial.",
+    "source": "illustrations.png",
+    "crop_box": [
+      1024,
+      0,
+      1536,
+      512
+    ],
+    "sha256": "446721a5bc23545b226a19d7075cf3a691982bfdfbd71cb304720b131de2e937"
+  },
+  {
+    "name": "offline-draft",
+    "family": "illustrations",
+    "file": "assets/illustrations/offline-draft.png",
+    "width": 438,
+    "height": 355,
+    "transparent": true,
+    "usage": "Ilustrasi dekoratif transparan; bukan grafik atau data finansial.",
+    "source": "illustrations.png",
+    "crop_box": [
+      0,
+      512,
+      512,
+      1024
+    ],
+    "sha256": "6a0d33a54fd17fab0212dbd3e6c974bb9a30993c23c3417e2aafb7c2de4d0c4e"
+  },
+  {
+    "name": "savings-goal",
+    "family": "illustrations",
+    "file": "assets/illustrations/savings-goal.png",
+    "width": 355,
+    "height": 442,
+    "transparent": true,
+    "usage": "Ilustrasi dekoratif transparan; bukan grafik atau data finansial.",
+    "source": "illustrations.png",
+    "crop_box": [
+      512,
+      512,
+      1024,
+      1024
+    ],
+    "sha256": "87e57ec6ea9f7805d30434e3c44ffa9d73d3aeebb68facd6e53cc24f98893b98"
+  },
+  {
+    "name": "success-check",
+    "family": "illustrations",
+    "file": "assets/illustrations/success-check.png",
+    "width": 387,
+    "height": 345,
+    "transparent": true,
+    "usage": "Ilustrasi dekoratif transparan; bukan grafik atau data finansial.",
+    "source": "illustrations.png",
+    "crop_box": [
+      1024,
+      512,
+      1536,
+      1024
+    ],
+    "sha256": "396efead96f59194948e1a2052199cb359fda20737dc13c77bf19492fb25d2f1"
+  },
+  {
+    "name": "food",
+    "family": "icons/categories",
+    "file": "assets/icons/categories/food.png",
+    "width": 235,
+    "height": 229,
+    "transparent": true,
+    "usage": "Ikon kategori pastel untuk permukaan kartu terang.",
+    "source": "category-icons.png",
+    "crop_box": [
+      66,
+      73,
+      301,
+      302
+    ],
+    "sha256": "32f7f2374deec2ea4b1c9d66625cacf3767b9b3717bb7c8c736b99430646bd20"
+  },
+  {
+    "name": "transport",
+    "family": "icons/categories",
+    "file": "assets/icons/categories/transport.png",
+    "width": 235,
+    "height": 229,
+    "transparent": true,
+    "usage": "Ikon kategori pastel untuk permukaan kartu terang.",
+    "source": "category-icons.png",
+    "crop_box": [
+      379,
+      73,
+      614,
+      302
+    ],
+    "sha256": "964e7490e4b4b1a28619c31745d6e3fe04bfd391ca5fa4410e354bd87c66286a"
+  },
+  {
+    "name": "snacks",
+    "family": "icons/categories",
+    "file": "assets/icons/categories/snacks.png",
+    "width": 237,
+    "height": 229,
+    "transparent": true,
+    "usage": "Ikon kategori pastel untuk permukaan kartu terang.",
+    "source": "category-icons.png",
+    "crop_box": [
+      690,
+      73,
+      927,
+      302
+    ],
+    "sha256": "c4650259b99f3799bcf5a5db8e5b82b1afea3c6c3854fcac59397eccf7db4db5"
+  },
+  {
+    "name": "other",
+    "family": "icons/categories",
+    "file": "assets/icons/categories/other.png",
+    "width": 235,
+    "height": 229,
+    "transparent": true,
+    "usage": "Ikon kategori pastel untuk permukaan kartu terang.",
+    "source": "category-icons.png",
+    "crop_box": [
+      1002,
+      73,
+      1237,
+      302
+    ],
+    "sha256": "968b8c4800b9b6c25557c5391f30e3ae5f170903641fd9435e6c5c14adfa11d1"
+  },
+  {
+    "name": "bank",
+    "family": "icons/categories",
+    "file": "assets/icons/categories/bank.png",
+    "width": 238,
+    "height": 232,
+    "transparent": true,
+    "usage": "Ikon kategori pastel untuk permukaan kartu terang.",
+    "source": "category-icons.png",
+    "crop_box": [
+      66,
+      350,
+      304,
+      582
+    ],
+    "sha256": "189a329ce5771163cce57ac2b06f6181c16f05e25cf449eb346b97b8d988ab6f"
+  },
+  {
+    "name": "cash",
+    "family": "icons/categories",
+    "file": "assets/icons/categories/cash.png",
+    "width": 235,
+    "height": 232,
+    "transparent": true,
+    "usage": "Ikon kategori pastel untuk permukaan kartu terang.",
+    "source": "category-icons.png",
+    "crop_box": [
+      379,
+      350,
+      614,
+      582
+    ],
+    "sha256": "86608c77a8710e4d664539e7ca2a78f12896471d0e90d70e2351029b214cc11e"
+  },
+  {
+    "name": "e-wallet",
+    "family": "icons/categories",
+    "file": "assets/icons/categories/e-wallet.png",
+    "width": 237,
+    "height": 234,
+    "transparent": true,
+    "usage": "Ikon kategori pastel untuk permukaan kartu terang.",
+    "source": "category-icons.png",
+    "crop_box": [
+      690,
+      350,
+      927,
+      584
+    ],
+    "sha256": "6fe3a7cc5fb7cebbbb740960d579d3b5920cd14185ca2b06fe26eec3b6e44e71"
+  },
+  {
+    "name": "savings",
+    "family": "icons/categories",
+    "file": "assets/icons/categories/savings.png",
+    "width": 235,
+    "height": 234,
+    "transparent": true,
+    "usage": "Ikon kategori pastel untuk permukaan kartu terang.",
+    "source": "category-icons.png",
+    "crop_box": [
+      1002,
+      350,
+      1237,
+      584
+    ],
+    "sha256": "f0ec39c44367cbab239fd8c07118fc6771ee1f5ede74a1ff16c088a1a5e23cfe"
+  },
+  {
+    "name": "water",
+    "family": "icons/categories",
+    "file": "assets/icons/categories/water.png",
+    "width": 238,
+    "height": 238,
+    "transparent": true,
+    "usage": "Ikon kategori pastel untuk permukaan kartu terang.",
+    "source": "category-icons.png",
+    "crop_box": [
+      66,
+      624,
+      304,
+      862
+    ],
+    "sha256": "01a1cdf047185e8c5fa4c7edbfa32ef94354e5f669d96177d2625618a4098b1f"
+  },
+  {
+    "name": "laundry",
+    "family": "icons/categories",
+    "file": "assets/icons/categories/laundry.png",
+    "width": 235,
+    "height": 238,
+    "transparent": true,
+    "usage": "Ikon kategori pastel untuk permukaan kartu terang.",
+    "source": "category-icons.png",
+    "crop_box": [
+      379,
+      624,
+      614,
+      862
+    ],
+    "sha256": "bc591a6b00006045435465887fec14ef32d302f31a99c8c736ada7acb35f2b60"
+  },
+  {
+    "name": "mobile-data",
+    "family": "icons/categories",
+    "file": "assets/icons/categories/mobile-data.png",
+    "width": 237,
+    "height": 238,
+    "transparent": true,
+    "usage": "Ikon kategori pastel untuk permukaan kartu terang.",
+    "source": "category-icons.png",
+    "crop_box": [
+      690,
+      624,
+      927,
+      862
+    ],
+    "sha256": "b8e81530549b4a0b85fc49cec9070a497216059280b8b8d986db409194d78cd8"
+  },
+  {
+    "name": "home",
+    "family": "icons/categories",
+    "file": "assets/icons/categories/home.png",
+    "width": 238,
+    "height": 238,
+    "transparent": true,
+    "usage": "Ikon kategori pastel untuk permukaan kartu terang.",
+    "source": "category-icons.png",
+    "crop_box": [
+      999,
+      624,
+      1237,
+      862
+    ],
+    "sha256": "77daebd39ace25fdd35132023a104f39766e1bea53dc06ef8a96c368b5a9e260"
+  },
+  {
+    "name": "education",
+    "family": "icons/categories",
+    "file": "assets/icons/categories/education.png",
+    "width": 238,
+    "height": 234,
+    "transparent": true,
+    "usage": "Ikon kategori pastel untuk permukaan kartu terang.",
+    "source": "category-icons.png",
+    "crop_box": [
+      66,
+      905,
+      304,
+      1139
+    ],
+    "sha256": "b7fefa2289ff0d60e9366270e0f965ca10373c709b9a54e1c1e38de93592d491"
+  },
+  {
+    "name": "health",
+    "family": "icons/categories",
+    "file": "assets/icons/categories/health.png",
+    "width": 238,
+    "height": 232,
+    "transparent": true,
+    "usage": "Ikon kategori pastel untuk permukaan kartu terang.",
+    "source": "category-icons.png",
+    "crop_box": [
+      376,
+      907,
+      614,
+      1139
+    ],
+    "sha256": "3fa1d0dcfce63d13390ab2e356bdd02eb8175325d2e9052aa8291861ba4c2441"
+  },
+  {
+    "name": "shopping",
+    "family": "icons/categories",
+    "file": "assets/icons/categories/shopping.png",
+    "width": 237,
+    "height": 232,
+    "transparent": true,
+    "usage": "Ikon kategori pastel untuk permukaan kartu terang.",
+    "source": "category-icons.png",
+    "crop_box": [
+      690,
+      907,
+      927,
+      1139
+    ],
+    "sha256": "b851140945aab09c1c48668ec64e7de73e852bab9bdbe501bfbcff2f48d5a9e8"
+  },
+  {
+    "name": "gift",
+    "family": "icons/categories",
+    "file": "assets/icons/categories/gift.png",
+    "width": 238,
+    "height": 232,
+    "transparent": true,
+    "usage": "Ikon kategori pastel untuk permukaan kartu terang.",
+    "source": "category-icons.png",
+    "crop_box": [
+      999,
+      907,
+      1237,
+      1139
+    ],
+    "sha256": "51b1d3ccf4ff06e80c7a8346638c012225b5996d62ecb44bcc6c173fba73e1f2"
+  },
+  {
+    "name": "venfinance-mark-violet",
+    "family": "brand",
+    "file": "assets/brand/venfinance-mark-violet.png",
+    "width": 268,
+    "height": 253,
+    "transparent": true,
+    "usage": "Identitas raster VenFinance; jangan ubah proporsi atau susunan mark.",
+    "source": "brand.png",
+    "crop_box": [
+      0,
+      0,
+      768,
+      380
+    ],
+    "sha256": "f3ae3d99fd9a0bd4ba519badb0c053c6d8ecc5438217f6c530263aeb24f92c78"
+  },
+  {
+    "name": "venfinance-mark-white",
+    "family": "brand",
+    "file": "assets/brand/venfinance-mark-white.png",
+    "width": 266,
+    "height": 252,
+    "transparent": true,
+    "usage": "Identitas raster VenFinance; jangan ubah proporsi atau susunan mark.",
+    "source": "brand.png",
+    "crop_box": [
+      768,
+      0,
+      1536,
+      380
+    ],
+    "sha256": "7f0c1f9b529834e3d607a2561221f483c09d58f30b3e8ac30bab1c190215fdbe"
+  },
+  {
+    "name": "venfinance-wordmark-dark",
+    "family": "brand",
+    "file": "assets/brand/venfinance-wordmark-dark.png",
+    "width": 667,
+    "height": 151,
+    "transparent": true,
+    "usage": "Identitas raster VenFinance; jangan ubah proporsi atau susunan mark.",
+    "source": "brand.png",
+    "crop_box": [
+      0,
+      380,
+      768,
+      610
+    ],
+    "sha256": "360c948f98d09e9eba5a46df66037bcff4cd4adfdbfa5b1e39c0229646986121"
+  },
+  {
+    "name": "venfinance-wordmark-white",
+    "family": "brand",
+    "file": "assets/brand/venfinance-wordmark-white.png",
+    "width": 673,
+    "height": 151,
+    "transparent": true,
+    "usage": "Identitas raster VenFinance; jangan ubah proporsi atau susunan mark.",
+    "source": "brand.png",
+    "crop_box": [
+      768,
+      380,
+      1536,
+      610
+    ],
+    "sha256": "618f1ebcb10e534e19d265bc7c45f3674247f89b7cb35e530f8b7d710bdae831"
+  },
+  {
+    "name": "venfinance-app-icon",
+    "family": "brand",
+    "file": "assets/brand/venfinance-app-icon.png",
+    "width": 316,
+    "height": 315,
+    "transparent": true,
+    "usage": "Identitas raster VenFinance; jangan ubah proporsi atau susunan mark.",
+    "source": "brand.png",
+    "crop_box": [
+      0,
+      610,
+      768,
+      1024
+    ],
+    "sha256": "e999b2eed5cb562eb8285c2ec362e93e0fa6aecdc9c1e9c4ab6858d6736174f7"
+  },
+  {
+    "name": "venfinance-mark-dark",
+    "family": "brand",
+    "file": "assets/brand/venfinance-mark-dark.png",
+    "width": 266,
+    "height": 253,
+    "transparent": true,
+    "usage": "Identitas raster VenFinance; jangan ubah proporsi atau susunan mark.",
+    "source": "brand.png",
+    "crop_box": [
+      768,
+      610,
+      1536,
+      1024
+    ],
+    "sha256": "6f722ad04e0ef02a5704f6ac391915e9d226c13ee3792798d51397dbfb8c699d"
+  },
+  {
+    "name": "saldo-violet",
+    "family": "backgrounds",
+    "file": "assets/backgrounds/saldo-violet.png",
+    "width": 627,
+    "height": 627,
+    "transparent": false,
+    "usage": "Tekstur dekoratif opsional; teks/angka ditambahkan oleh aplikasi.",
+    "source": "exec-ea2058e1-007a-473d-9f2b-69999dddb0ed.png",
+    "crop_box": [
+      0,
+      0,
+      627,
+      627
+    ],
+    "sha256": "21ac02011bd4f6cf958afdc6dfc3c94cfe3da7a3d4601e4413ac30074187a4ec"
+  },
+  {
+    "name": "lavender-light",
+    "family": "backgrounds",
+    "file": "assets/backgrounds/lavender-light.png",
+    "width": 627,
+    "height": 627,
+    "transparent": false,
+    "usage": "Tekstur dekoratif opsional; teks/angka ditambahkan oleh aplikasi.",
+    "source": "exec-ea2058e1-007a-473d-9f2b-69999dddb0ed.png",
+    "crop_box": [
+      627,
+      0,
+      1254,
+      627
+    ],
+    "sha256": "692812b3771a9110b42ff8f989db619d6e5c7f2f0db8b9f7006167617267feeb"
+  },
+  {
+    "name": "mint-light",
+    "family": "backgrounds",
+    "file": "assets/backgrounds/mint-light.png",
+    "width": 627,
+    "height": 627,
+    "transparent": false,
+    "usage": "Tekstur dekoratif opsional; teks/angka ditambahkan oleh aplikasi.",
+    "source": "exec-ea2058e1-007a-473d-9f2b-69999dddb0ed.png",
+    "crop_box": [
+      0,
+      627,
+      627,
+      1254
+    ],
+    "sha256": "204dafef071a141c9de36d4309f2b352db1765567de803ca0f4f619022789186"
+  },
+  {
+    "name": "navy-dark",
+    "family": "backgrounds",
+    "file": "assets/backgrounds/navy-dark.png",
+    "width": 627,
+    "height": 627,
+    "transparent": false,
+    "usage": "Tekstur dekoratif opsional; teks/angka ditambahkan oleh aplikasi.",
+    "source": "exec-ea2058e1-007a-473d-9f2b-69999dddb0ed.png",
+    "crop_box": [
+      627,
+      627,
+      1254,
+      1254
+    ],
+    "sha256": "65c36beb1ea7272eebd789d842b128fa95b6893a4923fa597aa34e60a184b165"
+  },
+  {
+    "name": "saldo-card",
+    "family": "components",
+    "file": "assets/components/saldo-card.png",
+    "width": 240,
+    "height": 151,
+    "transparent": false,
+    "usage": "POTONGAN REFERENSI VISUAL. Bangun ulang komponen dengan teks/data hidup; jangan dipakai sebagai tombol/grafik fungsional.",
+    "source": "exec-7402b5d2-937f-461a-964e-087786b376c7.png",
+    "crop_box": [
+      635,
+      156,
+      875,
+      307
+    ],
+    "sha256": "85ba45bace45f3fb4566d6166a17360b89f3a55a16c43a88d87b61daaef15ee8"
+  },
+  {
+    "name": "budget-summary",
+    "family": "components",
+    "file": "assets/components/budget-summary.png",
+    "width": 230,
+    "height": 151,
+    "transparent": false,
+    "usage": "POTONGAN REFERENSI VISUAL. Bangun ulang komponen dengan teks/data hidup; jangan dipakai sebagai tombol/grafik fungsional.",
+    "source": "exec-7402b5d2-937f-461a-964e-087786b376c7.png",
+    "crop_box": [
+      889,
+      156,
+      1119,
+      307
+    ],
+    "sha256": "e7aa428020dea958a4c09c80f48b11e0c39ad7c07ef91b6d79491b82f731e765"
+  },
+  {
+    "name": "primary-action",
+    "family": "components",
+    "file": "assets/components/primary-action.png",
+    "width": 153,
+    "height": 46,
+    "transparent": false,
+    "usage": "POTONGAN REFERENSI VISUAL. Bangun ulang komponen dengan teks/data hidup; jangan dipakai sebagai tombol/grafik fungsional.",
+    "source": "exec-7402b5d2-937f-461a-964e-087786b376c7.png",
+    "crop_box": [
+      1464,
+      87,
+      1617,
+      133
+    ],
+    "sha256": "49215dfa5ae9df08af23f6f086f2a2a86ff35315a6d48b5dc53efc41006d4971"
+  },
+  {
+    "name": "desktop-sidebar",
+    "family": "components",
+    "file": "assets/components/desktop-sidebar.png",
+    "width": 195,
+    "height": 867,
+    "transparent": false,
+    "usage": "POTONGAN REFERENSI VISUAL. Bangun ulang komponen dengan teks/data hidup; jangan dipakai sebagai tombol/grafik fungsional.",
+    "source": "exec-7402b5d2-937f-461a-964e-087786b376c7.png",
+    "crop_box": [
+      423,
+      63,
+      618,
+      930
+    ],
+    "sha256": "184d253d73099c558b45e69ad3786110af0d9a818ec712cec924f0a4507350bf"
+  },
+  {
+    "name": "mobile-bottom-navigation",
+    "family": "components",
+    "file": "assets/components/mobile-bottom-navigation.png",
+    "width": 361,
+    "height": 78,
+    "transparent": false,
+    "usage": "POTONGAN REFERENSI VISUAL. Bangun ulang komponen dengan teks/data hidup; jangan dipakai sebagai tombol/grafik fungsional.",
+    "source": "exec-7402b5d2-937f-461a-964e-087786b376c7.png",
+    "crop_box": [
+      38,
+      852,
+      399,
+      930
+    ],
+    "sha256": "35effcee22ca50d68141c12f9067c754e3a66168a70c5d1496e261a7c5716dd9"
+  },
+  {
+    "name": "review-notice",
+    "family": "components",
+    "file": "assets/components/review-notice.png",
+    "width": 337,
+    "height": 66,
+    "transparent": false,
+    "usage": "POTONGAN REFERENSI VISUAL. Bangun ulang komponen dengan teks/data hidup; jangan dipakai sebagai tombol/grafik fungsional.",
+    "source": "exec-7402b5d2-937f-461a-964e-087786b376c7.png",
+    "crop_box": [
+      51,
+      571,
+      388,
+      637
+    ],
+    "sha256": "6a0dc565475bcc0dde940d0dc716b288027d4d95c17608d4d7ec9c9d7cb1d75e"
+  },
+  {
+    "name": "daily-budget-card",
+    "family": "components",
+    "file": "assets/components/daily-budget-card.png",
+    "width": 169,
+    "height": 106,
+    "transparent": false,
+    "usage": "POTONGAN REFERENSI VISUAL. Bangun ulang komponen dengan teks/data hidup; jangan dipakai sebagai tombol/grafik fungsional.",
+    "source": "exec-7402b5d2-937f-461a-964e-087786b376c7.png",
+    "crop_box": [
+      51,
+      453,
+      220,
+      559
+    ],
+    "sha256": "31a972ab14be5668c28bf40d9abfa0bf0c94d37518d5c95156a5eee3bbca089d"
+  },
+  {
+    "name": "landing-hero",
+    "family": "extracted",
+    "file": "assets/extracted/landing-hero.png",
+    "width": 641,
+    "height": 492,
+    "transparent": false,
+    "usage": "Potongan ilustrasi dari screen, dengan latar bawaan. Pakai di latar serupa; bukan file transparan.",
+    "source": "exec-80b535f0-8c30-46bb-a938-f50f24d39ca0.png",
+    "crop_box": [
+      976,
+      175,
+      1617,
+      667
+    ],
+    "sha256": "81705d981fa16c1f19e8d966d4b9bbab6e10c878fe30340c8a9514b0eb549935"
+  },
+  {
+    "name": "login-wallet",
+    "family": "extracted",
+    "file": "assets/extracted/login-wallet.png",
+    "width": 570,
+    "height": 415,
+    "transparent": false,
+    "usage": "Potongan ilustrasi dari screen, dengan latar bawaan. Pakai di latar serupa; bukan file transparan.",
+    "source": "exec-c5fa222b-a197-4691-9842-bf2a13625759.png",
+    "crop_box": [
+      1025,
+      220,
+      1595,
+      635
+    ],
+    "sha256": "63499f55b360deaa3dfdf76aae84d3827a4ea30420ab8ad5ebdd8f6c8ee14748"
+  },
+  {
+    "name": "support-headset",
+    "family": "extracted",
+    "file": "assets/extracted/support-headset.png",
+    "width": 340,
+    "height": 170,
+    "transparent": false,
+    "usage": "Potongan ilustrasi dari screen, dengan latar bawaan. Pakai di latar serupa; bukan file transparan.",
+    "source": "exec-64e98846-5b83-4dd4-8572-7f3a4359401e.png",
+    "crop_box": [
+      690,
+      155,
+      1030,
+      325
+    ],
+    "sha256": "bc71eb4d94b3f1b849ec2053e6b9f974bf12c6db62005738ab07fea390a4ade7"
+  },
+  {
+    "name": "student-template",
+    "family": "extracted",
+    "file": "assets/extracted/student-template.png",
+    "width": 211,
+    "height": 152,
+    "transparent": false,
+    "usage": "Potongan ilustrasi dari screen, dengan latar bawaan. Pakai di latar serupa; bukan file transparan.",
+    "source": "exec-92c212d6-57b7-499b-9855-7c4683636acc.png",
+    "crop_box": [
+      727,
+      362,
+      938,
+      514
+    ],
+    "sha256": "f0d8ab422558b6c33884d9a775d5a45491c81231cec082e90ac0f503fb7007db"
+  }
+]

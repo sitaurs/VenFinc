@@ -1,0 +1,22 @@
+{
+  "status": "BLOCKED",
+  "checks": [
+    {
+      "command": "./tools/pnpm.sh test:integration",
+      "chunk_id": "7572d9",
+      "wall_time_seconds": 0.000051786,
+      "exit_code": 2,
+      "original_token_count": 81,
+      "output": "$ node tools/integration-gate.mjs\n{\"status\":\"BLOCKED\",\"scope\":\"Neon/R2\",\"reason\":\"Disposable Neon project/branch, real Worker auth propagation, migration/rollback and scoped R2 fixtures have not been verified. No production connection or migration is attempted.\",\"exitCode\":2}\n[ELIFECYCLE] Command failed with exit code 2.\n"
+    },
+    {
+      "command": "./tools/pnpm.sh db:check",
+      "chunk_id": "2eb2f9",
+      "wall_time_seconds": 0.000044154,
+      "exit_code": 2,
+      "original_token_count": 82,
+      "output": "$ node tools/integration-gate.mjs db\n{\"status\":\"BLOCKED\",\"scope\":\"database\",\"reason\":\"Disposable Neon project/branch, real Worker auth propagation, migration/rollback and scoped R2 fixtures have not been verified. No production connection or migration is attempted.\",\"exitCode\":2}\n[ELIFECYCLE] Command failed with exit code 2.\n"
+    }
+  ],
+  "productionActionsTaken": false
+}

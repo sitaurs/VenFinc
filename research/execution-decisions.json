@@ -1,0 +1,223 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-10-24T03:36:07.767058+00:00",
+  "basis": "PRD baseline and owner-authorized development; no new product/security decision approved by this register",
+  "decisions": [
+    {
+      "id": "DEC-001",
+      "topic": "Nama produk",
+      "baseline": "**VenFinance**",
+      "gate": "Working name; cek nama/merk sebelum publik",
+      "owner": "Pemilik produk",
+      "status": "working_baseline"
+    },
+    {
+      "id": "DEC-002",
+      "topic": "Domain",
+      "baseline": "`finance.venlab.tech`, `gowa.venlab.tech`, `9r.venlab.tech`",
+      "gate": "**Tiga hostname baseline**; jalur mesin `https://gowa.venlab.tech/internal/v1/jobs/notify` di-route **lebih dahulu** oleh Cloudflare Tunnel ke Finance Worker, sedangkan path lainnya ke GOWA. Uji ingress/Access path di P0; hostname keempat hanya jika ADR disetujui.",
+      "owner": "Pemilik produk",
+      "status": "working_baseline"
+    },
+    {
+      "id": "DEC-003",
+      "topic": "Platform",
+      "baseline": "React PWA + CF Worker/Hono, Neon, R2, Armbian",
+      "gate": "Baseline locked TRD; go/no-go cloud/free verification P0",
+      "owner": "Pemilik produk",
+      "status": "working_baseline"
+    },
+    {
+      "id": "DEC-004",
+      "topic": "Registrasi & role",
+      "baseline": "public signup; `user`, `admin`, `superuser`",
+      "gate": "Harus implement identity+authorization+isolation, no user self-promotion",
+      "owner": "Pemilik produk",
+      "status": "working_baseline"
+    },
+    {
+      "id": "DEC-005",
+      "topic": "Model WA",
+      "baseline": "Shared bot default + personal session opt-in",
+      "gate": "**Policy/legal/privacy gate** sebelum public personal link, flag disabled by default",
+      "owner": "Pemilik produk",
+      "status": "pending_validation"
+    },
+    {
+      "id": "DEC-006",
+      "topic": "Jatah personal device",
+      "baseline": "Satu slot aktif per user (configurable)",
+      "gate": "Working operational limit sampai ARM benchmark dan audit stabilitas",
+      "owner": "Pemilik produk",
+      "status": "pending_validation"
+    },
+    {
+      "id": "DEC-007",
+      "topic": "Reminder",
+      "baseline": "20.30 timezone user, bisa diubah, quiet hours + STOP",
+      "gate": "User preference, no enforced marketing blast",
+      "owner": "Pemilik produk",
+      "status": "working_baseline"
+    },
+    {
+      "id": "DEC-008",
+      "topic": "Kuota",
+      "baseline": "5 extract/day, file 5MB, 100MB bukti/user",
+      "gate": "Defaults yang bisa diubah superuser, global cap dan abuse throttle",
+      "owner": "Pemilik produk",
+      "status": "pending_validation"
+    },
+    {
+      "id": "DEC-009",
+      "topic": "Bahasa",
+      "baseline": "Indonesian default, English optional",
+      "gate": "ID/EN ada di seluruh UI termasuk legal UX dan error",
+      "owner": "Pemilik produk",
+      "status": "working_baseline"
+    },
+    {
+      "id": "DEC-010",
+      "topic": "Retensi bukti",
+      "baseline": "90 hari setelah transaksi final (default usulan)",
+      "gate": "Privacy/legal verification required; user visibility & settings",
+      "owner": "Pemilik produk",
+      "status": "pending_validation"
+    },
+    {
+      "id": "DEC-011",
+      "topic": "Integrasi bank",
+      "baseline": "Tidak ada koneksi bank/live QRIS hard limit",
+      "gate": "Website tak boleh klaim bisa blokir QRIS atau baca mutasi otomatis",
+      "owner": "Pemilik produk",
+      "status": "working_baseline"
+    },
+    {
+      "id": "DEC-012",
+      "topic": "Autentikasi",
+      "baseline": "Neon Managed Better Auth kandidat terpilih di TRD",
+      "gate": "**Hard gate:** email verification, MFA operator, custom SMTP, Workers, RLS all smoke tested; if impossible submit ADR to owner",
+      "owner": "Pemilik produk",
+      "status": "pending_validation",
+      "poc_direction": "Neon Managed Auth for users; evaluate Cloudflare Access with an MFA-enforcing IdP for operators, trusted identity binding and step-up. Fail closed until proved.",
+      "direction_authority": "Owner delegated the PoC choice: aturlah yg bagus, 2026-10-24.",
+      "evidence": [
+        "research/adr/ADR-0001-OPERATOR-MFA.md"
+      ]
+    },
+    {
+      "id": "DEC-013",
+      "topic": "Vision fallback",
+      "baseline": "Local Tesseract/Sharp on Armbian + deferred LLM recheck",
+      "gate": "Accepted functional contract, never silent financial edit",
+      "owner": "Pemilik produk",
+      "status": "working_baseline"
+    },
+    {
+      "id": "DEC-014",
+      "topic": "Biaya",
+      "baseline": "Target $0 service tier, bukan jaminan",
+      "gate": "Hard usage caps R2/AI, hosting+electricity/domain cost disclosed",
+      "owner": "Pemilik produk",
+      "status": "pending_validation"
+    }
+  ],
+  "gates": [
+    {
+      "id": "G-IDENTITY",
+      "required_evidence": "Neon auth session + refresh + verify/reset + operator MFA + RLS, email transactional deliverability & cost",
+      "fail_safe": "No public signup until verified; no fake MFA",
+      "owner": "Owner + tech",
+      "status": "blocked",
+      "evidence": []
+    },
+    {
+      "id": "G-RLS",
+      "required_evidence": "A/B data & R2 object isolation under worker AND finance-worker service access",
+      "fail_safe": "Block release, never use unrestricted DB role for public queries",
+      "owner": "Security/tech",
+      "status": "blocked",
+      "evidence": []
+    },
+    {
+      "id": "G-GOWA-API",
+      "required_evidence": "Current pinned version actual endpoints, 2+ test devices, restart, webhook HMAC, scope",
+      "fail_safe": "Disable personal WA rollout until tested",
+      "owner": "Owner + tech",
+      "status": "blocked",
+      "evidence": []
+    },
+    {
+      "id": "G-WHATSAPP-POLICY",
+      "required_evidence": "Compliance/legal decision for unofficial provider and data content risk, consent, STOP, deletion",
+      "fail_safe": "WA public invitations disabled; manual finance still functional",
+      "owner": "Owner/legal",
+      "status": "blocked",
+      "evidence": []
+    },
+    {
+      "id": "G-9ROUTER-VISION",
+      "required_evidence": "Real image forwarded through user-owned 9router/upstream with correct amount from unseen image",
+      "fail_safe": "OCR/manual review path, no invented image result",
+      "owner": "Tech",
+      "status": "blocked",
+      "evidence": []
+    },
+    {
+      "id": "G-INFRA",
+      "required_evidence": "Armbian RAM/CPU/storage baseline with GOWA sessions and 9router/OCR; Tunnel/Access tokens tested",
+      "fail_safe": "Constrain per-user sessions, queuing, degraded mode",
+      "owner": "Tech",
+      "status": "blocked",
+      "evidence": []
+    },
+    {
+      "id": "G-EMAIL",
+      "required_evidence": "Transactional mail verification/reset reliable under zero budget or owner-approved paid provider",
+      "fail_safe": "Do not enable registration globally",
+      "owner": "Owner",
+      "status": "blocked",
+      "evidence": []
+    },
+    {
+      "id": "G-COST",
+      "required_evidence": "Verified free allowances, R2 billing alerts and caps, test AI provider throughput",
+      "fail_safe": "Cap optional features before paid overage",
+      "owner": "Owner + ops",
+      "status": "blocked",
+      "evidence": []
+    },
+    {
+      "id": "G-PRIVACY",
+      "required_evidence": "UU PDP compliant docs/consent/retention and mechanism for exports/deletes",
+      "fail_safe": "No public release; no hidden data collection",
+      "owner": "Owner/legal",
+      "status": "blocked",
+      "evidence": []
+    },
+    {
+      "id": "G-VISUAL",
+      "required_evidence": "Design original 180 PNG present; mobile/web visual diffs QA with approved deviations",
+      "fail_safe": "Do not claim pixel-perfect for missing assets/screens",
+      "owner": "UI QA",
+      "status": "blocked",
+      "evidence": []
+    },
+    {
+      "id": "G-RECOVERY",
+      "required_evidence": "Verified encrypted backup restore + DB invariants + rollback",
+      "fail_safe": "No production change without recovery",
+      "owner": "Ops",
+      "status": "blocked",
+      "evidence": []
+    }
+  ],
+  "observed_evidence": [
+    "qa/infrastructure-readiness-2026-10-24.json",
+    "qa/consistency-report.json"
+  ],
+  "unresolved_decisions": [
+    "Proof of operator identity binding, enforced MFA/step-up and auth/RLS/email PoCs",
+    "staging hostname without an approved fourth domain"
+  ],
+  "production_ready": false
+}

@@ -1,0 +1,51 @@
+{
+  "checkedAt": "2026-10-24T05:18:00.359761+00:00",
+  "status": "LOCAL_DATABASE_PROBE_READY_NEON_IDENTITY_BLOCKED",
+  "baselineWebEvidence": "qa/P1-EXECUTION-REPORT.json",
+  "baselineWebSourceUnchanged": true,
+  "postgresProbe": {
+    "passed": 22,
+    "exitCode": 0,
+    "evidence": "qa/local-postgres-evidence.json"
+  },
+  "pythonVersion": "Python 3.14.4",
+  "sourceArtifacts": [
+    {
+      "path": "qa/database/ledger-probe.sql",
+      "sha256": "8229400957964770d84570719952750932e79ce720ed41a1a44687d46697aad2"
+    },
+    {
+      "path": "tools/verify-local-postgres.py",
+      "sha256": "1b2e159a07d630511ac6a81385b5e091daca911ea356f66247f9d19632b099cd"
+    },
+    {
+      "path": "qa/database/README.md",
+      "sha256": "7bd9dff30432de5c081d48050349a03d37c1bf9e9b251ecca805334e5dce3e96"
+    }
+  ],
+  "localPackageArtifacts": [
+    {
+      "name": "libpq5_18.6-0ubuntu0.26.04.1_amd64.deb",
+      "sha256": "7e9199f54290b04a28e9f136207624ca30b0988d613159977fd84e8b4467e0a4"
+    },
+    {
+      "name": "postgresql-18_18.6-0ubuntu0.26.04.1_amd64.deb",
+      "sha256": "0536716204dee9152dee758c252936ba41c93b7330395f8abb0c5b86558aa658"
+    },
+    {
+      "name": "postgresql-client-18_18.6-0ubuntu0.26.04.1_amd64.deb",
+      "sha256": "c46d1ace8f7d84a9648c63b566fff799b7ee3281db46ef6e7b99baf0fd7bd2e4"
+    }
+  ],
+  "preview": {
+    "url": "http://127.0.0.1:4173/demo",
+    "status": 200
+  },
+  "neonReadiness": "qa/neon-readiness-2026-10-24.json",
+  "taskStatusChangedToDone": [],
+  "productionReady": false,
+  "productionDeployment": false,
+  "productionMigration": false,
+  "r2SapAccessed": false,
+  "subagentsUsed": false
+}

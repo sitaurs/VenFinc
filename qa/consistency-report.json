@@ -1,0 +1,33 @@
+{
+  "result": "PASS",
+  "metrics": {
+    "markdown_files": 62,
+    "internal_links_checked": 1426,
+    "lite_missing_image_paths_waived": 0,
+    "prd_requirement_ids": 177,
+    "requirement_heading_ids": 177,
+    "qa_req_ids": 177,
+    "decision_ids": 14,
+    "qa_task_refs": 209,
+    "task_count": 373,
+    "tasks_per_phase": {
+      "P0": 10,
+      "P1": 12,
+      "P2": 24,
+      "P3": 52,
+      "P4": 111,
+      "P5": 22,
+      "P6": 8,
+      "P7": 33,
+      "P8": 35,
+      "P9": 29,
+      "P10": 37
+    },
+    "task_covered_req_ids": 177,
+    "screen_ids": 90,
+    "screens_sha256_verified": 180,
+    "assets_sha256_verified": 59,
+    "qa_screen_ids": 90
+  },
+  "issues": []
+}

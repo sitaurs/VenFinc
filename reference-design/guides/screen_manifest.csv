@@ -1,0 +1,181 @@
+﻿id,name,surface,kind,file,width,height,source_board
+ADM-01,Dashboard operasional,mobile,main,screens/mobile/ADM-01__dashboard-operasional.png,361,867,previews/ADM-01__dashboard-operasional.jpg
+ADM-01,Dashboard operasional,web,main,screens/web/ADM-01__dashboard-operasional.png,1211,867,previews/ADM-01__dashboard-operasional.jpg
+ADM-02,Daftar akun,mobile,main,screens/mobile/ADM-02__daftar-akun.png,361,867,previews/ADM-02__daftar-akun.jpg
+ADM-02,Daftar akun,web,main,screens/web/ADM-02__daftar-akun.png,1211,867,previews/ADM-02__daftar-akun.jpg
+ADM-03,Moderasi & banding akun,mobile,main,screens/mobile/ADM-03__moderasi-banding-akun.png,361,867,previews/ADM-03__moderasi-banding-akun.jpg
+ADM-03,Moderasi & banding akun,web,main,screens/web/ADM-03__moderasi-banding-akun.png,1211,867,previews/ADM-03__moderasi-banding-akun.jpg
+ADM-04,Antrean support,mobile,main,screens/mobile/ADM-04__antrean-support.png,361,867,previews/ADM-04__antrean-support.jpg
+ADM-04,Antrean support,web,main,screens/web/ADM-04__antrean-support.png,1211,867,previews/ADM-04__antrean-support.jpg
+ADM-05,Detail tiket berizin,mobile,main,screens/mobile/ADM-05__detail-tiket-berizin.png,361,867,previews/ADM-05__detail-tiket-berizin.jpg
+ADM-05,Detail tiket berizin,web,main,screens/web/ADM-05__detail-tiket-berizin.png,1211,867,previews/ADM-05__detail-tiket-berizin.jpg
+ADM-06,Insiden & antrean pekerjaan,mobile,main,screens/mobile/ADM-06__insiden-antrean-pekerjaan.png,361,867,previews/ADM-06__insiden-antrean-pekerjaan.jpg
+ADM-06,Insiden & antrean pekerjaan,web,main,screens/web/ADM-06__insiden-antrean-pekerjaan.png,1211,867,previews/ADM-06__insiden-antrean-pekerjaan.jpg
+ADM-07,Audit operasional,mobile,main,screens/mobile/ADM-07__audit-operasional.png,361,867,previews/ADM-07__audit-operasional.jpg
+ADM-07,Audit operasional,web,main,screens/web/ADM-07__audit-operasional.png,1211,867,previews/ADM-07__audit-operasional.jpg
+AUTH-01,Masuk,mobile,main,screens/mobile/AUTH-01__masuk.png,361,867,previews/AUTH-01__masuk.jpg
+AUTH-01,Masuk,web,main,screens/web/AUTH-01__masuk.png,1211,867,previews/AUTH-01__masuk.jpg
+AUTH-02,Daftar,mobile,main,screens/mobile/AUTH-02__daftar.png,361,867,previews/AUTH-02__daftar.jpg
+AUTH-02,Daftar,web,main,screens/web/AUTH-02__daftar.png,1211,867,previews/AUTH-02__daftar.jpg
+AUTH-03,Verifikasi email,mobile,main,screens/mobile/AUTH-03__verifikasi-email.png,361,867,previews/AUTH-03__verifikasi-email.jpg
+AUTH-03,Verifikasi email,web,main,screens/web/AUTH-03__verifikasi-email.png,1211,867,previews/AUTH-03__verifikasi-email.jpg
+AUTH-04,Lupa password,mobile,main,screens/mobile/AUTH-04__lupa-password.png,361,867,previews/AUTH-04__lupa-password.jpg
+AUTH-04,Lupa password,web,main,screens/web/AUTH-04__lupa-password.png,1211,867,previews/AUTH-04__lupa-password.jpg
+AUTH-05,Reset password,mobile,main,screens/mobile/AUTH-05__reset-password.png,361,867,previews/AUTH-05__reset-password.jpg
+AUTH-05,Reset password,web,main,screens/web/AUTH-05__reset-password.png,1211,867,previews/AUTH-05__reset-password.jpg
+AUTH-06,Verifikasi keamanan,mobile,main,screens/mobile/AUTH-06__verifikasi-keamanan.png,361,867,previews/AUTH-06__verifikasi-keamanan.jpg
+AUTH-06,Verifikasi keamanan,web,main,screens/web/AUTH-06__verifikasi-keamanan.png,1211,867,previews/AUTH-06__verifikasi-keamanan.jpg
+AUTH-07,Akses akun dibatasi,mobile,main,screens/mobile/AUTH-07__akses-akun-dibatasi.png,361,867,previews/AUTH-07__akses-akun-dibatasi.jpg
+AUTH-07,Akses akun dibatasi,web,main,screens/web/AUTH-07__akses-akun-dibatasi.png,1211,867,previews/AUTH-07__akses-akun-dibatasi.jpg
+DARK-01,Beranda dark,mobile,dark,screens/mobile/DARK-01__beranda-dark.png,361,867,previews/DARK-01__beranda-dark.jpg
+DARK-01,Beranda dark,web,dark,screens/web/DARK-01__beranda-dark.png,1211,867,previews/DARK-01__beranda-dark.jpg
+DARK-02,Review dark,mobile,dark,screens/mobile/DARK-02__review-dark.png,361,867,previews/DARK-02__review-dark.jpg
+DARK-02,Review dark,web,dark,screens/web/DARK-02__review-dark.png,1211,867,previews/DARK-02__review-dark.jpg
+FIN-UI-01,Beranda,mobile,main,screens/mobile/FIN-UI-01__beranda.png,361,867,previews/FIN-UI-01__beranda.jpg
+FIN-UI-01,Beranda,web,main,screens/web/FIN-UI-01__beranda.png,1211,867,previews/FIN-UI-01__beranda.jpg
+FIN-UI-02,Riwayat transaksi,mobile,main,screens/mobile/FIN-UI-02__riwayat-transaksi.png,361,867,previews/FIN-UI-02__riwayat-transaksi.jpg
+FIN-UI-02,Riwayat transaksi,web,main,screens/web/FIN-UI-02__riwayat-transaksi.png,1211,867,previews/FIN-UI-02__riwayat-transaksi.jpg
+FIN-UI-03,Detail transaksi,mobile,main,screens/mobile/FIN-UI-03__detail-transaksi.png,361,867,previews/FIN-UI-03__detail-transaksi.jpg
+FIN-UI-03,Detail transaksi,web,main,screens/web/FIN-UI-03__detail-transaksi.png,1211,867,previews/FIN-UI-03__detail-transaksi.jpg
+FIN-UI-04,Kalender pencatatan,mobile,main,screens/mobile/FIN-UI-04__kalender-pencatatan.png,361,867,previews/FIN-UI-04__kalender-pencatatan.jpg
+FIN-UI-04,Kalender pencatatan,web,main,screens/web/FIN-UI-04__kalender-pencatatan.png,1210,867,previews/FIN-UI-04__kalender-pencatatan.jpg
+FIN-UI-05,Daftar dompet,mobile,main,screens/mobile/FIN-UI-05__daftar-dompet.png,361,867,previews/FIN-UI-05__daftar-dompet.jpg
+FIN-UI-05,Daftar dompet,web,main,screens/web/FIN-UI-05__daftar-dompet.png,1211,867,previews/FIN-UI-05__daftar-dompet.jpg
+FIN-UI-06,Detail dompet,mobile,main,screens/mobile/FIN-UI-06__detail-dompet.png,361,867,previews/FIN-UI-06__detail-dompet.jpg
+FIN-UI-06,Detail dompet,web,main,screens/web/FIN-UI-06__detail-dompet.png,1211,867,previews/FIN-UI-06__detail-dompet.jpg
+FIN-UI-07,Ringkasan anggaran,mobile,main,screens/mobile/FIN-UI-07__ringkasan-anggaran.png,361,867,previews/FIN-UI-07__ringkasan-anggaran.jpg
+FIN-UI-07,Ringkasan anggaran,web,main,screens/web/FIN-UI-07__ringkasan-anggaran.png,1211,867,previews/FIN-UI-07__ringkasan-anggaran.jpg
+FIN-UI-08,Detail kantong anggaran,mobile,main,screens/mobile/FIN-UI-08__detail-kantong-anggaran.png,361,867,previews/FIN-UI-08__detail-kantong-anggaran.jpg
+FIN-UI-08,Detail kantong anggaran,web,main,screens/web/FIN-UI-08__detail-kantong-anggaran.png,1211,867,previews/FIN-UI-08__detail-kantong-anggaran.jpg
+FIN-UI-09,Daftar target tabungan,mobile,main,screens/mobile/FIN-UI-09__daftar-target-tabungan.png,361,867,previews/FIN-UI-09__daftar-target-tabungan.jpg
+FIN-UI-09,Daftar target tabungan,web,main,screens/web/FIN-UI-09__daftar-target-tabungan.png,1211,867,previews/FIN-UI-09__daftar-target-tabungan.jpg
+FIN-UI-10,Detail target,mobile,main,screens/mobile/FIN-UI-10__detail-target.png,361,867,previews/FIN-UI-10__detail-target.jpg
+FIN-UI-10,Detail target,web,main,screens/web/FIN-UI-10__detail-target.png,1211,867,previews/FIN-UI-10__detail-target.jpg
+FIN-UI-11,Daftar utang & piutang,mobile,main,screens/mobile/FIN-UI-11__daftar-utang-piutang.png,361,867,previews/FIN-UI-11__daftar-utang-piutang.jpg
+FIN-UI-11,Daftar utang & piutang,web,main,screens/web/FIN-UI-11__daftar-utang-piutang.png,1211,867,previews/FIN-UI-11__daftar-utang-piutang.jpg
+FIN-UI-12,Detail utang/piutang,mobile,main,screens/mobile/FIN-UI-12__detail-utang-piutang.png,361,867,previews/FIN-UI-12__detail-utang-piutang.jpg
+FIN-UI-12,Detail utang/piutang,web,main,screens/web/FIN-UI-12__detail-utang-piutang.png,1211,867,previews/FIN-UI-12__detail-utang-piutang.jpg
+FIN-UI-13,Tagihan & catatan berulang,mobile,main,screens/mobile/FIN-UI-13__tagihan-catatan-berulang.png,361,867,previews/FIN-UI-13__tagihan-catatan-berulang.jpg
+FIN-UI-13,Tagihan & catatan berulang,web,main,screens/web/FIN-UI-13__tagihan-catatan-berulang.png,1211,867,previews/FIN-UI-13__tagihan-catatan-berulang.jpg
+FIN-UI-14,Detail tagihan,mobile,main,screens/mobile/FIN-UI-14__detail-tagihan.png,361,867,previews/FIN-UI-14__detail-tagihan.jpg
+FIN-UI-14,Detail tagihan,web,main,screens/web/FIN-UI-14__detail-tagihan.png,1211,867,previews/FIN-UI-14__detail-tagihan.jpg
+FIN-UI-15,Laporan & insight,mobile,main,screens/mobile/FIN-UI-15__laporan-insight.png,361,867,previews/FIN-UI-15__laporan-insight.jpg
+FIN-UI-15,Laporan & insight,web,main,screens/web/FIN-UI-15__laporan-insight.png,1211,867,previews/FIN-UI-15__laporan-insight.jpg
+FIN-UI-16,Simulasi belanja,mobile,main,screens/mobile/FIN-UI-16__simulasi-belanja.png,361,867,previews/FIN-UI-16__simulasi-belanja.jpg
+FIN-UI-16,Simulasi belanja,web,main,screens/web/FIN-UI-16__simulasi-belanja.png,1211,867,previews/FIN-UI-16__simulasi-belanja.jpg
+FLOW-01,Catat angka cepat,mobile,flow,screens/mobile/FLOW-01__catat-angka-cepat.png,361,867,previews/FLOW-01__catat-angka-cepat.jpg
+FLOW-01,Catat angka cepat,web,flow,screens/web/FLOW-01__catat-angka-cepat.png,1211,867,previews/FLOW-01__catat-angka-cepat.jpg
+FLOW-02,Teks natural dan preview,mobile,flow,screens/mobile/FLOW-02__teks-natural-dan-preview.png,361,867,previews/FLOW-02__teks-natural-dan-preview.jpg
+FLOW-02,Teks natural dan preview,web,flow,screens/web/FLOW-02__teks-natural-dan-preview.png,1211,867,previews/FLOW-02__teks-natural-dan-preview.jpg
+FLOW-03,Catat transfer,mobile,flow,screens/mobile/FLOW-03__catat-transfer.png,361,867,previews/FLOW-03__catat-transfer.jpg
+FLOW-03,Catat transfer,web,flow,screens/web/FLOW-03__catat-transfer.png,1211,867,previews/FLOW-03__catat-transfer.jpg
+FLOW-04,Split kategori,mobile,flow,screens/mobile/FLOW-04__split-kategori.png,361,867,previews/FLOW-04__split-kategori.jpg
+FLOW-04,Split kategori,web,flow,screens/web/FLOW-04__split-kategori.png,1211,867,previews/FLOW-04__split-kategori.jpg
+FLOW-05,Atur anggaran periode,mobile,flow,screens/mobile/FLOW-05__atur-anggaran-periode.png,361,867,previews/FLOW-05__atur-anggaran-periode.jpg
+FLOW-05,Atur anggaran periode,web,flow,screens/web/FLOW-05__atur-anggaran-periode.png,1211,867,previews/FLOW-05__atur-anggaran-periode.jpg
+FLOW-06,Catat cicilan,mobile,flow,screens/mobile/FLOW-06__catat-cicilan.png,361,867,previews/FLOW-06__catat-cicilan.jpg
+FLOW-06,Catat cicilan,web,flow,screens/web/FLOW-06__catat-cicilan.png,1211,867,previews/FLOW-06__catat-cicilan.jpg
+ONB-01,Kenalan & preferensi,mobile,main,screens/mobile/ONB-01__kenalan-preferensi.png,361,867,previews/ONB-01__kenalan-preferensi.jpg
+ONB-01,Kenalan & preferensi,web,main,screens/web/ONB-01__kenalan-preferensi.png,1211,867,previews/ONB-01__kenalan-preferensi.jpg
+ONB-02,Sumber uang awal,mobile,main,screens/mobile/ONB-02__sumber-uang-awal.png,361,867,previews/ONB-02__sumber-uang-awal.jpg
+ONB-02,Sumber uang awal,web,main,screens/web/ONB-02__sumber-uang-awal.png,1211,867,previews/ONB-02__sumber-uang-awal.jpg
+ONB-03,Pilih rencana anggaran,mobile,main,screens/mobile/ONB-03__pilih-rencana-anggaran.png,361,867,previews/ONB-03__pilih-rencana-anggaran.jpg
+ONB-03,Pilih rencana anggaran,web,main,screens/web/ONB-03__pilih-rencana-anggaran.png,1211,867,previews/ONB-03__pilih-rencana-anggaran.jpg
+ONB-04,Sesuaikan anggaran,mobile,main,screens/mobile/ONB-04__sesuaikan-anggaran.png,361,867,previews/ONB-04__sesuaikan-anggaran.jpg
+ONB-04,Sesuaikan anggaran,web,main,screens/web/ONB-04__sesuaikan-anggaran.png,1211,867,previews/ONB-04__sesuaikan-anggaran.jpg
+ONB-05,Fitur opsional & selesai,mobile,main,screens/mobile/ONB-05__fitur-opsional-selesai.png,361,867,previews/ONB-05__fitur-opsional-selesai.jpg
+ONB-05,Fitur opsional & selesai,web,main,screens/web/ONB-05__fitur-opsional-selesai.png,1211,867,previews/ONB-05__fitur-opsional-selesai.jpg
+PUB-01,Landing,mobile,main,screens/mobile/PUB-01__landing.png,361,867,previews/PUB-01__landing.jpg
+PUB-01,Landing,web,main,screens/web/PUB-01__landing.png,1211,867,previews/PUB-01__landing.jpg
+PUB-02,Demo interaktif,mobile,main,screens/mobile/PUB-02__demo-interaktif.png,361,867,previews/PUB-02__demo-interaktif.jpg
+PUB-02,Demo interaktif,web,main,screens/web/PUB-02__demo-interaktif.png,1211,867,previews/PUB-02__demo-interaktif.jpg
+PUB-03,FAQ & pusat bantuan publik,mobile,main,screens/mobile/PUB-03__faq-pusat-bantuan-publik.png,361,867,previews/PUB-03__faq-pusat-bantuan-publik.jpg
+PUB-03,FAQ & pusat bantuan publik,web,main,screens/web/PUB-03__faq-pusat-bantuan-publik.png,1211,867,previews/PUB-03__faq-pusat-bantuan-publik.jpg
+PUB-04,Kontak dukungan,mobile,main,screens/mobile/PUB-04__kontak-dukungan.png,361,867,previews/PUB-04__kontak-dukungan.jpg
+PUB-04,Kontak dukungan,web,main,screens/web/PUB-04__kontak-dukungan.png,1210,867,previews/PUB-04__kontak-dukungan.jpg
+PUB-05,Status layanan,mobile,main,screens/mobile/PUB-05__status-layanan.png,361,867,previews/PUB-05__status-layanan.jpg
+PUB-05,Status layanan,web,main,screens/web/PUB-05__status-layanan.png,1211,867,previews/PUB-05__status-layanan.jpg
+PUB-06,Kebijakan privasi,mobile,main,screens/mobile/PUB-06__kebijakan-privasi.png,361,867,previews/PUB-06__kebijakan-privasi.jpg
+PUB-06,Kebijakan privasi,web,main,screens/web/PUB-06__kebijakan-privasi.png,1211,867,previews/PUB-06__kebijakan-privasi.jpg
+PUB-07,Syarat layanan,mobile,main,screens/mobile/PUB-07__syarat-layanan.png,361,867,previews/PUB-07__syarat-layanan.jpg
+PUB-07,Syarat layanan,web,main,screens/web/PUB-07__syarat-layanan.png,1211,867,previews/PUB-07__syarat-layanan.jpg
+PUB-08,Pembaruan produk,mobile,main,screens/mobile/PUB-08__pembaruan-produk.png,361,867,previews/PUB-08__pembaruan-produk.jpg
+PUB-08,Pembaruan produk,web,main,screens/web/PUB-08__pembaruan-produk.png,1211,867,previews/PUB-08__pembaruan-produk.jpg
+REV-01,Inbox perlu ditinjau,mobile,main,screens/mobile/REV-01__inbox-perlu-ditinjau.png,361,867,previews/REV-01__inbox-perlu-ditinjau.jpg
+REV-01,Inbox perlu ditinjau,web,main,screens/web/REV-01__inbox-perlu-ditinjau.png,1211,867,previews/REV-01__inbox-perlu-ditinjau.jpg
+REV-02,Unggah & proses bukti,mobile,main,screens/mobile/REV-02__unggah-proses-bukti.png,361,867,previews/REV-02__unggah-proses-bukti.jpg
+REV-02,Unggah & proses bukti,web,main,screens/web/REV-02__unggah-proses-bukti.png,1211,867,previews/REV-02__unggah-proses-bukti.jpg
+REV-03,Review hasil bacaan,mobile,main,screens/mobile/REV-03__review-hasil-bacaan.png,361,867,previews/REV-03__review-hasil-bacaan.jpg
+REV-03,Review hasil bacaan,web,main,screens/web/REV-03__review-hasil-bacaan.png,1211,867,previews/REV-03__review-hasil-bacaan.jpg
+REV-04,Bandingkan hasil berbeda,mobile,main,screens/mobile/REV-04__bandingkan-hasil-berbeda.png,361,867,previews/REV-04__bandingkan-hasil-berbeda.jpg
+REV-04,Bandingkan hasil berbeda,web,main,screens/web/REV-04__bandingkan-hasil-berbeda.png,1211,867,previews/REV-04__bandingkan-hasil-berbeda.jpg
+REV-05,Periksa kemungkinan duplikat,mobile,main,screens/mobile/REV-05__periksa-kemungkinan-duplikat.png,361,867,previews/REV-05__periksa-kemungkinan-duplikat.jpg
+REV-05,Periksa kemungkinan duplikat,web,main,screens/web/REV-05__periksa-kemungkinan-duplikat.png,1211,867,previews/REV-05__periksa-kemungkinan-duplikat.jpg
+SET-01,Pusat pengaturan / Lainnya,mobile,main,screens/mobile/SET-01__pusat-pengaturan-lainnya.png,361,867,previews/SET-01__pusat-pengaturan-lainnya.jpg
+SET-01,Pusat pengaturan / Lainnya,web,main,screens/web/SET-01__pusat-pengaturan-lainnya.png,1211,867,previews/SET-01__pusat-pengaturan-lainnya.jpg
+SET-02,Profil,mobile,main,screens/mobile/SET-02__profil.png,361,867,previews/SET-02__profil.jpg
+SET-02,Profil,web,main,screens/web/SET-02__profil.png,1211,867,previews/SET-02__profil.jpg
+SET-03,Tampilan & preferensi,mobile,main,screens/mobile/SET-03__tampilan-preferensi.png,361,867,previews/SET-03__tampilan-preferensi.jpg
+SET-03,Tampilan & preferensi,web,main,screens/web/SET-03__tampilan-preferensi.png,1211,867,previews/SET-03__tampilan-preferensi.jpg
+SET-04,Keamanan & perangkat,mobile,main,screens/mobile/SET-04__keamanan-perangkat.png,361,867,previews/SET-04__keamanan-perangkat.jpg
+SET-04,Keamanan & perangkat,web,main,screens/web/SET-04__keamanan-perangkat.png,1211,867,previews/SET-04__keamanan-perangkat.jpg
+SET-05,WhatsApp — pilihan & status,mobile,main,screens/mobile/SET-05__whatsapp-pilihan-status.png,361,867,previews/SET-05__whatsapp-pilihan-status.jpg
+SET-05,WhatsApp — pilihan & status,web,main,screens/web/SET-05__whatsapp-pilihan-status.png,1211,867,previews/SET-05__whatsapp-pilihan-status.jpg
+SET-06,Verifikasi nomor bot bersama,mobile,main,screens/mobile/SET-06__verifikasi-nomor-bot-bersama.png,361,867,previews/SET-06__verifikasi-nomor-bot-bersama.jpg
+SET-06,Verifikasi nomor bot bersama,web,main,screens/web/SET-06__verifikasi-nomor-bot-bersama.png,1211,867,previews/SET-06__verifikasi-nomor-bot-bersama.jpg
+SET-07,Tautkan WhatsApp pribadi,mobile,main,screens/mobile/SET-07__tautkan-whatsapp-pribadi.png,361,867,previews/SET-07__tautkan-whatsapp-pribadi.jpg
+SET-07,Tautkan WhatsApp pribadi,web,main,screens/web/SET-07__tautkan-whatsapp-pribadi.png,1211,867,previews/SET-07__tautkan-whatsapp-pribadi.jpg
+SET-08,Izin & aktivitas WhatsApp,mobile,main,screens/mobile/SET-08__izin-aktivitas-whatsapp.png,361,867,previews/SET-08__izin-aktivitas-whatsapp.jpg
+SET-08,Izin & aktivitas WhatsApp,web,main,screens/web/SET-08__izin-aktivitas-whatsapp.png,1211,867,previews/SET-08__izin-aktivitas-whatsapp.jpg
+SET-09,"AI, bukti & pemakaian",mobile,main,screens/mobile/SET-09__ai-bukti-pemakaian.png,361,867,previews/SET-09__ai-bukti-pemakaian.jpg
+SET-09,"AI, bukti & pemakaian",web,main,screens/web/SET-09__ai-bukti-pemakaian.png,1211,867,previews/SET-09__ai-bukti-pemakaian.jpg
+SET-10,Pengingat & notifikasi,mobile,main,screens/mobile/SET-10__pengingat-notifikasi.png,361,867,previews/SET-10__pengingat-notifikasi.jpg
+SET-10,Pengingat & notifikasi,web,main,screens/web/SET-10__pengingat-notifikasi.png,1211,867,previews/SET-10__pengingat-notifikasi.jpg
+SET-11,Kategori & subkategori,mobile,main,screens/mobile/SET-11__kategori-subkategori.png,361,867,previews/SET-11__kategori-subkategori.jpg
+SET-11,Kategori & subkategori,web,main,screens/web/SET-11__kategori-subkategori.png,1211,867,previews/SET-11__kategori-subkategori.jpg
+SET-12,Data & privasi,mobile,main,screens/mobile/SET-12__data-privasi.png,361,867,previews/SET-12__data-privasi.jpg
+SET-12,Data & privasi,web,main,screens/web/SET-12__data-privasi.png,1211,867,previews/SET-12__data-privasi.jpg
+SET-13,Impor — pemetaan,mobile,main,screens/mobile/SET-13__impor-pemetaan.png,361,867,previews/SET-13__impor-pemetaan.jpg
+SET-13,Impor — pemetaan,web,main,screens/web/SET-13__impor-pemetaan.png,1211,867,previews/SET-13__impor-pemetaan.jpg
+SET-14,Impor — pratinjau & hasil,mobile,main,screens/mobile/SET-14__impor-pratinjau-hasil.png,361,867,previews/SET-14__impor-pratinjau-hasil.jpg
+SET-14,Impor — pratinjau & hasil,web,main,screens/web/SET-14__impor-pratinjau-hasil.png,1211,867,previews/SET-14__impor-pratinjau-hasil.jpg
+SET-15,Pusat notifikasi,mobile,main,screens/mobile/SET-15__pusat-notifikasi.png,361,867,previews/SET-15__pusat-notifikasi.jpg
+SET-15,Pusat notifikasi,web,main,screens/web/SET-15__pusat-notifikasi.png,1211,867,previews/SET-15__pusat-notifikasi.jpg
+SET-16,Bantuan & tiket saya,mobile,main,screens/mobile/SET-16__bantuan-tiket-saya.png,361,867,previews/SET-16__bantuan-tiket-saya.jpg
+SET-16,Bantuan & tiket saya,web,main,screens/web/SET-16__bantuan-tiket-saya.png,1211,867,previews/SET-16__bantuan-tiket-saya.jpg
+SET-17,Detail tiket saya,mobile,main,screens/mobile/SET-17__detail-tiket-saya.png,361,867,previews/SET-17__detail-tiket-saya.jpg
+SET-17,Detail tiket saya,web,main,screens/web/SET-17__detail-tiket-saya.png,1211,867,previews/SET-17__detail-tiket-saya.jpg
+SET-18,Sinkronisasi & konflik,mobile,main,screens/mobile/SET-18__sinkronisasi-konflik.png,361,867,previews/SET-18__sinkronisasi-konflik.jpg
+SET-18,Sinkronisasi & konflik,web,main,screens/web/SET-18__sinkronisasi-konflik.png,1211,867,previews/SET-18__sinkronisasi-konflik.jpg
+SET-19,Hapus akun & progres,mobile,main,screens/mobile/SET-19__hapus-akun-progres.png,361,867,previews/SET-19__hapus-akun-progres.jpg
+SET-19,Hapus akun & progres,web,main,screens/web/SET-19__hapus-akun-progres.png,1211,867,previews/SET-19__hapus-akun-progres.jpg
+STATE-01,Belum ada transaksi,mobile,state,screens/mobile/STATE-01__belum-ada-transaksi.png,361,867,previews/STATE-01__belum-ada-transaksi.jpg
+STATE-01,Belum ada transaksi,web,state,screens/web/STATE-01__belum-ada-transaksi.png,1211,867,previews/STATE-01__belum-ada-transaksi.jpg
+STATE-02,Upload gagal,mobile,state,screens/mobile/STATE-02__upload-gagal.png,361,867,previews/STATE-02__upload-gagal.jpg
+STATE-02,Upload gagal,web,state,screens/web/STATE-02__upload-gagal.png,1211,867,previews/STATE-02__upload-gagal.jpg
+STATE-03,Kode WhatsApp kedaluwarsa,mobile,state,screens/mobile/STATE-03__kode-whatsapp-kedaluwarsa.png,361,867,previews/STATE-03__kode-whatsapp-kedaluwarsa.jpg
+STATE-03,Kode WhatsApp kedaluwarsa,web,state,screens/web/STATE-03__kode-whatsapp-kedaluwarsa.png,1211,867,previews/STATE-03__kode-whatsapp-kedaluwarsa.jpg
+STATE-04,Lebih anggaran,mobile,state,screens/mobile/STATE-04__lebih-anggaran.png,361,867,previews/STATE-04__lebih-anggaran.jpg
+STATE-04,Lebih anggaran,web,state,screens/web/STATE-04__lebih-anggaran.png,1211,867,previews/STATE-04__lebih-anggaran.jpg
+SYS-01,Ringkasan sistem,mobile,main,screens/mobile/SYS-01__ringkasan-sistem.png,361,867,previews/SYS-01__ringkasan-sistem.jpg
+SYS-01,Ringkasan sistem,web,main,screens/web/SYS-01__ringkasan-sistem.png,1211,867,previews/SYS-01__ringkasan-sistem.jpg
+SYS-02,Integrasi & kredensial,mobile,main,screens/mobile/SYS-02__integrasi-kredensial.png,361,867,previews/SYS-02__integrasi-kredensial.jpg
+SYS-02,Integrasi & kredensial,web,main,screens/web/SYS-02__integrasi-kredensial.png,1211,867,previews/SYS-02__integrasi-kredensial.jpg
+SYS-03,Kuota & biaya,mobile,main,screens/mobile/SYS-03__kuota-biaya.png,361,867,previews/SYS-03__kuota-biaya.jpg
+SYS-03,Kuota & biaya,web,main,screens/web/SYS-03__kuota-biaya.png,1211,867,previews/SYS-03__kuota-biaya.jpg
+SYS-04,Feature flags,mobile,main,screens/mobile/SYS-04__feature-flags.png,361,867,previews/SYS-04__feature-flags.jpg
+SYS-04,Feature flags,web,main,screens/web/SYS-04__feature-flags.png,1211,867,previews/SYS-04__feature-flags.jpg
+SYS-05,Peran & akses,mobile,main,screens/mobile/SYS-05__peran-akses.png,361,867,previews/SYS-05__peran-akses.jpg
+SYS-05,Peran & akses,web,main,screens/web/SYS-05__peran-akses.png,1211,867,previews/SYS-05__peran-akses.jpg
+SYS-06,Kebijakan reminder,mobile,main,screens/mobile/SYS-06__kebijakan-reminder.png,361,867,previews/SYS-06__kebijakan-reminder.jpg
+SYS-06,Kebijakan reminder,web,main,screens/web/SYS-06__kebijakan-reminder.png,1211,867,previews/SYS-06__kebijakan-reminder.jpg
+SYS-07,Konten & kebijakan publik,mobile,main,screens/mobile/SYS-07__konten-kebijakan-publik.png,361,867,previews/SYS-07__konten-kebijakan-publik.jpg
+SYS-07,Konten & kebijakan publik,web,main,screens/web/SYS-07__konten-kebijakan-publik.png,1211,867,previews/SYS-07__konten-kebijakan-publik.jpg
+SYS-08,Backup & pemulihan,mobile,main,screens/mobile/SYS-08__backup-pemulihan.png,361,867,previews/SYS-08__backup-pemulihan.jpg
+SYS-08,Backup & pemulihan,web,main,screens/web/SYS-08__backup-pemulihan.png,1211,867,previews/SYS-08__backup-pemulihan.jpg
+SYS-09,Audit sensitif,mobile,main,screens/mobile/SYS-09__audit-sensitif.png,361,867,previews/SYS-09__audit-sensitif.jpg
+SYS-09,Audit sensitif,web,main,screens/web/SYS-09__audit-sensitif.png,1211,867,previews/SYS-09__audit-sensitif.jpg
+SYS-10,Permintaan data,mobile,main,screens/mobile/SYS-10__permintaan-data.png,361,867,previews/SYS-10__permintaan-data.jpg
+SYS-10,Permintaan data,web,main,screens/web/SYS-10__permintaan-data.png,1211,867,previews/SYS-10__permintaan-data.jpg
+SYS-11,Insiden & pengumuman,mobile,main,screens/mobile/SYS-11__insiden-pengumuman.png,361,867,previews/SYS-11__insiden-pengumuman.jpg
+SYS-11,Insiden & pengumuman,web,main,screens/web/SYS-11__insiden-pengumuman.png,1211,867,previews/SYS-11__insiden-pengumuman.jpg

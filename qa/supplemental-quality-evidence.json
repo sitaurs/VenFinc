@@ -1,0 +1,6 @@
+{
+  "command": "./tools/pnpm.sh lint && ./tools/pnpm.sh test:contracts && ./tools/pnpm.sh test:security && ./tools/pnpm.sh infra:smoke",
+  "exitCode": 0,
+  "output": "$ eslint apps packages qa/e2e qa/fixtures tools/*.mjs *.ts && stylelint 'packages/ui/src/**/*.css' 'apps/web/src/**/*.css' --allow-empty-input\n$ vitest run packages/contracts/src\n\n RUN  v5.0.5 /home/zamn/VenFinance\n\n\n Test Files  1 passed (1)\n      Tests  21 passed (21)\n   Start at  11:28:32\n   Duration  1.60s (import 62%, tests 30%, transform 5%, worker 3%)\n\n$ vitest run apps/edge/src/security.test.ts && node tools/scan-client.mjs\n\n RUN  v5.0.5 /home/zamn/VenFinance\n\n\n Test Files  1 passed (1)\n      Tests  9 passed (9)\n   Start at  11:28:40\n   Duration  1.16s (import 57%, tests 34%, transform 7%, worker 3%)\n\n{\"check\":\"client-secret-and-service-boundary-scan\",\"status\":\"PASS\",\"scannedFiles\":8,\"failures\":[],\"limitation\":\"Heuristic built-artifact scan; not a replacement for staging auth/RLS/security audit.\"}\n$ node tools/infra-smoke.mjs\n{\"status\":\"PASS\",\"scope\":\"local static assets + real workerd Hono route + fail-closed API\",\"externalProvidersTested\":false}\n",
+  "externalProviderEvidence": false
+}

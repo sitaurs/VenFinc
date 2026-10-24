@@ -1,0 +1,6 @@
+{
+  "command": "./tools/pnpm.sh exec vitest run packages/domain/src/health.test.ts apps/edge/src/security.test.ts",
+  "exitCode": 0,
+  "output": "\n RUN  v5.0.5 /home/zamn/VenFinance\n\n\n Test Files  2 passed (2)\n      Tests  15 passed (15)\n   Start at  11:43:40\n   Duration  794ms (import 68%, tests 21%, transform 7%, worker 4%)\n\n",
+  "scope": "Correlation, safe errors and heartbeat contract/freshness only; no live ARM heartbeat or provider monitoring proof."
+}

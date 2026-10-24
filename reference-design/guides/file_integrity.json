@@ -1,0 +1,14 @@
+{
+  "verified_screen_files": 180,
+  "verified_asset_files": 59,
+  "verified_previews": 90,
+  "source_atlases": 5,
+  "failed_files": [],
+  "method": [
+    "Pillow.verify",
+    "native dimensions",
+    "SHA-256 vs manifest"
+  ],
+  "visual_review_notes": "QA_Review.md",
+  "implementation_testing": "not performed; raster design deliverable"
+}

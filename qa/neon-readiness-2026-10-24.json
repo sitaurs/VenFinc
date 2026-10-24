@@ -1,0 +1,59 @@
+{
+  "checkedAt": "2026-10-24T05:23:37.726Z",
+  "projectId": "hidden-unit-95812377",
+  "organizationId": "org-snowy-scene-55200104",
+  "organizationDisplayName": "VenFinance",
+  "ownerConfirmedProjectUrl": "https://console.neon.tech/app/projects/hidden-unit-95812377/branches/br-rapid-band-b4jw3tlq",
+  "projectVerifiedByApi": true,
+  "ownerReportedBranchId": "br-rapid-band-b4jw3tlq",
+  "branchVerifiedByApi": true,
+  "productionBranch": {
+    "id": "br-rapid-band-b4jw3tlq",
+    "name": "production",
+    "default": true,
+    "protected": false,
+    "applicationTablesObserved": false,
+    "neonAuthSchemaObserved": false,
+    "rowsRead": false
+  },
+  "projectMetadata": {
+    "platform": "aws",
+    "region": "aws-us-east-2",
+    "pgVersion": 18,
+    "subscriptionType": "free_v3",
+    "branchesLimit": 10,
+    "logicalSizeLimitBytes": 1073741824,
+    "historyRetentionSeconds": 21600,
+    "defaultEndpointSettings": {
+      "autoscaling_limit_min_cu": 0.25,
+      "autoscaling_limit_max_cu": 2,
+      "suspend_timeout_seconds": 0
+    },
+    "endpointEffectiveSettingsVerified": false
+  },
+  "stagingBranch": {
+    "id": "br-aged-mode-b4rcy9i0",
+    "name": "venfinance-p0-auth-20261024",
+    "parentId": "br-rapid-band-b4jw3tlq",
+    "default": false,
+    "createdAt": "2026-10-24T05:22:40Z",
+    "metadataVerifiedBySeparateDescribe": true,
+    "computeCreated": false,
+    "authProvisioned": false,
+    "applicationMigrationApplied": false,
+    "autoExpiryConfigured": false
+  },
+  "state": "project_and_staging_scope_verified_auth_sql_capabilities_pending",
+  "missingConnectorCapabilities": [
+    "SQL execution",
+    "connection retrieval",
+    "Auth configuration"
+  ],
+  "productionReady": false,
+  "productionMigrationApplied": false,
+  "secretsPersisted": false,
+  "note": "Project and parent branch belong to owner-confirmed scope. Only child staging branch creation was performed; no compute, auth users, schema migration or live deployment.",
+  "accessPath": "MCP",
+  "cliLoginRequired": false,
+  "cliFallbackWithdrawn": true
+}

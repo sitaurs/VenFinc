@@ -1,0 +1,392 @@
+[
+  {
+    "id": "PUB-01",
+    "name": "Landing",
+    "requirements": "Nilai produk, cara kerja, preview, CTA daftar, akses demo, penjelasan sebagai pencatat keuangan."
+  },
+  {
+    "id": "PUB-02",
+    "name": "Demo interaktif",
+    "requirements": "Shell aplikasi dengan data sintetis dan label Contoh; jalur menuju daftar."
+  },
+  {
+    "id": "PUB-03",
+    "name": "FAQ & pusat bantuan publik",
+    "requirements": "Pencarian topik manual, anggaran, AI, WA, privasi, offline."
+  },
+  {
+    "id": "PUB-04",
+    "name": "Kontak dukungan",
+    "requirements": "Pilihan masalah, form, pemberitahuan agar tidak mengirim data sensitif yang tidak diperlukan."
+  },
+  {
+    "id": "PUB-05",
+    "name": "Status layanan",
+    "requirements": "Status layanan dan riwayat insiden, waktu pembaruan serta alternatif pencatatan."
+  },
+  {
+    "id": "PUB-06",
+    "name": "Kebijakan privasi",
+    "requirements": "Dokumen terbaca, daftar isi, versi, tanggal berlaku."
+  },
+  {
+    "id": "PUB-07",
+    "name": "Syarat layanan",
+    "requirements": "Dokumen terbaca, batas fungsi dan versi; tidak mengarang kebijakan yang belum disahkan."
+  },
+  {
+    "id": "PUB-08",
+    "name": "Pembaruan produk",
+    "requirements": "Changelog dan catatan fitur."
+  },
+  {
+    "id": "AUTH-01",
+    "name": "Masuk",
+    "requirements": "Email, password, pemulihan; Google hanya jika diaktifkan."
+  },
+  {
+    "id": "AUTH-02",
+    "name": "Daftar",
+    "requirements": "Email, password, syarat, petunjuk validasi; tanpa pilihan role."
+  },
+  {
+    "id": "AUTH-03",
+    "name": "Verifikasi email",
+    "requirements": "Kirim ulang, ubah alamat sesuai kebijakan, tautan kedaluwarsa, hasil verifikasi."
+  },
+  {
+    "id": "AUTH-04",
+    "name": "Lupa password",
+    "requirements": "Permintaan reset dengan respons yang tidak membocorkan keberadaan akun."
+  },
+  {
+    "id": "AUTH-05",
+    "name": "Reset password",
+    "requirements": "Password baru, validasi, tautan invalid/kedaluwarsa, selesai."
+  },
+  {
+    "id": "AUTH-06",
+    "name": "Verifikasi keamanan",
+    "requirements": "MFA/step-up; bentuk final mengikuti metode autentikasi yang dipilih."
+  },
+  {
+    "id": "AUTH-07",
+    "name": "Akses akun dibatasi",
+    "requirements": "Alasan yang boleh ditampilkan, bantuan, banding, status pengajuan."
+  },
+  {
+    "id": "ONB-01",
+    "name": "Kenalan & preferensi",
+    "requirements": "Nama panggilan, bahasa, IDR, Asia/Jakarta, awal siklus."
+  },
+  {
+    "id": "ONB-02",
+    "name": "Sumber uang awal",
+    "requirements": "Buat dompet virtual dan saldo pembuka; dapat dilewati untuk disiapkan nanti."
+  },
+  {
+    "id": "ONB-03",
+    "name": "Pilih rencana anggaran",
+    "requirements": "Mahasiswa Kos, umum, atau mulai kosong."
+  },
+  {
+    "id": "ONB-04",
+    "name": "Sesuaikan anggaran",
+    "requirements": "Edit nominal, cek pemasukan dan kebutuhan termasuk kos/listrik; tidak mencatat rencana sebagai pengeluaran."
+  },
+  {
+    "id": "ONB-05",
+    "name": "Fitur opsional & selesai",
+    "requirements": "AI, bukti, WA, pengingat dengan izin terpisah; Lewati tetap jelas."
+  },
+  {
+    "id": "FIN-UI-01",
+    "name": "Beranda",
+    "requirements": "Saldo terkonfirmasi, sisa anggaran, jatah hari ini, review, transaksi, tagihan, status hari."
+  },
+  {
+    "id": "FIN-UI-02",
+    "name": "Riwayat transaksi",
+    "requirements": "Search, filter gabungan, pengelompokan tanggal, bulk action dan ekspor."
+  },
+  {
+    "id": "FIN-UI-03",
+    "name": "Detail transaksi",
+    "requirements": "Jenis, nominal, sumber uang, kategori/split, bukti, asal input, edit, void/restore, riwayat."
+  },
+  {
+    "id": "FIN-UI-04",
+    "name": "Kalender pencatatan",
+    "requirements": "Belum dilaporkan, sebagian, selesai, nihil; rincian per hari dan koreksi."
+  },
+  {
+    "id": "FIN-UI-05",
+    "name": "Daftar dompet",
+    "requirements": "Total saldo dan sumber uang, tambah, arsip, transfer."
+  },
+  {
+    "id": "FIN-UI-06",
+    "name": "Detail dompet",
+    "requirements": "Saldo virtual, mutasi, rekonsiliasi, penyesuaian dan arsip."
+  },
+  {
+    "id": "FIN-UI-07",
+    "name": "Ringkasan anggaran",
+    "requirements": "Periode, budget, terpakai, sisa, lebih budget, copy periode/template."
+  },
+  {
+    "id": "FIN-UI-08",
+    "name": "Detail kantong anggaran",
+    "requirements": "Batas, transaksi terkait, threshold, rollover, riwayat perubahan."
+  },
+  {
+    "id": "FIN-UI-09",
+    "name": "Daftar target tabungan",
+    "requirements": "Target, realisasi, tanggal, kemajuan."
+  },
+  {
+    "id": "FIN-UI-10",
+    "name": "Detail target",
+    "requirements": "Riwayat setoran/transfer, sumber uang, sisa target dan edit."
+  },
+  {
+    "id": "FIN-UI-11",
+    "name": "Daftar utang & piutang",
+    "requirements": "Sisa pokok, jatuh tempo, pihak opsional, filter status."
+  },
+  {
+    "id": "FIN-UI-12",
+    "name": "Detail utang/piutang",
+    "requirements": "Pokok, pembayaran, bunga/biaya terpisah, jadwal, catat cicilan/pelunasan."
+  },
+  {
+    "id": "FIN-UI-13",
+    "name": "Tagihan & catatan berulang",
+    "requirements": "Daftar/kalender, jatuh tempo, dana tersedia, pengingat atau draft otomatis."
+  },
+  {
+    "id": "FIN-UI-14",
+    "name": "Detail tagihan",
+    "requirements": "Jadwal, nominal rencana, sumber uang, riwayat; Bayar berarti catat pembayaran nyata."
+  },
+  {
+    "id": "FIN-UI-15",
+    "name": "Laporan & insight",
+    "requirements": "Periode, kategori, arus kas, perbandingan, data grafik, ekspor dan preview berbagi."
+  },
+  {
+    "id": "FIN-UI-16",
+    "name": "Simulasi belanja",
+    "requirements": "Masukkan nominal/kategori → lihat dampak; tidak menyimpan transaksi otomatis."
+  },
+  {
+    "id": "REV-01",
+    "name": "Inbox perlu ditinjau",
+    "requirements": "Usulan, sementara, konflik, duplikat, gagal; jumlah dan prioritas jelas."
+  },
+  {
+    "id": "REV-02",
+    "name": "Unggah & proses bukti",
+    "requirements": "Kamera/file/paste bila didukung, izin, validasi, progress, antrean, batal, manual."
+  },
+  {
+    "id": "REV-03",
+    "name": "Review hasil bacaan",
+    "requirements": "Bukti asli, nominal, tanggal, merchant, kategori, dompet, item/split, konfirmasi."
+  },
+  {
+    "id": "REV-04",
+    "name": "Bandingkan hasil berbeda",
+    "requirements": "OCR vs hasil pemeriksaan ulang vs nilai tersimpan bila ada; pilih/koreksi dengan alasan."
+  },
+  {
+    "id": "REV-05",
+    "name": "Periksa kemungkinan duplikat",
+    "requirements": "Dua kandidat, bukti dan asal, gabungkan/simpan terpisah/batalkan."
+  },
+  {
+    "id": "SET-01",
+    "name": "Pusat pengaturan / Lainnya",
+    "requirements": "Direktori yang mudah dipindai; status integrasi dan akses cepat."
+  },
+  {
+    "id": "SET-02",
+    "name": "Profil",
+    "requirements": "Nama, foto opsional, email dan verifikasi perubahan."
+  },
+  {
+    "id": "SET-03",
+    "name": "Tampilan & preferensi",
+    "requirements": "Bahasa ID/EN, light/dark/system, timezone, siklus, sembunyikan nominal."
+  },
+  {
+    "id": "SET-04",
+    "name": "Keamanan & perangkat",
+    "requirements": "Password, sesi aktif, cabut perangkat, logout semua, keamanan akun."
+  },
+  {
+    "id": "SET-05",
+    "name": "WhatsApp — pilihan & status",
+    "requirements": "Bot bersama/pribadi, status aktual, fitur yang tersedia dan koneksi opsional."
+  },
+  {
+    "id": "SET-06",
+    "name": "Verifikasi nomor bot bersama",
+    "requirements": "Pembuktian nomor dan hasil; tidak meminta QR sesi pribadi."
+  },
+  {
+    "id": "SET-07",
+    "name": "Tautkan WhatsApp pribadi",
+    "requirements": "Mobile mengutamakan kode pairing; desktop dapat mengutamakan QR; masa berlaku dan petunjuk."
+  },
+  {
+    "id": "SET-08",
+    "name": "Izin & aktivitas WhatsApp",
+    "requirements": "Chat/tujuan diizinkan, reconnect, login ulang, logout, hapus sesi, cabut izin."
+  },
+  {
+    "id": "SET-09",
+    "name": "AI, bukti & pemakaian",
+    "requirements": "Izin upstream, simpan bukti, kuota aktual, preferensi kategori, cabut izin."
+  },
+  {
+    "id": "SET-10",
+    "name": "Pengingat & notifikasi",
+    "requirements": "Kanal, jam, hari, timezone, quiet hours, threshold dan STOP/jeda."
+  },
+  {
+    "id": "SET-11",
+    "name": "Kategori & subkategori",
+    "requirements": "Buat, ubah, arsip, ikon, pengaruh ke histori."
+  },
+  {
+    "id": "SET-12",
+    "name": "Data & privasi",
+    "requirements": "Ekspor CSV/JSON, bukti terpisah, retensi, izin, status permintaan."
+  },
+  {
+    "id": "SET-13",
+    "name": "Impor — pemetaan",
+    "requirements": "Upload CSV, mapping kolom, format tanggal/nominal, validasi."
+  },
+  {
+    "id": "SET-14",
+    "name": "Impor — pratinjau & hasil",
+    "requirements": "Valid/error/duplikat, keputusan sebelum posting, hasil dan rollback sesuai aturan."
+  },
+  {
+    "id": "SET-15",
+    "name": "Pusat notifikasi",
+    "requirements": "Budget, jatuh tempo, review, keamanan; kontrol data sensitif."
+  },
+  {
+    "id": "SET-16",
+    "name": "Bantuan & tiket saya",
+    "requirements": "Artikel, buat tiket, pilih lampiran dan izin akses terbatas."
+  },
+  {
+    "id": "SET-17",
+    "name": "Detail tiket saya",
+    "requirements": "Status, balasan, lampiran yang dibagikan, masa akses dan cabut akses."
+  },
+  {
+    "id": "SET-18",
+    "name": "Sinkronisasi & konflik",
+    "requirements": "Antrean lokal, syncing, gagal, versi lokal/server, retry dan keputusan konflik."
+  },
+  {
+    "id": "SET-19",
+    "name": "Hapus akun & progres",
+    "requirements": "Dampak, reauth, ekspor opsional, tenggang jika disahkan, status proses/pengecualian."
+  },
+  {
+    "id": "ADM-01",
+    "name": "Dashboard operasional",
+    "requirements": "Pengguna agregat, error, antrean, kuota, status layanan."
+  },
+  {
+    "id": "ADM-02",
+    "name": "Daftar akun",
+    "requirements": "Metadata minimum, identitas tersamar, status dan pencarian terbatas."
+  },
+  {
+    "id": "ADM-03",
+    "name": "Moderasi & banding akun",
+    "requirements": "Alasan, warn/suspend/unsuspend, banding, jejak tindakan; tanpa tab transaksi pribadi."
+  },
+  {
+    "id": "ADM-04",
+    "name": "Antrean support",
+    "requirements": "Tiket, kategori, prioritas, masa akses lampiran."
+  },
+  {
+    "id": "ADM-05",
+    "name": "Detail tiket berizin",
+    "requirements": "Konten yang sengaja dibagikan, batas izin/waktu, tanggapan."
+  },
+  {
+    "id": "ADM-06",
+    "name": "Insiden & antrean pekerjaan",
+    "requirements": "Metadata aman, retry/cancel sesuai mandat dan status insiden."
+  },
+  {
+    "id": "ADM-07",
+    "name": "Audit operasional",
+    "requirements": "Tindakan aktor, waktu, alasan dan hasil; filter tanpa payload pribadi."
+  },
+  {
+    "id": "SYS-01",
+    "name": "Ringkasan sistem",
+    "requirements": "Health, kapasitas, insiden, kontrol yang memerlukan perhatian."
+  },
+  {
+    "id": "SYS-02",
+    "name": "Integrasi & kredensial",
+    "requirements": "Konfigurasi gateway/model, kapabilitas teruji, status, rotasi; secret tersamarkan."
+  },
+  {
+    "id": "SYS-03",
+    "name": "Kuota & biaya",
+    "requirements": "Per-user/global, soft/hard limit, penggunaan dan peringatan."
+  },
+  {
+    "id": "SYS-04",
+    "name": "Feature flags",
+    "requirements": "Dampak fitur, rollout dan fallback, perubahan dengan audit."
+  },
+  {
+    "id": "SYS-05",
+    "name": "Peran & akses",
+    "requirements": "User ↔ Admin, reauth, alasan, audit; tidak menyediakan promosi Superuser publik."
+  },
+  {
+    "id": "SYS-06",
+    "name": "Kebijakan reminder",
+    "requirements": "Antispam, batas global, quiet hours, emergency stop; opt-out pengguna dihormati."
+  },
+  {
+    "id": "SYS-07",
+    "name": "Konten & kebijakan publik",
+    "requirements": "FAQ, terms, privacy, changelog, versi dan publikasi terkendali."
+  },
+  {
+    "id": "SYS-08",
+    "name": "Backup & pemulihan",
+    "requirements": "Status backup, pengujian restore, ringkasan dampak dan alur otorisasi."
+  },
+  {
+    "id": "SYS-09",
+    "name": "Audit sensitif",
+    "requirements": "Role, konfigurasi, kuota, kredensial, kebijakan dan hasil tindakan."
+  },
+  {
+    "id": "SYS-10",
+    "name": "Permintaan data",
+    "requirements": "Progres ekspor/hapus, tenggat dan pengecualian; tidak membuka isi ekspor."
+  },
+  {
+    "id": "SYS-11",
+    "name": "Insiden & pengumuman",
+    "requirements": "Dampak, banner, maintenance, mitigasi, pemulihan dan riwayat."
+  }
+]

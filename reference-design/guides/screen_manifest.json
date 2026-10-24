@@ -1,0 +1,3062 @@
+[
+  {
+    "id": "ADM-01",
+    "name": "Dashboard operasional",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/ADM-01__dashboard-operasional.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/ADM-01__dashboard-operasional.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "d477861953054d7a8e0dddcf2e138ee184478b1176e5451b2eeab4490bd17afd"
+  },
+  {
+    "id": "ADM-01",
+    "name": "Dashboard operasional",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/ADM-01__dashboard-operasional.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/ADM-01__dashboard-operasional.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "013ce9ef82837c7cc7e909765cce86b9c2e833d7beb2997451985f33ff6818c9"
+  },
+  {
+    "id": "ADM-02",
+    "name": "Daftar akun",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/ADM-02__daftar-akun.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/ADM-02__daftar-akun.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "dd8b717285a143a0d6e0fa598ba8f5341957ccadfa074d78779b762eab074e9f"
+  },
+  {
+    "id": "ADM-02",
+    "name": "Daftar akun",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/ADM-02__daftar-akun.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/ADM-02__daftar-akun.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "3d7c71cd855d853e63d21b0a8b7c6b837195d3c6ef3c37851d9f53908aedf4e1"
+  },
+  {
+    "id": "ADM-03",
+    "name": "Moderasi & banding akun",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/ADM-03__moderasi-banding-akun.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/ADM-03__moderasi-banding-akun.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "03bff2adb1a0c9d16099f255f510f446931d315b7775173d0c2ed251b4100126"
+  },
+  {
+    "id": "ADM-03",
+    "name": "Moderasi & banding akun",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/ADM-03__moderasi-banding-akun.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/ADM-03__moderasi-banding-akun.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "cb314c4d58164d027b05b27bf8c23539ee9da2571a03e906ee71b823afe9a508"
+  },
+  {
+    "id": "ADM-04",
+    "name": "Antrean support",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/ADM-04__antrean-support.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/ADM-04__antrean-support.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "e5674bf1913f88a469662ca277d1089ca5ed8d5dfe09eccd00b8b0201a6aeb58"
+  },
+  {
+    "id": "ADM-04",
+    "name": "Antrean support",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/ADM-04__antrean-support.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/ADM-04__antrean-support.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "88565995027d942068a89829e9a5a041b6e8f085a2208982ea37af7dcfd8fc2e"
+  },
+  {
+    "id": "ADM-05",
+    "name": "Detail tiket berizin",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/ADM-05__detail-tiket-berizin.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/ADM-05__detail-tiket-berizin.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "1929fdf11f1422847ca4b0c1ebeabbe3ab90685079fbaeab31a87feb03c56399"
+  },
+  {
+    "id": "ADM-05",
+    "name": "Detail tiket berizin",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/ADM-05__detail-tiket-berizin.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/ADM-05__detail-tiket-berizin.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "4b4c2ec276276576426ecfc9203d95e0111db456960ad3cb26e563357d0b1bad"
+  },
+  {
+    "id": "ADM-06",
+    "name": "Insiden & antrean pekerjaan",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/ADM-06__insiden-antrean-pekerjaan.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/ADM-06__insiden-antrean-pekerjaan.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "1032e47d20afd19fb50eb49ec1fc743490cc2cc58474a482096f67496668dcc6"
+  },
+  {
+    "id": "ADM-06",
+    "name": "Insiden & antrean pekerjaan",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/ADM-06__insiden-antrean-pekerjaan.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/ADM-06__insiden-antrean-pekerjaan.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "c3c2f5b84058890e73991cebf13932b4b8e9be08ffba4c37c58e7e274a85e5b0"
+  },
+  {
+    "id": "ADM-07",
+    "name": "Audit operasional",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/ADM-07__audit-operasional.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/ADM-07__audit-operasional.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "9a1cd43a6cf0050c6184caecead98ba9853a3f9138d0b5cfcbf5ab1907b312a3"
+  },
+  {
+    "id": "ADM-07",
+    "name": "Audit operasional",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/ADM-07__audit-operasional.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/ADM-07__audit-operasional.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "c5a946e3b98a42bea8c7057c7e4e5bb3ea793457ebf388e2bbbac942dbe0030c"
+  },
+  {
+    "id": "AUTH-01",
+    "name": "Masuk",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/AUTH-01__masuk.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/AUTH-01__masuk.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "ecd8b68cb1b7760f934e79ff1ff87bf02ebcfbd87a0249fac35003de93b1ec31"
+  },
+  {
+    "id": "AUTH-01",
+    "name": "Masuk",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/AUTH-01__masuk.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/AUTH-01__masuk.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "a1ad475cbcafe71bca3daf40f3763e02b2c41e2bb7311faa7c341d65b2be297c"
+  },
+  {
+    "id": "AUTH-02",
+    "name": "Daftar",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/AUTH-02__daftar.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/AUTH-02__daftar.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "1570a2bcfea90ac9aa80ec6e683883bc4e77b974ad4218b3df96d3bf5f441d4c"
+  },
+  {
+    "id": "AUTH-02",
+    "name": "Daftar",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/AUTH-02__daftar.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/AUTH-02__daftar.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "75f977f75c668309ec31f00e67ea470836a535c1f15d07dc0cedfac151d2348a"
+  },
+  {
+    "id": "AUTH-03",
+    "name": "Verifikasi email",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/AUTH-03__verifikasi-email.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/AUTH-03__verifikasi-email.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "bc3874aad9f3aacb795bd3b048c8a7c6d018ed992ceb8513640e2e32afd5fcd6"
+  },
+  {
+    "id": "AUTH-03",
+    "name": "Verifikasi email",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/AUTH-03__verifikasi-email.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/AUTH-03__verifikasi-email.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "b745db4ab43529e21ed86c2568d1c6ecf3b71b421ab424651287e0113655b38e"
+  },
+  {
+    "id": "AUTH-04",
+    "name": "Lupa password",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/AUTH-04__lupa-password.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/AUTH-04__lupa-password.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "83d4cc19cb5c4cff36aa6809d767a71c03af44aa2494566e57d7449162087fdb"
+  },
+  {
+    "id": "AUTH-04",
+    "name": "Lupa password",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/AUTH-04__lupa-password.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/AUTH-04__lupa-password.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "0771da940b67eaf5289ea3ca24296f22e99ffb0ea7d804f5cd80f1cddedeff54"
+  },
+  {
+    "id": "AUTH-05",
+    "name": "Reset password",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/AUTH-05__reset-password.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/AUTH-05__reset-password.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "45fe37b6f68698b2faefa012b5071a8b37dbeb044586215d962a43964cdc377f"
+  },
+  {
+    "id": "AUTH-05",
+    "name": "Reset password",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/AUTH-05__reset-password.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/AUTH-05__reset-password.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "bb887693414f95137f688751eb23642ca7d3720823454f49e60a39311b51f527"
+  },
+  {
+    "id": "AUTH-06",
+    "name": "Verifikasi keamanan",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/AUTH-06__verifikasi-keamanan.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/AUTH-06__verifikasi-keamanan.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "0ec76b567257a82b212af0b60d58f81a30000bb6880c2230d638921360609105"
+  },
+  {
+    "id": "AUTH-06",
+    "name": "Verifikasi keamanan",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/AUTH-06__verifikasi-keamanan.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/AUTH-06__verifikasi-keamanan.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "f6c9d3dd3f5a0d24cc9497532cb9277ac9745d4e895bed559c0c0a716a9d79ad"
+  },
+  {
+    "id": "AUTH-07",
+    "name": "Akses akun dibatasi",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/AUTH-07__akses-akun-dibatasi.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/AUTH-07__akses-akun-dibatasi.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "e7c6dccaf0b08d99695d0689177ba7fd6dc0f839f3c57e3f06293db761f877d1"
+  },
+  {
+    "id": "AUTH-07",
+    "name": "Akses akun dibatasi",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/AUTH-07__akses-akun-dibatasi.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/AUTH-07__akses-akun-dibatasi.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "99c55a880bdd27f5cd5639715760bd96c5f020601c5f9eabf17cd5a6cb8f4cee"
+  },
+  {
+    "id": "DARK-01",
+    "name": "Beranda dark",
+    "surface": "mobile",
+    "kind": "dark",
+    "file": "screens/mobile/DARK-01__beranda-dark.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/DARK-01__beranda-dark.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "e614d5c596d1f7d53e088868b207e2b44fc3617bac718ad3771b3c94977c4d29"
+  },
+  {
+    "id": "DARK-01",
+    "name": "Beranda dark",
+    "surface": "web",
+    "kind": "dark",
+    "file": "screens/web/DARK-01__beranda-dark.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/DARK-01__beranda-dark.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "dedaae4ca6891e5edf9b2575a7982fb0d73155ddd4be6a0b45623e7fd252152a"
+  },
+  {
+    "id": "DARK-02",
+    "name": "Review dark",
+    "surface": "mobile",
+    "kind": "dark",
+    "file": "screens/mobile/DARK-02__review-dark.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/DARK-02__review-dark.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "8771def07a54b411642e670e66f34221623bd7731e8aa616ee1bb70bba8e8e58"
+  },
+  {
+    "id": "DARK-02",
+    "name": "Review dark",
+    "surface": "web",
+    "kind": "dark",
+    "file": "screens/web/DARK-02__review-dark.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/DARK-02__review-dark.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "97eb5c6dd97fd3cbcb3b6a9fdadaf9ad2379342f65aabb3552ef3a7e4b62233f"
+  },
+  {
+    "id": "FIN-UI-01",
+    "name": "Beranda",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/FIN-UI-01__beranda.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/FIN-UI-01__beranda.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "539e5bb9f2b34ae90c2b888b43243997745719db599365bf5dc8e18e3c5d6906"
+  },
+  {
+    "id": "FIN-UI-01",
+    "name": "Beranda",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/FIN-UI-01__beranda.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/FIN-UI-01__beranda.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "5c355b811e88414457581be447addae126463bf47aa66d5d8af6b1c802963c34"
+  },
+  {
+    "id": "FIN-UI-02",
+    "name": "Riwayat transaksi",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/FIN-UI-02__riwayat-transaksi.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/FIN-UI-02__riwayat-transaksi.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "dae922fc55dffd1900f2ec0acb2259d972979a056e77ae41878a78940cd13721"
+  },
+  {
+    "id": "FIN-UI-02",
+    "name": "Riwayat transaksi",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/FIN-UI-02__riwayat-transaksi.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/FIN-UI-02__riwayat-transaksi.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "cbe88f890c6d24c790adce3be2a936f5feab32317e56e1a0d150b250a6a103ca"
+  },
+  {
+    "id": "FIN-UI-03",
+    "name": "Detail transaksi",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/FIN-UI-03__detail-transaksi.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/FIN-UI-03__detail-transaksi.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "03899b2fd50380fd83c1868cd50f99649939c826ba40f19f586a18d796fa59a0"
+  },
+  {
+    "id": "FIN-UI-03",
+    "name": "Detail transaksi",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/FIN-UI-03__detail-transaksi.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/FIN-UI-03__detail-transaksi.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "d41485a7ec0b0506b0fd6983540597774190ae270d6e055155b5c919b59abcbc"
+  },
+  {
+    "id": "FIN-UI-04",
+    "name": "Kalender pencatatan",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/FIN-UI-04__kalender-pencatatan.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/FIN-UI-04__kalender-pencatatan.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "615220c6d0877dea71d291f7aeaa60c68469cbc7dd623cc866a34c541287dc40"
+  },
+  {
+    "id": "FIN-UI-04",
+    "name": "Kalender pencatatan",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/FIN-UI-04__kalender-pencatatan.png",
+    "width": 1210,
+    "height": 867,
+    "source_board": "previews/FIN-UI-04__kalender-pencatatan.jpg",
+    "source_crop_box": [
+      422,
+      63,
+      1632,
+      930
+    ],
+    "sha256": "63a1eb61aa0243e8614d42ef67b6d30de384b9d90455cd7b29106d9ab9d0138a"
+  },
+  {
+    "id": "FIN-UI-05",
+    "name": "Daftar dompet",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/FIN-UI-05__daftar-dompet.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/FIN-UI-05__daftar-dompet.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "8d25d4c338e4620a1e88ca7a95257c37a18358adde99a82a7f904a42f8c1e206"
+  },
+  {
+    "id": "FIN-UI-05",
+    "name": "Daftar dompet",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/FIN-UI-05__daftar-dompet.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/FIN-UI-05__daftar-dompet.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "a80a7a3e85fdc19dd8b4633ff7f68b8df4aad8151c75a1c578500193454ea9ac"
+  },
+  {
+    "id": "FIN-UI-06",
+    "name": "Detail dompet",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/FIN-UI-06__detail-dompet.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/FIN-UI-06__detail-dompet.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "087e596aaeedd23efe0feb0999d199561a5989853453c8be56a1be688512a910"
+  },
+  {
+    "id": "FIN-UI-06",
+    "name": "Detail dompet",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/FIN-UI-06__detail-dompet.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/FIN-UI-06__detail-dompet.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "fc2cd968115c8f49f9ae58c4d5d1014b69227085b12413034e3a70f755626b9a"
+  },
+  {
+    "id": "FIN-UI-07",
+    "name": "Ringkasan anggaran",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/FIN-UI-07__ringkasan-anggaran.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/FIN-UI-07__ringkasan-anggaran.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "e9c8ee9cdc0fbd50fd8e6e0196a55261e02b32c82ba22c1c591099b84bdb6f33"
+  },
+  {
+    "id": "FIN-UI-07",
+    "name": "Ringkasan anggaran",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/FIN-UI-07__ringkasan-anggaran.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/FIN-UI-07__ringkasan-anggaran.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "8a6419e63ecda95c0c5749bcb93e5385b63c550ebbf19d003c7c9cf0b9001f0f"
+  },
+  {
+    "id": "FIN-UI-08",
+    "name": "Detail kantong anggaran",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/FIN-UI-08__detail-kantong-anggaran.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/FIN-UI-08__detail-kantong-anggaran.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "28306d42eb265f0e429377a9348167dad5b629bd47e5f08ce4cf2e04f1db281d"
+  },
+  {
+    "id": "FIN-UI-08",
+    "name": "Detail kantong anggaran",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/FIN-UI-08__detail-kantong-anggaran.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/FIN-UI-08__detail-kantong-anggaran.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "1467b952f22eb6dbbab9f1220b72be66c6ec6831f73f201c22435a92b4156256"
+  },
+  {
+    "id": "FIN-UI-09",
+    "name": "Daftar target tabungan",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/FIN-UI-09__daftar-target-tabungan.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/FIN-UI-09__daftar-target-tabungan.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "2e1a0da078f78aae7e008bbb677da202c2426b5976f0c2a6af39fc59a19434af"
+  },
+  {
+    "id": "FIN-UI-09",
+    "name": "Daftar target tabungan",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/FIN-UI-09__daftar-target-tabungan.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/FIN-UI-09__daftar-target-tabungan.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "7a3a136ffaecbb4984d70e78573ca9915fde203daad1d6faabc55256ac42c464"
+  },
+  {
+    "id": "FIN-UI-10",
+    "name": "Detail target",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/FIN-UI-10__detail-target.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/FIN-UI-10__detail-target.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "6b46a748f7a973e4d961586ed09cfda66695f988e9ba98be6f34c755a6c314c4"
+  },
+  {
+    "id": "FIN-UI-10",
+    "name": "Detail target",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/FIN-UI-10__detail-target.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/FIN-UI-10__detail-target.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "883ad403d48d21c91b6536fbead15a7420465c81afdb14782f789ff9dc38eeaa"
+  },
+  {
+    "id": "FIN-UI-11",
+    "name": "Daftar utang & piutang",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/FIN-UI-11__daftar-utang-piutang.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/FIN-UI-11__daftar-utang-piutang.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "14e340226ca2afaf391619f30d5db350c4b99367291faebbcd9a3fbadbfe7880"
+  },
+  {
+    "id": "FIN-UI-11",
+    "name": "Daftar utang & piutang",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/FIN-UI-11__daftar-utang-piutang.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/FIN-UI-11__daftar-utang-piutang.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "e642cf10509424d4cc200bb0851947d5ddc696a1b2a952e6725c7157da730c1c"
+  },
+  {
+    "id": "FIN-UI-12",
+    "name": "Detail utang/piutang",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/FIN-UI-12__detail-utang-piutang.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/FIN-UI-12__detail-utang-piutang.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "ccf95d4f7b448b0ea30344cdde84e124584e5ea0e0eadcd3f6be6544e114b082"
+  },
+  {
+    "id": "FIN-UI-12",
+    "name": "Detail utang/piutang",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/FIN-UI-12__detail-utang-piutang.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/FIN-UI-12__detail-utang-piutang.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "ed5ae7fce6e4415ff368e817c19bb93c5cfa9ce5a1fce85801d8074751c481dd"
+  },
+  {
+    "id": "FIN-UI-13",
+    "name": "Tagihan & catatan berulang",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/FIN-UI-13__tagihan-catatan-berulang.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/FIN-UI-13__tagihan-catatan-berulang.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "5c19b54b6c6e6e972a37c91f7676059424a303b3f07531d88ab624a48da58ecd"
+  },
+  {
+    "id": "FIN-UI-13",
+    "name": "Tagihan & catatan berulang",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/FIN-UI-13__tagihan-catatan-berulang.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/FIN-UI-13__tagihan-catatan-berulang.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "256f83d76210e0e1cdb3b789a5955799a1864d0184bddb8e46bc6f65c5095ecf"
+  },
+  {
+    "id": "FIN-UI-14",
+    "name": "Detail tagihan",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/FIN-UI-14__detail-tagihan.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/FIN-UI-14__detail-tagihan.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "392f542af1e189043c6372368d4c5be8fe5bc720a89d74289e628b0fe502f8df"
+  },
+  {
+    "id": "FIN-UI-14",
+    "name": "Detail tagihan",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/FIN-UI-14__detail-tagihan.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/FIN-UI-14__detail-tagihan.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "05d9fc79ff09420efe9224af6572fb6d7f7d119ad5a134dfb5831be979ebf51d"
+  },
+  {
+    "id": "FIN-UI-15",
+    "name": "Laporan & insight",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/FIN-UI-15__laporan-insight.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/FIN-UI-15__laporan-insight.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "ba5875570175e6a0db7b6645c97ac058cc5f9bfcde4b4a048f5892b08bdcc2a0"
+  },
+  {
+    "id": "FIN-UI-15",
+    "name": "Laporan & insight",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/FIN-UI-15__laporan-insight.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/FIN-UI-15__laporan-insight.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "ac392f9e0af42493b6bc3033928062a17ffc3c319bd94562b73ba664ab8a64cd"
+  },
+  {
+    "id": "FIN-UI-16",
+    "name": "Simulasi belanja",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/FIN-UI-16__simulasi-belanja.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/FIN-UI-16__simulasi-belanja.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "af642b4a0bfcdcdc62f25b6557cef1c0397012c56baafd19bff9c6bf41544d68"
+  },
+  {
+    "id": "FIN-UI-16",
+    "name": "Simulasi belanja",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/FIN-UI-16__simulasi-belanja.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/FIN-UI-16__simulasi-belanja.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "49b8d63f28f38d92efde3294924b44fe8ecf4a929ae2a6ef9efce44cd2e31e3e"
+  },
+  {
+    "id": "FLOW-01",
+    "name": "Catat angka cepat",
+    "surface": "mobile",
+    "kind": "flow",
+    "file": "screens/mobile/FLOW-01__catat-angka-cepat.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/FLOW-01__catat-angka-cepat.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "b39876025204b07cded70f15f7173c47b48d67d364e91e6c89c7db10d304869a"
+  },
+  {
+    "id": "FLOW-01",
+    "name": "Catat angka cepat",
+    "surface": "web",
+    "kind": "flow",
+    "file": "screens/web/FLOW-01__catat-angka-cepat.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/FLOW-01__catat-angka-cepat.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "bb813613fd3d4cf733cff1644f4c2a8cd6e518af750a766aa42e44080c1a0294"
+  },
+  {
+    "id": "FLOW-02",
+    "name": "Teks natural dan preview",
+    "surface": "mobile",
+    "kind": "flow",
+    "file": "screens/mobile/FLOW-02__teks-natural-dan-preview.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/FLOW-02__teks-natural-dan-preview.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "451c38972bd37b411feb894a8f862eb1f092a6cab877c72434910bf7bbe8ab61"
+  },
+  {
+    "id": "FLOW-02",
+    "name": "Teks natural dan preview",
+    "surface": "web",
+    "kind": "flow",
+    "file": "screens/web/FLOW-02__teks-natural-dan-preview.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/FLOW-02__teks-natural-dan-preview.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "533a6b98925a03561d56a78f600b0f54a316765cdc3cfd1d77e783fc8c0fc4fa"
+  },
+  {
+    "id": "FLOW-03",
+    "name": "Catat transfer",
+    "surface": "mobile",
+    "kind": "flow",
+    "file": "screens/mobile/FLOW-03__catat-transfer.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/FLOW-03__catat-transfer.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "bfc6363bbd660fb4dde133d9a5dee371568895006c59e2a535f0ddc0e210ee4a"
+  },
+  {
+    "id": "FLOW-03",
+    "name": "Catat transfer",
+    "surface": "web",
+    "kind": "flow",
+    "file": "screens/web/FLOW-03__catat-transfer.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/FLOW-03__catat-transfer.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "0c4b0e0a6c1c10012f43534cf6fd4d5bd4338644ae2c5f6057141f5240655fc9"
+  },
+  {
+    "id": "FLOW-04",
+    "name": "Split kategori",
+    "surface": "mobile",
+    "kind": "flow",
+    "file": "screens/mobile/FLOW-04__split-kategori.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/FLOW-04__split-kategori.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "4f587f5578820a89123e845fef9e1010c7265bd3b5b263733ab2c62c676630af"
+  },
+  {
+    "id": "FLOW-04",
+    "name": "Split kategori",
+    "surface": "web",
+    "kind": "flow",
+    "file": "screens/web/FLOW-04__split-kategori.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/FLOW-04__split-kategori.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "5a4e9a0d52bd473a4fd6605b48f1aed9eeae5e35df789ebe7ffa04d2f1f19be0"
+  },
+  {
+    "id": "FLOW-05",
+    "name": "Atur anggaran periode",
+    "surface": "mobile",
+    "kind": "flow",
+    "file": "screens/mobile/FLOW-05__atur-anggaran-periode.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/FLOW-05__atur-anggaran-periode.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "cdbf2ede172d7936079e644bf085abc5aa87086c3c1fa810ce00a5db039836c3"
+  },
+  {
+    "id": "FLOW-05",
+    "name": "Atur anggaran periode",
+    "surface": "web",
+    "kind": "flow",
+    "file": "screens/web/FLOW-05__atur-anggaran-periode.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/FLOW-05__atur-anggaran-periode.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "eed39db5a9a6b8369335ac7171274ce6b7eb29ae3aa953b4c79efd326d3f8828"
+  },
+  {
+    "id": "FLOW-06",
+    "name": "Catat cicilan",
+    "surface": "mobile",
+    "kind": "flow",
+    "file": "screens/mobile/FLOW-06__catat-cicilan.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/FLOW-06__catat-cicilan.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "ce79eb8da8d0466aaa5639325d7e6c9671b14fe02a248c295351700e7396f71e"
+  },
+  {
+    "id": "FLOW-06",
+    "name": "Catat cicilan",
+    "surface": "web",
+    "kind": "flow",
+    "file": "screens/web/FLOW-06__catat-cicilan.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/FLOW-06__catat-cicilan.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "a1f593efac7d32b9823fb5950e355f53d6ff0f72c24f6a891e7a3efdf5f53de8"
+  },
+  {
+    "id": "ONB-01",
+    "name": "Kenalan & preferensi",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/ONB-01__kenalan-preferensi.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/ONB-01__kenalan-preferensi.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "d02e9ab2b7b67926361082d01d25a92cb24625fbb28d42d34e4d7294032333d5"
+  },
+  {
+    "id": "ONB-01",
+    "name": "Kenalan & preferensi",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/ONB-01__kenalan-preferensi.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/ONB-01__kenalan-preferensi.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "c537083830a382ad726b69e8126021b23c6627c70e313fc4e4f6d9206c1225e6"
+  },
+  {
+    "id": "ONB-02",
+    "name": "Sumber uang awal",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/ONB-02__sumber-uang-awal.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/ONB-02__sumber-uang-awal.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "feeddf1e1321a9d4e51af13c62efc7db9f4a4cf37a3c3e4010ee4b69ee050dad"
+  },
+  {
+    "id": "ONB-02",
+    "name": "Sumber uang awal",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/ONB-02__sumber-uang-awal.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/ONB-02__sumber-uang-awal.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "07359b147e77a850854d9d97bdb69153262bb1a49c2e4648af4d7ff55c57c0d7"
+  },
+  {
+    "id": "ONB-03",
+    "name": "Pilih rencana anggaran",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/ONB-03__pilih-rencana-anggaran.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/ONB-03__pilih-rencana-anggaran.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "d9503702de3bf50fe959a298b9d2ce6afdf1b704da6968ff90450b1b257a5d3b"
+  },
+  {
+    "id": "ONB-03",
+    "name": "Pilih rencana anggaran",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/ONB-03__pilih-rencana-anggaran.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/ONB-03__pilih-rencana-anggaran.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "922743fe92e14ad61b171a3ea5949959c6aa17ee01abd0f0866108eadbacf031"
+  },
+  {
+    "id": "ONB-04",
+    "name": "Sesuaikan anggaran",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/ONB-04__sesuaikan-anggaran.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/ONB-04__sesuaikan-anggaran.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "18b8b5340e8044d1a58220ddfed3342b2f20d45c8b3ecbc749270671cfd40e3b"
+  },
+  {
+    "id": "ONB-04",
+    "name": "Sesuaikan anggaran",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/ONB-04__sesuaikan-anggaran.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/ONB-04__sesuaikan-anggaran.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "b69d8ccde20034ad4bfb61834cb84a39ec5e5625cd4041eae6d3139178ddb9b4"
+  },
+  {
+    "id": "ONB-05",
+    "name": "Fitur opsional & selesai",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/ONB-05__fitur-opsional-selesai.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/ONB-05__fitur-opsional-selesai.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "6def00ead3ddfa31edeffe2db633c657892498778ebb6d609dfb94e89deff860"
+  },
+  {
+    "id": "ONB-05",
+    "name": "Fitur opsional & selesai",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/ONB-05__fitur-opsional-selesai.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/ONB-05__fitur-opsional-selesai.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "a2a4b786d3dcaa640386b286e953927132863e488f423d1ef3c7943398fd7c97"
+  },
+  {
+    "id": "PUB-01",
+    "name": "Landing",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/PUB-01__landing.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/PUB-01__landing.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "0a6b779c9d5389087ca6f08252da9db2c00486ee80a21c640020bbd2d22e6a27"
+  },
+  {
+    "id": "PUB-01",
+    "name": "Landing",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/PUB-01__landing.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/PUB-01__landing.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "948fc98517dc5882403486e9eccc6a3da61bc453848cbf67ca7322236fecda4b"
+  },
+  {
+    "id": "PUB-02",
+    "name": "Demo interaktif",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/PUB-02__demo-interaktif.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/PUB-02__demo-interaktif.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "645f1447cc7d4dc6dd5ca90caec4c070003abb37aba8225b65c1ca90ce92023f"
+  },
+  {
+    "id": "PUB-02",
+    "name": "Demo interaktif",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/PUB-02__demo-interaktif.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/PUB-02__demo-interaktif.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "092c6791b4189cc1b82adbbfe975af179a9a474c813996e2005beb8ae0ae1316"
+  },
+  {
+    "id": "PUB-03",
+    "name": "FAQ & pusat bantuan publik",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/PUB-03__faq-pusat-bantuan-publik.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/PUB-03__faq-pusat-bantuan-publik.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "b63f0ff6100488fba0d656e810264e5cb5d1bdf2b66d3124a4d18aafe7345be8"
+  },
+  {
+    "id": "PUB-03",
+    "name": "FAQ & pusat bantuan publik",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/PUB-03__faq-pusat-bantuan-publik.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/PUB-03__faq-pusat-bantuan-publik.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "50b22d719716c80fb2fd4ea9072b983f117de05c9549aba4c7673a4ac9e5fb71"
+  },
+  {
+    "id": "PUB-04",
+    "name": "Kontak dukungan",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/PUB-04__kontak-dukungan.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/PUB-04__kontak-dukungan.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "b6369cf1eb64ec9daa1f607583c9e86c93445f4769c97176e3139dbadff41e38"
+  },
+  {
+    "id": "PUB-04",
+    "name": "Kontak dukungan",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/PUB-04__kontak-dukungan.png",
+    "width": 1210,
+    "height": 867,
+    "source_board": "previews/PUB-04__kontak-dukungan.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1633,
+      930
+    ],
+    "sha256": "06c5d6f5de3b8938528dca06dddb5bfd95bc276d44d31305616561999be53650"
+  },
+  {
+    "id": "PUB-05",
+    "name": "Status layanan",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/PUB-05__status-layanan.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/PUB-05__status-layanan.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "7cecc6bdccbeac38f2829c17d8e6c65df1f440cc21fbca3337aad8e721d995a6"
+  },
+  {
+    "id": "PUB-05",
+    "name": "Status layanan",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/PUB-05__status-layanan.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/PUB-05__status-layanan.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "61ce93227dc9422d1fd2b3cfbe3ccd202bc46ddca9b779821156f67cbd51ab67"
+  },
+  {
+    "id": "PUB-06",
+    "name": "Kebijakan privasi",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/PUB-06__kebijakan-privasi.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/PUB-06__kebijakan-privasi.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "67f1a12bb2023b4269558b27888ae51a57090ca745c85dfb65dc8162951657a7"
+  },
+  {
+    "id": "PUB-06",
+    "name": "Kebijakan privasi",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/PUB-06__kebijakan-privasi.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/PUB-06__kebijakan-privasi.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "2bd119d775564c583f6daf0352b56f95fbf54a74c81bc8804fb478601d785827"
+  },
+  {
+    "id": "PUB-07",
+    "name": "Syarat layanan",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/PUB-07__syarat-layanan.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/PUB-07__syarat-layanan.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "12525bd91176ab30eca2eb04ba1feb6db35ea020974b78f237180d5c4ff7b121"
+  },
+  {
+    "id": "PUB-07",
+    "name": "Syarat layanan",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/PUB-07__syarat-layanan.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/PUB-07__syarat-layanan.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "46fa31b3948d95064cfc39d4f725ecef9d0d8b3859936a6953a9aa0813672597"
+  },
+  {
+    "id": "PUB-08",
+    "name": "Pembaruan produk",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/PUB-08__pembaruan-produk.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/PUB-08__pembaruan-produk.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "a665283d056e43fffe6de07d394ebc4cd16fde5b18b7254fb848c7daef594ed6"
+  },
+  {
+    "id": "PUB-08",
+    "name": "Pembaruan produk",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/PUB-08__pembaruan-produk.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/PUB-08__pembaruan-produk.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "4b3bc5f7a2a794cb87915fa42133c19a7149a0d56c85b5d692d6d655f6ca7baf"
+  },
+  {
+    "id": "REV-01",
+    "name": "Inbox perlu ditinjau",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/REV-01__inbox-perlu-ditinjau.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/REV-01__inbox-perlu-ditinjau.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "49c5297ebd5e3d621e82897851bc0fe402035e4205780224934e620cb6e35ded"
+  },
+  {
+    "id": "REV-01",
+    "name": "Inbox perlu ditinjau",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/REV-01__inbox-perlu-ditinjau.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/REV-01__inbox-perlu-ditinjau.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "13d02e3253f5ae38cd0161303135fe5349016f96363410b0cc77d54279b27741"
+  },
+  {
+    "id": "REV-02",
+    "name": "Unggah & proses bukti",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/REV-02__unggah-proses-bukti.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/REV-02__unggah-proses-bukti.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "77e0cf44b1c7acf5b0595db05e84863e2f5cda65be07a45ec3237bd73b542d80"
+  },
+  {
+    "id": "REV-02",
+    "name": "Unggah & proses bukti",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/REV-02__unggah-proses-bukti.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/REV-02__unggah-proses-bukti.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "e20502b2c04cdbab9c1401e9e9b0bc5db2ecda6ae51d72944825a29804c76ac9"
+  },
+  {
+    "id": "REV-03",
+    "name": "Review hasil bacaan",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/REV-03__review-hasil-bacaan.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/REV-03__review-hasil-bacaan.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "8e9e9e78fe95ff2040bc8b3f08772b268ea3a0fdc6e467eb108a4db06e2ccd2e"
+  },
+  {
+    "id": "REV-03",
+    "name": "Review hasil bacaan",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/REV-03__review-hasil-bacaan.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/REV-03__review-hasil-bacaan.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "ea6fabec642cc57085e032e7e1c80eea8d0b446b277b34514440afeddcf9990b"
+  },
+  {
+    "id": "REV-04",
+    "name": "Bandingkan hasil berbeda",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/REV-04__bandingkan-hasil-berbeda.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/REV-04__bandingkan-hasil-berbeda.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "1e6d3bd95a7317e936bbb40f1e015ca6816a589fe5221b531aae593783c51f8d"
+  },
+  {
+    "id": "REV-04",
+    "name": "Bandingkan hasil berbeda",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/REV-04__bandingkan-hasil-berbeda.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/REV-04__bandingkan-hasil-berbeda.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "ce9bfa23b1cda7b656951cf6201f6627cf79602e8c679c68c950d740b31d9864"
+  },
+  {
+    "id": "REV-05",
+    "name": "Periksa kemungkinan duplikat",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/REV-05__periksa-kemungkinan-duplikat.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/REV-05__periksa-kemungkinan-duplikat.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "829e9bf6ea5ac5becb3b59c3d3ff64e3196d3fa7d66f639d59e48b37efaf338a"
+  },
+  {
+    "id": "REV-05",
+    "name": "Periksa kemungkinan duplikat",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/REV-05__periksa-kemungkinan-duplikat.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/REV-05__periksa-kemungkinan-duplikat.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "7aca64cc1065e29a0d5e8781b0ae47e4bc596b0625c0b17569f2bb1472751f22"
+  },
+  {
+    "id": "SET-01",
+    "name": "Pusat pengaturan / Lainnya",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/SET-01__pusat-pengaturan-lainnya.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/SET-01__pusat-pengaturan-lainnya.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "690f9d5d2293f455be248457310884c1b1ca97b6f8b806bb0999eef2cdc01bf5"
+  },
+  {
+    "id": "SET-01",
+    "name": "Pusat pengaturan / Lainnya",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/SET-01__pusat-pengaturan-lainnya.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/SET-01__pusat-pengaturan-lainnya.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "59bc47c97f1d48e97cbf1172d3bfd379b22a80db37a3f93d2842bc79e2c914fb"
+  },
+  {
+    "id": "SET-02",
+    "name": "Profil",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/SET-02__profil.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/SET-02__profil.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "28a75203346d7b83fb911f4a8ae8de62415ed074e971077db74f0b4d2f8e0da6"
+  },
+  {
+    "id": "SET-02",
+    "name": "Profil",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/SET-02__profil.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/SET-02__profil.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "126676d3eaae6386c27f57fc797b34640ba6078dfc245b91c4535d0cfd52116d"
+  },
+  {
+    "id": "SET-03",
+    "name": "Tampilan & preferensi",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/SET-03__tampilan-preferensi.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/SET-03__tampilan-preferensi.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "2a1ee1549f73ac936aebc9ec82a7bb8bf85594d2c65ecfe670ece65cd498ff74"
+  },
+  {
+    "id": "SET-03",
+    "name": "Tampilan & preferensi",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/SET-03__tampilan-preferensi.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/SET-03__tampilan-preferensi.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "e823c80373e9cb1e7150e8c68dde35f9479a5f8bb3970bc08dfb976aa8b8d7b3"
+  },
+  {
+    "id": "SET-04",
+    "name": "Keamanan & perangkat",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/SET-04__keamanan-perangkat.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/SET-04__keamanan-perangkat.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "f34a46e2c94fc0dd4ca1a09c83440c03fcfb4a88f9aef4eb493f31820f7de53d"
+  },
+  {
+    "id": "SET-04",
+    "name": "Keamanan & perangkat",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/SET-04__keamanan-perangkat.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/SET-04__keamanan-perangkat.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "a8b46d51bacd8751f78663fd2ec33e36174e3d1b1f5b773bac95cb6822f8d4f2"
+  },
+  {
+    "id": "SET-05",
+    "name": "WhatsApp — pilihan & status",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/SET-05__whatsapp-pilihan-status.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/SET-05__whatsapp-pilihan-status.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "fcefe5192a87f5a8b502077e1a30c46dde79efa3107a3940e110726bbf2488d2"
+  },
+  {
+    "id": "SET-05",
+    "name": "WhatsApp — pilihan & status",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/SET-05__whatsapp-pilihan-status.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/SET-05__whatsapp-pilihan-status.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "204c3a3de61b59adaae55c3181e85546dc18b313ed8025fcdee31f69f23b16db"
+  },
+  {
+    "id": "SET-06",
+    "name": "Verifikasi nomor bot bersama",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/SET-06__verifikasi-nomor-bot-bersama.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/SET-06__verifikasi-nomor-bot-bersama.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "c417f695dc183bcae82bac5ecaffb2a32e7ae50eb825242902bee04c0b3b1f27"
+  },
+  {
+    "id": "SET-06",
+    "name": "Verifikasi nomor bot bersama",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/SET-06__verifikasi-nomor-bot-bersama.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/SET-06__verifikasi-nomor-bot-bersama.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "5ccb13cd31dd4e4c3d44b96eccd08781b3584081948d866e297d6c16effa12b6"
+  },
+  {
+    "id": "SET-07",
+    "name": "Tautkan WhatsApp pribadi",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/SET-07__tautkan-whatsapp-pribadi.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/SET-07__tautkan-whatsapp-pribadi.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "722dae7082a7a50f6512a4183219b90a11bbc03da5084a2d771697b1f5184e9c"
+  },
+  {
+    "id": "SET-07",
+    "name": "Tautkan WhatsApp pribadi",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/SET-07__tautkan-whatsapp-pribadi.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/SET-07__tautkan-whatsapp-pribadi.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "94d69a6cef7bf5f1a95f73ab31b1946f8ad5f1336fb007577b00b3112aeadb44"
+  },
+  {
+    "id": "SET-08",
+    "name": "Izin & aktivitas WhatsApp",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/SET-08__izin-aktivitas-whatsapp.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/SET-08__izin-aktivitas-whatsapp.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "ababa3a604805459e2cdcb023a723e3147fa7d4dcbab7f97945487ece707ff23"
+  },
+  {
+    "id": "SET-08",
+    "name": "Izin & aktivitas WhatsApp",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/SET-08__izin-aktivitas-whatsapp.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/SET-08__izin-aktivitas-whatsapp.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "89bfc515c50d439cac095f8ee61605462579d243036da5b8f8f85901529d9392"
+  },
+  {
+    "id": "SET-09",
+    "name": "AI, bukti & pemakaian",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/SET-09__ai-bukti-pemakaian.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/SET-09__ai-bukti-pemakaian.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "3965d55f6e1a483c045607b54b640cd649f429946c716587a462696efa5a05dd"
+  },
+  {
+    "id": "SET-09",
+    "name": "AI, bukti & pemakaian",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/SET-09__ai-bukti-pemakaian.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/SET-09__ai-bukti-pemakaian.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "9f0159218f3c54ccfa8b3a97b90d4331d7c281a2635ddadd27951a28b2889a99"
+  },
+  {
+    "id": "SET-10",
+    "name": "Pengingat & notifikasi",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/SET-10__pengingat-notifikasi.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/SET-10__pengingat-notifikasi.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "306c1394300ecc06130fd1a6895e5bba0a8e0a7b90d1270a0310fb2df90a8b53"
+  },
+  {
+    "id": "SET-10",
+    "name": "Pengingat & notifikasi",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/SET-10__pengingat-notifikasi.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/SET-10__pengingat-notifikasi.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "23b1ff2e901924a1f874f75dd03b500fe3fbc4f88819ebded44cc38bee96bb80"
+  },
+  {
+    "id": "SET-11",
+    "name": "Kategori & subkategori",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/SET-11__kategori-subkategori.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/SET-11__kategori-subkategori.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "eac7a6c740ca4f1eba75308f4fa95958df36ed1f98d5aa64ac7f625c63cbe122"
+  },
+  {
+    "id": "SET-11",
+    "name": "Kategori & subkategori",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/SET-11__kategori-subkategori.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/SET-11__kategori-subkategori.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "ecafaf8bb0b1a5adddd52d387a2c2425224fff015a3417fc1ae9627dfa62f98a"
+  },
+  {
+    "id": "SET-12",
+    "name": "Data & privasi",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/SET-12__data-privasi.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/SET-12__data-privasi.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "44c55224d71ddf89778cdca06f52e1cabf6c70432de7611d3796af47414e91d7"
+  },
+  {
+    "id": "SET-12",
+    "name": "Data & privasi",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/SET-12__data-privasi.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/SET-12__data-privasi.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "abbf28b861d2e0570fb042b424fb4c298db2f48b450c1d7c0dc569204ef8e654"
+  },
+  {
+    "id": "SET-13",
+    "name": "Impor — pemetaan",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/SET-13__impor-pemetaan.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/SET-13__impor-pemetaan.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "6580f93faa1d0dd3ac9b3457bb11ffc3261e42dfcb5000c81d294bb20b9cccfc"
+  },
+  {
+    "id": "SET-13",
+    "name": "Impor — pemetaan",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/SET-13__impor-pemetaan.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/SET-13__impor-pemetaan.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "b9648cc5de21b55394f4e96cf488c76d0de62a7b43c730032f69a2418a887f89"
+  },
+  {
+    "id": "SET-14",
+    "name": "Impor — pratinjau & hasil",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/SET-14__impor-pratinjau-hasil.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/SET-14__impor-pratinjau-hasil.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "058f004bc6d039abbd7e89ca7245a7f7b2f2935c2ec286cbeeeeed97a25c9502"
+  },
+  {
+    "id": "SET-14",
+    "name": "Impor — pratinjau & hasil",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/SET-14__impor-pratinjau-hasil.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/SET-14__impor-pratinjau-hasil.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "7c144da449e2fb73bdf0a4ea81e5a0d9d568f035523b61651a9abadf2c1e459e"
+  },
+  {
+    "id": "SET-15",
+    "name": "Pusat notifikasi",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/SET-15__pusat-notifikasi.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/SET-15__pusat-notifikasi.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "f8f86abb9ad724d3b1d32158404c67a2a6c68b746dc8da0d2696c0ae08387e0f"
+  },
+  {
+    "id": "SET-15",
+    "name": "Pusat notifikasi",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/SET-15__pusat-notifikasi.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/SET-15__pusat-notifikasi.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "40c48da0032b55714c79564f3a90239c24fc46160d93c5c81508e662c50853b9"
+  },
+  {
+    "id": "SET-16",
+    "name": "Bantuan & tiket saya",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/SET-16__bantuan-tiket-saya.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/SET-16__bantuan-tiket-saya.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "68b0ee4abe8c3d49cd9ec63531c0981fb28767ead4a9766122283009728f816c"
+  },
+  {
+    "id": "SET-16",
+    "name": "Bantuan & tiket saya",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/SET-16__bantuan-tiket-saya.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/SET-16__bantuan-tiket-saya.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "01d45f94df6e9d89087a824fa9bb0065f3e118b35ee0976250a63d0128f06532"
+  },
+  {
+    "id": "SET-17",
+    "name": "Detail tiket saya",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/SET-17__detail-tiket-saya.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/SET-17__detail-tiket-saya.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "0ff3360860121947c8c49507ba1fa222313ad52a6546b14c8191efeb46705097"
+  },
+  {
+    "id": "SET-17",
+    "name": "Detail tiket saya",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/SET-17__detail-tiket-saya.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/SET-17__detail-tiket-saya.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "a469db5cd905135ccd0fa66bee43ae50d7f0c7d25965ad434edda77b4f12c486"
+  },
+  {
+    "id": "SET-18",
+    "name": "Sinkronisasi & konflik",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/SET-18__sinkronisasi-konflik.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/SET-18__sinkronisasi-konflik.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "06b858d9032350aa4359872e6a1a7b1f20ab0f1a5bda7fdcfbb96ed17ebb9963"
+  },
+  {
+    "id": "SET-18",
+    "name": "Sinkronisasi & konflik",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/SET-18__sinkronisasi-konflik.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/SET-18__sinkronisasi-konflik.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "aae101b9be5a4762c4727c264be81166d0df1b9e8cb882c1b51ea3a1ea73cd62"
+  },
+  {
+    "id": "SET-19",
+    "name": "Hapus akun & progres",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/SET-19__hapus-akun-progres.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/SET-19__hapus-akun-progres.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "719f3dad4fd18d438e14c1a17bbdc685894e0843bd5276dadb342ca5f79a69da"
+  },
+  {
+    "id": "SET-19",
+    "name": "Hapus akun & progres",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/SET-19__hapus-akun-progres.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/SET-19__hapus-akun-progres.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "b7f1d0987d186a8d7bfefe589b98d9a3903fc19f7dc7ad55cf98dc5f80f83c93"
+  },
+  {
+    "id": "STATE-01",
+    "name": "Belum ada transaksi",
+    "surface": "mobile",
+    "kind": "state",
+    "file": "screens/mobile/STATE-01__belum-ada-transaksi.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/STATE-01__belum-ada-transaksi.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "60581d9d15ec246954c21d74a39d7918af8ea5d07992c56bb4859e86171f3760"
+  },
+  {
+    "id": "STATE-01",
+    "name": "Belum ada transaksi",
+    "surface": "web",
+    "kind": "state",
+    "file": "screens/web/STATE-01__belum-ada-transaksi.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/STATE-01__belum-ada-transaksi.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "08ebb92b3b3737bcf66de9ea41bd75f46b25f45bd8662cefb945340bd1b1a3ff"
+  },
+  {
+    "id": "STATE-02",
+    "name": "Upload gagal",
+    "surface": "mobile",
+    "kind": "state",
+    "file": "screens/mobile/STATE-02__upload-gagal.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/STATE-02__upload-gagal.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "38c72b307d03991441b4436bb5184b7535978ab419be9dd5370cbed484607106"
+  },
+  {
+    "id": "STATE-02",
+    "name": "Upload gagal",
+    "surface": "web",
+    "kind": "state",
+    "file": "screens/web/STATE-02__upload-gagal.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/STATE-02__upload-gagal.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "9271247559b73d5afdd460c194cabc7e822a8aba9adc639ea29ed3a2808cc740"
+  },
+  {
+    "id": "STATE-03",
+    "name": "Kode WhatsApp kedaluwarsa",
+    "surface": "mobile",
+    "kind": "state",
+    "file": "screens/mobile/STATE-03__kode-whatsapp-kedaluwarsa.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/STATE-03__kode-whatsapp-kedaluwarsa.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "8c69fe33644d2c174235ec9b3cec91a5d165e3e59e5069de83034f2003b1d1f0"
+  },
+  {
+    "id": "STATE-03",
+    "name": "Kode WhatsApp kedaluwarsa",
+    "surface": "web",
+    "kind": "state",
+    "file": "screens/web/STATE-03__kode-whatsapp-kedaluwarsa.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/STATE-03__kode-whatsapp-kedaluwarsa.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "3aea88784464bbb7b818822b44707afe2bb6a5b8220b4903c0c3574fcbaecc1a"
+  },
+  {
+    "id": "STATE-04",
+    "name": "Lebih anggaran",
+    "surface": "mobile",
+    "kind": "state",
+    "file": "screens/mobile/STATE-04__lebih-anggaran.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/STATE-04__lebih-anggaran.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "7b04105498509337521299100a5ba53db9c74491dd50ab316b377741437f744b"
+  },
+  {
+    "id": "STATE-04",
+    "name": "Lebih anggaran",
+    "surface": "web",
+    "kind": "state",
+    "file": "screens/web/STATE-04__lebih-anggaran.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/STATE-04__lebih-anggaran.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "c755bd9b15fd395aeea389a76297a11dc68fc5707c844d4b3a43f3d416707d48"
+  },
+  {
+    "id": "SYS-01",
+    "name": "Ringkasan sistem",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/SYS-01__ringkasan-sistem.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/SYS-01__ringkasan-sistem.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "753c7c7e2afc3df7f4a581e337b73c0eea01e03dfed29d8203db398a818dcc06"
+  },
+  {
+    "id": "SYS-01",
+    "name": "Ringkasan sistem",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/SYS-01__ringkasan-sistem.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/SYS-01__ringkasan-sistem.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "92bc1658b5f1a78d1cc7d3cac9c6bd3b51986230e84796945d0869eebaa9c322"
+  },
+  {
+    "id": "SYS-02",
+    "name": "Integrasi & kredensial",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/SYS-02__integrasi-kredensial.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/SYS-02__integrasi-kredensial.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "919e4dcf4498e12a63b1d557f2b73208968e798498e85df1f768a872c051607a"
+  },
+  {
+    "id": "SYS-02",
+    "name": "Integrasi & kredensial",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/SYS-02__integrasi-kredensial.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/SYS-02__integrasi-kredensial.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "63cbac52de7dff2a5913847de23ed17efdb356909b6c1b5b6c8ecd366d1ccd4f"
+  },
+  {
+    "id": "SYS-03",
+    "name": "Kuota & biaya",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/SYS-03__kuota-biaya.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/SYS-03__kuota-biaya.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "a0baaaae0b326fcb6daa7f8a2fd46b93f6c1845163f9af7ca7d200c9bdf20edd"
+  },
+  {
+    "id": "SYS-03",
+    "name": "Kuota & biaya",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/SYS-03__kuota-biaya.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/SYS-03__kuota-biaya.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "dd39c227c5f74b4a64d818cb84a41efa439b5907d708697b0507ee3049ef3606"
+  },
+  {
+    "id": "SYS-04",
+    "name": "Feature flags",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/SYS-04__feature-flags.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/SYS-04__feature-flags.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "12214edaf165b5db88ffbb8ae3576bd72315e2498875bf6b76cfe21d0d6de1fd"
+  },
+  {
+    "id": "SYS-04",
+    "name": "Feature flags",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/SYS-04__feature-flags.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/SYS-04__feature-flags.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "1dadee15b31f8411f60c10af97255529a967d1d612025c1a02d30ee8feb3984b"
+  },
+  {
+    "id": "SYS-05",
+    "name": "Peran & akses",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/SYS-05__peran-akses.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/SYS-05__peran-akses.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "33a11887da144303df5af0e88ce2be5c50b8a878f0dea50c231988a1c69b65cf"
+  },
+  {
+    "id": "SYS-05",
+    "name": "Peran & akses",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/SYS-05__peran-akses.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/SYS-05__peran-akses.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "ef414ac7652977629e00d44b40168c85918dd6cd3919879429be8924ffe1c470"
+  },
+  {
+    "id": "SYS-06",
+    "name": "Kebijakan reminder",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/SYS-06__kebijakan-reminder.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/SYS-06__kebijakan-reminder.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "2bdc2181a89e7dd3db5e65eae45cede613271d2485924a2c48706132e8b82a9e"
+  },
+  {
+    "id": "SYS-06",
+    "name": "Kebijakan reminder",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/SYS-06__kebijakan-reminder.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/SYS-06__kebijakan-reminder.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "37be1297b635cd20778064c5c584c8d16740d082f619dcef4dc0a7113a41a48c"
+  },
+  {
+    "id": "SYS-07",
+    "name": "Konten & kebijakan publik",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/SYS-07__konten-kebijakan-publik.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/SYS-07__konten-kebijakan-publik.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "b80606be8633ef70120bbe6f0b4a3f1f9eb21ceedfc9d8ee535d481947c7f32b"
+  },
+  {
+    "id": "SYS-07",
+    "name": "Konten & kebijakan publik",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/SYS-07__konten-kebijakan-publik.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/SYS-07__konten-kebijakan-publik.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "877820a4cffcca28ba87e9a1ce2ad7ab50e1c8b177adf251e3e93f466a0df3fd"
+  },
+  {
+    "id": "SYS-08",
+    "name": "Backup & pemulihan",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/SYS-08__backup-pemulihan.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/SYS-08__backup-pemulihan.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "b010dfa5c1e02b2fab1a6b6d6b5e1894b906b56303402a9cd1a32ab38b6d87ee"
+  },
+  {
+    "id": "SYS-08",
+    "name": "Backup & pemulihan",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/SYS-08__backup-pemulihan.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/SYS-08__backup-pemulihan.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "807291457ccaa8c840f6382e6b60d7963afda1fed151d8a630d76b5c3a2f6f83"
+  },
+  {
+    "id": "SYS-09",
+    "name": "Audit sensitif",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/SYS-09__audit-sensitif.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/SYS-09__audit-sensitif.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "fefc1da4e813154d15b86af822bf76c271af09921f0f97fc09f18215f31cd236"
+  },
+  {
+    "id": "SYS-09",
+    "name": "Audit sensitif",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/SYS-09__audit-sensitif.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/SYS-09__audit-sensitif.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "d30ebda54022e99d140ef4770408ca96a2ef0792fc7fcfdc6c543d6b1f08e4a9"
+  },
+  {
+    "id": "SYS-10",
+    "name": "Permintaan data",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/SYS-10__permintaan-data.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/SYS-10__permintaan-data.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "850caa2e739eb96321ba087a0c7a26d296dc08091d29bd4c60de730afe3cc513"
+  },
+  {
+    "id": "SYS-10",
+    "name": "Permintaan data",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/SYS-10__permintaan-data.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/SYS-10__permintaan-data.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "914409badf937cfc4a34e68e640a72b451fd29f0edbbab00e920d63af9e56b80"
+  },
+  {
+    "id": "SYS-11",
+    "name": "Insiden & pengumuman",
+    "surface": "mobile",
+    "kind": "main",
+    "file": "screens/mobile/SYS-11__insiden-pengumuman.png",
+    "width": 361,
+    "height": 867,
+    "source_board": "previews/SYS-11__insiden-pengumuman.jpg",
+    "source_crop_box": [
+      38,
+      63,
+      399,
+      930
+    ],
+    "sha256": "bc05ea7d1dc6eaf9ccec47ce26f133ec77528224b0a77bba38f502138e8335e9"
+  },
+  {
+    "id": "SYS-11",
+    "name": "Insiden & pengumuman",
+    "surface": "web",
+    "kind": "main",
+    "file": "screens/web/SYS-11__insiden-pengumuman.png",
+    "width": 1211,
+    "height": 867,
+    "source_board": "previews/SYS-11__insiden-pengumuman.jpg",
+    "source_crop_box": [
+      423,
+      63,
+      1634,
+      930
+    ],
+    "sha256": "91f985aa744a22f7bd0284e4a8ce4d4ec37756eb410ba8b9e13487a47f642fab"
+  }
+]

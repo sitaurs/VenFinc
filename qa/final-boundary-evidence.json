@@ -1,0 +1,5 @@
+{
+  "command": "./tools/pnpm.sh test:security && ./tools/pnpm.sh infra:smoke",
+  "exitCode": 0,
+  "output": "$ vitest run apps/edge/src/security.test.ts && node tools/scan-client.mjs\n\n RUN  v5.0.5 /home/zamn/VenFinance\n\n\n Test Files  1 passed (1)\n      Tests  9 passed (9)\n   Start at  11:41:46\n   Duration  3.71s (import 65%, tests 24%, transform 8%, worker 2%)\n\n{\"check\":\"client-secret-and-service-boundary-scan\",\"status\":\"PASS\",\"scannedFiles\":8,\"failures\":[],\"limitation\":\"Heuristic built-artifact scan; not a replacement for staging auth/RLS/security audit.\"}\n$ node tools/infra-smoke.mjs\n{\"status\":\"PASS\",\"scope\":\"local static assets + real workerd Hono route + fail-closed API\",\"externalProvidersTested\":false}\n"
+}

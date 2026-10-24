@@ -1,0 +1,67 @@
+{
+  "as_of": "2026-10-23",
+  "currency": "IDR",
+  "synthetic": true,
+  "wallets": {
+    "cash": 75000,
+    "bank": 450000,
+    "e_wallet": 125000,
+    "total": 650000
+  },
+  "monthly_budget": {
+    "target": 1200000,
+    "posted_expenses": 920000,
+    "remaining": 280000,
+    "pending_receipts_count": 2,
+    "pending_amount_excluded": 18000
+  },
+  "categories": [
+    {
+      "name": "Makan",
+      "spent": 330000,
+      "target": 400000
+    },
+    {
+      "name": "Transportasi",
+      "spent": 80000,
+      "target": 120000
+    },
+    {
+      "name": "Jajan",
+      "spent": 23000,
+      "target": 30000
+    },
+    {
+      "name": "Lainnya",
+      "spent": 487000,
+      "target": 650000
+    }
+  ],
+  "goal": {
+    "name": "Dana darurat",
+    "saved": 250000,
+    "target": 1000000,
+    "percent": 25,
+    "target_date": "2027-01-31",
+    "included_in_bank_wallet": true
+  },
+  "debt": {
+    "original": 500000,
+    "paid": 200000,
+    "remaining": 300000,
+    "next_installment": 100000,
+    "due_date": "2026-11-01"
+  },
+  "bank_reconciliation": {
+    "opening": 250000,
+    "income": 1200000,
+    "expenses": 750000,
+    "net_transfer_out": 250000,
+    "closing": 450000
+  },
+  "scenario_notes": {
+    "FLOW-03": "Transfer 50000 Bank to Tunai: Bank400000, Tunai125000, total unchanged650000",
+    "FLOW-06": "Draft repayment100000: bank350000,total550000,debt200000 after confirmation",
+    "STATE-04": "Alternative overspend fixture: target30000,spent35000,remaining-5000"
+  }
+}
