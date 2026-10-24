@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-24T05:23:37.726Z",
+  "checkedAt": "2026-10-24T06:54:20Z",
   "projectId": "hidden-unit-95812377",
   "organizationId": "org-snowy-scene-55200104",
   "organizationDisplayName": "VenFinance",
@@ -12,6 +12,7 @@
     "name": "production",
     "default": true,
     "protected": false,
+    "neonAuthEnabled": false,
     "applicationTablesObserved": false,
     "neonAuthSchemaObserved": false,
     "rowsRead": false
@@ -29,30 +30,73 @@
       "autoscaling_limit_max_cu": 2,
       "suspend_timeout_seconds": 0
     },
-    "endpointEffectiveSettingsVerified": false
+    "endpointEffectiveSettingsVerified": true,
+    "observedEndpoint": {
+      "state": "idle",
+      "autoscalingMinCu": 0.25,
+      "autoscalingMaxCu": 2,
+      "suspendTimeoutSeconds": 0,
+      "poolerEnabled": false
+    }
   },
   "stagingBranch": {
     "id": "br-aged-mode-b4rcy9i0",
     "name": "venfinance-p0-auth-20261024",
     "parentId": "br-rapid-band-b4jw3tlq",
     "default": false,
+    "protected": false,
     "createdAt": "2026-10-24T05:22:40Z",
     "metadataVerifiedBySeparateDescribe": true,
     "computeCreated": false,
+    "neonAuthEnabled": false,
     "authProvisioned": false,
     "applicationMigrationApplied": false,
     "autoExpiryConfigured": false
   },
-  "state": "project_and_staging_scope_verified_auth_sql_capabilities_pending",
-  "missingConnectorCapabilities": [
-    "SQL execution",
-    "connection retrieval",
-    "Auth configuration"
-  ],
+  "readOnlyMcpRecheck": {
+    "checkedAt": "2026-10-24T06:54:20Z",
+    "projectAndBranchScopeVerified": true,
+    "readOnlyToolsUsed": [
+      "describe_project",
+      "list_branches",
+      "get_default_branch",
+      "list_postgres_endpoints",
+      "describe_branch",
+      "get_auth"
+    ],
+    "observations": [
+      "Neon Auth is not enabled on the default production branch or the isolated child branch.",
+      "The production branch is the default branch and is not protected.",
+      "The child staging branch has no compute endpoint and no observed compute usage.",
+      "The production endpoint is idle; its current autoscaling and suspend settings were read without starting compute."
+    ],
+    "sqlExecuted": false,
+    "connectionStringRetrieved": false,
+    "authUsersCreated": false,
+    "computeStarted": false,
+    "writesNotPerformed": [
+      "Provision Neon Auth",
+      "Apply database SQL or migrations",
+      "Create test users",
+      "Start a Postgres compute endpoint"
+    ],
+    "writeScope": "Owner authorization currently covers infrastructure analysis. Staging writes and compute usage require explicit approval."
+  },
+  "mcpCapabilities": {
+    "inspectionAndSqlAuthToolsExposed": true,
+    "sqlAndAuthWritesInvoked": false,
+    "cliLoginRequiredForCurrentMcpPath": false
+  },
+  "authRoadmapCheck": {
+    "source": "https://neon.com/docs/auth/roadmap",
+    "checkedAt": "2026-10-24T06:54:20Z",
+    "managedMfa": "MFA support remains listed as coming soon."
+  },
+  "state": "scope_verified_auth_disabled_staging_poc_waits_for_write_approval",
   "productionReady": false,
   "productionMigrationApplied": false,
   "secretsPersisted": false,
-  "note": "Project and parent branch belong to owner-confirmed scope. Only child staging branch creation was performed; no compute, auth users, schema migration or live deployment.",
+  "note": "Read-only MCP inspection is current. The only existing staging resource is the named child branch; no compute, auth users, schema migration, or live deployment was performed.",
   "accessPath": "MCP",
   "cliLoginRequired": false,
   "cliFallbackWithdrawn": true

@@ -102,7 +102,7 @@
       "blockers": [
         {
           "gate": "G-IDENTITY",
-          "reason": "Neon project and isolated no-compute child branch verified through MCP. Auth/SQL/connection tools are not exposed in this session. Actual Worker A/B verified sessions, revoke/JWT/RLS proof and operator MFA remain unverified. No CLI login is required for the active MCP path."
+          "reason": "Read-only Neon MCP tools are now available. Checks confirm Neon Auth is disabled on both the unprotected default branch named production and the isolated child staging branch; the Neon Auth roadmap still lists Managed MFA as coming soon. The owner's current authorization covers analysis; provisioning Auth, applying SQL, creating test users, or starting staging compute requires explicit write approval and may consume quota. Actual Worker A/B sessions, revoke/JWT/RLS proof, Cloudflare Access MFA binding, and step-up remain unverified. CLI login is not required for the MCP path."
         }
       ],
       "minimum_verification": "PoC user A/B, session revoke, role JWT + akses data ditolak; dokumentasi masalah."
