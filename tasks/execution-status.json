@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-24 12:10:45 UTC",
+  "updated_at": "2026-10-24 12:17:52 UTC",
   "source_of_truth": "Execution status only; task source markdown keeps the original baseline wording. A blocked external gate is not done.",
   "status_values": [
     "todo",
@@ -92,6 +92,7 @@
       "status": "blocked",
       "evidence": [
         "qa/neon-readiness-2026-10-24.json",
+        "qa/staging-host-readiness-2026-10-24.json",
         "qa/neon-poc/evidence-2026-10-24.json",
         "qa/neon-poc/README.md",
         "qa/neon-poc/test_auth.mjs",
@@ -106,7 +107,7 @@
       "blockers": [
         {
           "gate": "G-IDENTITY",
-          "reason": "Staging Neon Auth + Hono POC proves A/B isolation, anonymous/tampered-JWT denial, and forged-owner denial through its staging Data API test path. Direct replay to that Neon Data API after sign-out still returns HTTP 200 for the remaining 900-second JWT (no sid claim); this does not test the current app Hono cookie-to-get-session boundary, whose local revoked-cookie/stale-bearer test now denies access. The live app Worker+RLS revocation path is unverified. Direct @neondatabase/serverless with the NOBYPASSRLS worker role cannot call auth.user_id() because schema auth is owned by cloud_admin. Operator MFA/email verification remain release blockers. The separate unused staging role with BYPASSRLS and neon_superuser membership was deleted after explicit owner approval and verified absent; production was not modified."
+          "reason": "Staging Neon Auth + Hono POC proves A/B isolation, anonymous/tampered-JWT denial, and forged-owner denial through its staging Data API test path. Catalog inspection confirms all 11 application tables on the staging branch have RLS enabled and forced, but this is metadata evidence, not a live two-tenant Worker test. Direct replay to that Neon Data API after sign-out still returns HTTP 200 for the remaining 900-second JWT (no sid claim); this does not test the current app Hono cookie-to-get-session boundary, whose local revoked-cookie/stale-bearer test now denies access. The live app Worker+RLS revocation path is unverified. Direct @neondatabase/serverless with the NOBYPASSRLS worker role cannot call auth.user_id() because schema auth is owned by cloud_admin. Neon Auth provider config still allows direct signup without email verification despite the Worker proxy signup flag being disabled; direct provider signup is untested. Operator MFA/email verification remain release blockers. The separate unused staging role with BYPASSRLS and neon_superuser membership was deleted after explicit owner approval and verified absent; production was not modified."
         }
       ],
       "minimum_verification": "PoC user A/B, session revoke, role JWT + akses data ditolak; dokumentasi masalah."

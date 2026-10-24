@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-24T12:11:48Z",
+  "checkedAt": "2026-10-24T12:17:52Z",
   "decision": {
     "adr": "research/adr/ADR-0002-STAGING-HOSTNAME.md",
     "ownerApproved": true,
@@ -36,10 +36,37 @@
     "stagingBranchId": "br-aged-mode-b4rcy9i0",
     "stagingBranchName": "venfinance-p0-auth-20261024",
     "authProvider": "better_auth",
+    "authSettings": {
+      "signupAllowedAtProvider": true,
+      "emailVerificationRequired": false,
+      "emailProvider": "shared",
+      "managedMfaAvailable": false,
+      "honoSignupProxyDisabled": true,
+      "directProviderSignupTested": false
+    },
     "stagingTrustedOriginAdded": true,
     "stagingDataApiStatus": "active",
+    "applicationRlsInventory": {
+      "applicationTableCount": 11,
+      "rlsEnabledAndForcedForAll": true,
+      "evidence": "PostgreSQL catalog SELECT on staging branch at 2026-10-24T12:15Z; metadata only, not a two-tenant Worker behavior test.",
+      "tables": [
+        "audit.security_events",
+        "p0_005_poc.owner_probe",
+        "platform.roles",
+        "public.categories",
+        "public.category_allocations",
+        "public.command_idempotency",
+        "public.finance_events",
+        "public.ledger_accounts",
+        "public.ledger_postings",
+        "public.user_profiles",
+        "public.wallets"
+      ]
+    },
     "stagingComputeEndpointId": "ep-rapid-flower-b46lkbp1",
     "stagingComputeState": "idle",
+    "stagingComputeLastSuspendedAt": "2026-10-24T12:17:22Z",
     "stagingComputeSuspendTimeoutSeconds": 0
   },
   "local": {
@@ -65,7 +92,7 @@
   "openBlockers": [
     "Wrangler CLI must be logged in to upload the compiled Worker and PWA assets.",
     "Access Allow policy needs an approved operator/tester email allowlist and an IdP that proves MFA; current One-time PIN provider is not accepted as MFA.",
-    "No tester-owned synthetic inbox; public signup remains disabled.",
+    "No tester-owned synthetic inbox. Hono proxy signup is disabled, but Neon Auth provider settings still allow signup without email verification; direct provider signup was not tested and must be closed at provider level before staging QA.",
     "Live Hono Worker session/revocation, role propagation and two-tenant RLS tests remain outstanding."
   ],
   "productionReady": false
