@@ -76,5 +76,11 @@
     "The client scan is heuristic and does not replace Worker auth/RLS or a security audit.",
     "No live auth, ledger, Neon RLS, owner-checked R2, WhatsApp, AI, Armbian worker, or production deployment was verified by this task.",
     "Overall project readiness remains false; external gates remain blocked as tracked in tasks/execution-status.json and qa/ACCEPTANCE-MATRIX.md."
-  ]
+  ],
+  "commit": {
+    "sha": "54c39c352aa205d4a9a2f688f850783e68bbdceb",
+    "branch": "main",
+    "remote": "https://github.com/sitaurs/VenFinc.git",
+    "remote_ref_sha_verified": "54c39c352aa205d4a9a2f688f850783e68bbdceb"
+  }
 }
