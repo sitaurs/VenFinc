@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-24 07:05:52 UTC",
+  "updated_at": "2026-10-24 11:56:58 UTC",
   "source_of_truth": "Execution status only; task source markdown keeps the original baseline wording. A blocked external gate is not done.",
   "status_values": [
     "todo",
@@ -983,9 +983,16 @@
         "P2-002",
         "P2-003"
       ],
-      "status": "todo",
-      "evidence": [],
-      "blockers": [],
+      "status": "blocked",
+      "evidence": [
+        "apps/edge/src/index.ts",
+        "apps/edge/src/finance.test.ts",
+        "qa/unit-test-evidence.json",
+        "qa/local-quality-evidence.json"
+      ],
+      "blockers": [
+        "P2-002 and P2-003 remain blocked: live Hono Worker identity propagation and two-provider-user RLS tests have not passed. Local tests verify trusted current_platform_role lookup, user/header forgery denial, admin/system separation, and no admin ledger endpoint; they do not prove live staging role claims or tenant isolation. Operator promotion/bootstrap, step-up MFA, and audit controls are still separate incomplete gates."
+      ],
       "minimum_verification": "User cannot elevate role or access /admin,/system; admin cannot access ledger user."
     },
     {
@@ -1221,7 +1228,7 @@
       "status": "todo",
       "evidence": [],
       "blockers": [],
-      "minimum_verification": "Buktikan AC-TRUST-001-A dan AC-TRUST-001-B yang relevan: **Diberikan** pengguna atau operator memulai tindakan yang memproses data pribadi, **ketika** pengguna menjalankan kemampuan \"Pemisahan tenant/user pada semua catatan, object storage, job AI dan WA.\", **maka** Akses lintas pemilik ditolak pada server dan lapisan data. Negative/boundary: A mengakses ID transaksi atau object R2 B → selalu ditolak, termasuk ketika file URL lama atau role operator dipakai. Tes dua tenant + retry/idempotency jika operasi menyentuh data pengguna."
+      "minimum_verification": "Buktikan AC-TRUST-001-A dan AC-TRUST-001-B yang relevan: **Diberikan** pengguna atau operator memulai tindakan yang memproses data pribadi, **ketika** pengguna menjalankan kemampuan \"Pemisahan tenant/user pada semua catatan, object storage, job AI dan WA.\", **maka** Akses lintas pemilik ditolak pada server dan lapisan data. Negative/boundary: A mengakses ID transaksi atau object R2 B \u2192 selalu ditolak, termasuk ketika file URL lama atau role operator dipakai. Tes dua tenant + retry/idempotency jika operasi menyentuh data pengguna."
     },
     {
       "id": "P2-TRUST-002",
@@ -2239,7 +2246,7 @@
     },
     {
       "id": "P4-SCREEN-PUB-01",
-      "title": "UI PUB-01 — Landing",
+      "title": "UI PUB-01 \u2014 Landing",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2252,7 +2259,7 @@
     },
     {
       "id": "P4-SCREEN-PUB-02",
-      "title": "UI PUB-02 — Demo interaktif",
+      "title": "UI PUB-02 \u2014 Demo interaktif",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2265,7 +2272,7 @@
     },
     {
       "id": "P4-SCREEN-PUB-03",
-      "title": "UI PUB-03 — FAQ & pusat bantuan publik",
+      "title": "UI PUB-03 \u2014 FAQ & pusat bantuan publik",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2278,7 +2285,7 @@
     },
     {
       "id": "P4-SCREEN-PUB-04",
-      "title": "UI PUB-04 — Kontak dukungan",
+      "title": "UI PUB-04 \u2014 Kontak dukungan",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2291,7 +2298,7 @@
     },
     {
       "id": "P4-SCREEN-PUB-05",
-      "title": "UI PUB-05 — Status layanan",
+      "title": "UI PUB-05 \u2014 Status layanan",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2304,7 +2311,7 @@
     },
     {
       "id": "P4-SCREEN-PUB-06",
-      "title": "UI PUB-06 — Kebijakan privasi",
+      "title": "UI PUB-06 \u2014 Kebijakan privasi",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2317,7 +2324,7 @@
     },
     {
       "id": "P4-SCREEN-PUB-07",
-      "title": "UI PUB-07 — Syarat layanan",
+      "title": "UI PUB-07 \u2014 Syarat layanan",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2330,7 +2337,7 @@
     },
     {
       "id": "P4-SCREEN-PUB-08",
-      "title": "UI PUB-08 — Pembaruan produk",
+      "title": "UI PUB-08 \u2014 Pembaruan produk",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2343,7 +2350,7 @@
     },
     {
       "id": "P4-SCREEN-AUTH-01",
-      "title": "UI AUTH-01 — Masuk",
+      "title": "UI AUTH-01 \u2014 Masuk",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2357,7 +2364,7 @@
     },
     {
       "id": "P4-SCREEN-AUTH-02",
-      "title": "UI AUTH-02 — Daftar",
+      "title": "UI AUTH-02 \u2014 Daftar",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2371,7 +2378,7 @@
     },
     {
       "id": "P4-SCREEN-AUTH-03",
-      "title": "UI AUTH-03 — Verifikasi email",
+      "title": "UI AUTH-03 \u2014 Verifikasi email",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2385,7 +2392,7 @@
     },
     {
       "id": "P4-SCREEN-AUTH-04",
-      "title": "UI AUTH-04 — Lupa password",
+      "title": "UI AUTH-04 \u2014 Lupa password",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2399,7 +2406,7 @@
     },
     {
       "id": "P4-SCREEN-AUTH-05",
-      "title": "UI AUTH-05 — Reset password",
+      "title": "UI AUTH-05 \u2014 Reset password",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2413,7 +2420,7 @@
     },
     {
       "id": "P4-SCREEN-AUTH-06",
-      "title": "UI AUTH-06 — Verifikasi keamanan",
+      "title": "UI AUTH-06 \u2014 Verifikasi keamanan",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2427,7 +2434,7 @@
     },
     {
       "id": "P4-SCREEN-AUTH-07",
-      "title": "UI AUTH-07 — Akses akun dibatasi",
+      "title": "UI AUTH-07 \u2014 Akses akun dibatasi",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2441,7 +2448,7 @@
     },
     {
       "id": "P4-SCREEN-ONB-01",
-      "title": "UI ONB-01 — Kenalan & preferensi",
+      "title": "UI ONB-01 \u2014 Kenalan & preferensi",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2455,7 +2462,7 @@
     },
     {
       "id": "P4-SCREEN-ONB-02",
-      "title": "UI ONB-02 — Sumber uang awal",
+      "title": "UI ONB-02 \u2014 Sumber uang awal",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2469,7 +2476,7 @@
     },
     {
       "id": "P4-SCREEN-ONB-03",
-      "title": "UI ONB-03 — Pilih rencana anggaran",
+      "title": "UI ONB-03 \u2014 Pilih rencana anggaran",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2483,7 +2490,7 @@
     },
     {
       "id": "P4-SCREEN-ONB-04",
-      "title": "UI ONB-04 — Sesuaikan anggaran",
+      "title": "UI ONB-04 \u2014 Sesuaikan anggaran",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2497,7 +2504,7 @@
     },
     {
       "id": "P4-SCREEN-ONB-05",
-      "title": "UI ONB-05 — Fitur opsional & selesai",
+      "title": "UI ONB-05 \u2014 Fitur opsional & selesai",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2511,7 +2518,7 @@
     },
     {
       "id": "P4-SCREEN-FIN-UI-01",
-      "title": "UI FIN-UI-01 — Beranda",
+      "title": "UI FIN-UI-01 \u2014 Beranda",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2525,7 +2532,7 @@
     },
     {
       "id": "P4-SCREEN-FIN-UI-02",
-      "title": "UI FIN-UI-02 — Riwayat transaksi",
+      "title": "UI FIN-UI-02 \u2014 Riwayat transaksi",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2539,7 +2546,7 @@
     },
     {
       "id": "P4-SCREEN-FIN-UI-03",
-      "title": "UI FIN-UI-03 — Detail transaksi",
+      "title": "UI FIN-UI-03 \u2014 Detail transaksi",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2553,7 +2560,7 @@
     },
     {
       "id": "P4-SCREEN-FIN-UI-04",
-      "title": "UI FIN-UI-04 — Kalender pencatatan",
+      "title": "UI FIN-UI-04 \u2014 Kalender pencatatan",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2567,7 +2574,7 @@
     },
     {
       "id": "P4-SCREEN-FIN-UI-05",
-      "title": "UI FIN-UI-05 — Daftar dompet",
+      "title": "UI FIN-UI-05 \u2014 Daftar dompet",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2581,7 +2588,7 @@
     },
     {
       "id": "P4-SCREEN-FIN-UI-06",
-      "title": "UI FIN-UI-06 — Detail dompet",
+      "title": "UI FIN-UI-06 \u2014 Detail dompet",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2595,7 +2602,7 @@
     },
     {
       "id": "P4-SCREEN-FIN-UI-07",
-      "title": "UI FIN-UI-07 — Ringkasan anggaran",
+      "title": "UI FIN-UI-07 \u2014 Ringkasan anggaran",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2609,7 +2616,7 @@
     },
     {
       "id": "P4-SCREEN-FIN-UI-08",
-      "title": "UI FIN-UI-08 — Detail kantong anggaran",
+      "title": "UI FIN-UI-08 \u2014 Detail kantong anggaran",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2623,7 +2630,7 @@
     },
     {
       "id": "P4-SCREEN-FIN-UI-09",
-      "title": "UI FIN-UI-09 — Daftar target tabungan",
+      "title": "UI FIN-UI-09 \u2014 Daftar target tabungan",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2637,7 +2644,7 @@
     },
     {
       "id": "P4-SCREEN-FIN-UI-10",
-      "title": "UI FIN-UI-10 — Detail target",
+      "title": "UI FIN-UI-10 \u2014 Detail target",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2651,7 +2658,7 @@
     },
     {
       "id": "P4-SCREEN-FIN-UI-11",
-      "title": "UI FIN-UI-11 — Daftar utang & piutang",
+      "title": "UI FIN-UI-11 \u2014 Daftar utang & piutang",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2665,7 +2672,7 @@
     },
     {
       "id": "P4-SCREEN-FIN-UI-12",
-      "title": "UI FIN-UI-12 — Detail utang/piutang",
+      "title": "UI FIN-UI-12 \u2014 Detail utang/piutang",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2679,7 +2686,7 @@
     },
     {
       "id": "P4-SCREEN-FIN-UI-13",
-      "title": "UI FIN-UI-13 — Tagihan & catatan berulang",
+      "title": "UI FIN-UI-13 \u2014 Tagihan & catatan berulang",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2693,7 +2700,7 @@
     },
     {
       "id": "P4-SCREEN-FIN-UI-14",
-      "title": "UI FIN-UI-14 — Detail tagihan",
+      "title": "UI FIN-UI-14 \u2014 Detail tagihan",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2707,7 +2714,7 @@
     },
     {
       "id": "P4-SCREEN-FIN-UI-15",
-      "title": "UI FIN-UI-15 — Laporan & insight",
+      "title": "UI FIN-UI-15 \u2014 Laporan & insight",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2721,7 +2728,7 @@
     },
     {
       "id": "P4-SCREEN-FIN-UI-16",
-      "title": "UI FIN-UI-16 — Simulasi belanja",
+      "title": "UI FIN-UI-16 \u2014 Simulasi belanja",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2735,7 +2742,7 @@
     },
     {
       "id": "P4-SCREEN-REV-01",
-      "title": "UI REV-01 — Inbox perlu ditinjau",
+      "title": "UI REV-01 \u2014 Inbox perlu ditinjau",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2748,7 +2755,7 @@
     },
     {
       "id": "P4-SCREEN-REV-02",
-      "title": "UI REV-02 — Unggah & proses bukti",
+      "title": "UI REV-02 \u2014 Unggah & proses bukti",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2761,7 +2768,7 @@
     },
     {
       "id": "P4-SCREEN-REV-03",
-      "title": "UI REV-03 — Review hasil bacaan",
+      "title": "UI REV-03 \u2014 Review hasil bacaan",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2774,7 +2781,7 @@
     },
     {
       "id": "P4-SCREEN-REV-04",
-      "title": "UI REV-04 — Bandingkan hasil berbeda",
+      "title": "UI REV-04 \u2014 Bandingkan hasil berbeda",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2787,7 +2794,7 @@
     },
     {
       "id": "P4-SCREEN-REV-05",
-      "title": "UI REV-05 — Periksa kemungkinan duplikat",
+      "title": "UI REV-05 \u2014 Periksa kemungkinan duplikat",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2800,7 +2807,7 @@
     },
     {
       "id": "P4-SCREEN-SET-01",
-      "title": "UI SET-01 — Pusat pengaturan / Lainnya",
+      "title": "UI SET-01 \u2014 Pusat pengaturan / Lainnya",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2814,7 +2821,7 @@
     },
     {
       "id": "P4-SCREEN-SET-02",
-      "title": "UI SET-02 — Profil",
+      "title": "UI SET-02 \u2014 Profil",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2828,7 +2835,7 @@
     },
     {
       "id": "P4-SCREEN-SET-03",
-      "title": "UI SET-03 — Tampilan & preferensi",
+      "title": "UI SET-03 \u2014 Tampilan & preferensi",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2842,7 +2849,7 @@
     },
     {
       "id": "P4-SCREEN-SET-04",
-      "title": "UI SET-04 — Keamanan & perangkat",
+      "title": "UI SET-04 \u2014 Keamanan & perangkat",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2856,7 +2863,7 @@
     },
     {
       "id": "P4-SCREEN-SET-05",
-      "title": "UI SET-05 — WhatsApp — pilihan & status",
+      "title": "UI SET-05 \u2014 WhatsApp \u2014 pilihan & status",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2870,7 +2877,7 @@
     },
     {
       "id": "P4-SCREEN-SET-06",
-      "title": "UI SET-06 — Verifikasi nomor bot bersama",
+      "title": "UI SET-06 \u2014 Verifikasi nomor bot bersama",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2884,7 +2891,7 @@
     },
     {
       "id": "P4-SCREEN-SET-07",
-      "title": "UI SET-07 — Tautkan WhatsApp pribadi",
+      "title": "UI SET-07 \u2014 Tautkan WhatsApp pribadi",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2898,7 +2905,7 @@
     },
     {
       "id": "P4-SCREEN-SET-08",
-      "title": "UI SET-08 — Izin & aktivitas WhatsApp",
+      "title": "UI SET-08 \u2014 Izin & aktivitas WhatsApp",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2912,7 +2919,7 @@
     },
     {
       "id": "P4-SCREEN-SET-09",
-      "title": "UI SET-09 — AI, bukti & pemakaian",
+      "title": "UI SET-09 \u2014 AI, bukti & pemakaian",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2926,7 +2933,7 @@
     },
     {
       "id": "P4-SCREEN-SET-10",
-      "title": "UI SET-10 — Pengingat & notifikasi",
+      "title": "UI SET-10 \u2014 Pengingat & notifikasi",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2940,7 +2947,7 @@
     },
     {
       "id": "P4-SCREEN-SET-11",
-      "title": "UI SET-11 — Kategori & subkategori",
+      "title": "UI SET-11 \u2014 Kategori & subkategori",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2954,7 +2961,7 @@
     },
     {
       "id": "P4-SCREEN-SET-12",
-      "title": "UI SET-12 — Data & privasi",
+      "title": "UI SET-12 \u2014 Data & privasi",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2968,7 +2975,7 @@
     },
     {
       "id": "P4-SCREEN-SET-13",
-      "title": "UI SET-13 — Impor — pemetaan",
+      "title": "UI SET-13 \u2014 Impor \u2014 pemetaan",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2982,7 +2989,7 @@
     },
     {
       "id": "P4-SCREEN-SET-14",
-      "title": "UI SET-14 — Impor — pratinjau & hasil",
+      "title": "UI SET-14 \u2014 Impor \u2014 pratinjau & hasil",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -2996,7 +3003,7 @@
     },
     {
       "id": "P4-SCREEN-SET-15",
-      "title": "UI SET-15 — Pusat notifikasi",
+      "title": "UI SET-15 \u2014 Pusat notifikasi",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -3010,7 +3017,7 @@
     },
     {
       "id": "P4-SCREEN-SET-16",
-      "title": "UI SET-16 — Bantuan & tiket saya",
+      "title": "UI SET-16 \u2014 Bantuan & tiket saya",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -3024,7 +3031,7 @@
     },
     {
       "id": "P4-SCREEN-SET-17",
-      "title": "UI SET-17 — Detail tiket saya",
+      "title": "UI SET-17 \u2014 Detail tiket saya",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -3038,7 +3045,7 @@
     },
     {
       "id": "P4-SCREEN-SET-18",
-      "title": "UI SET-18 — Sinkronisasi & konflik",
+      "title": "UI SET-18 \u2014 Sinkronisasi & konflik",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -3052,7 +3059,7 @@
     },
     {
       "id": "P4-SCREEN-SET-19",
-      "title": "UI SET-19 — Hapus akun & progres",
+      "title": "UI SET-19 \u2014 Hapus akun & progres",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -3066,7 +3073,7 @@
     },
     {
       "id": "P4-SCREEN-ADM-01",
-      "title": "UI ADM-01 — Dashboard operasional",
+      "title": "UI ADM-01 \u2014 Dashboard operasional",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -3080,7 +3087,7 @@
     },
     {
       "id": "P4-SCREEN-ADM-02",
-      "title": "UI ADM-02 — Daftar akun",
+      "title": "UI ADM-02 \u2014 Daftar akun",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -3094,7 +3101,7 @@
     },
     {
       "id": "P4-SCREEN-ADM-03",
-      "title": "UI ADM-03 — Moderasi & banding akun",
+      "title": "UI ADM-03 \u2014 Moderasi & banding akun",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -3108,7 +3115,7 @@
     },
     {
       "id": "P4-SCREEN-ADM-04",
-      "title": "UI ADM-04 — Antrean support",
+      "title": "UI ADM-04 \u2014 Antrean support",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -3122,7 +3129,7 @@
     },
     {
       "id": "P4-SCREEN-ADM-05",
-      "title": "UI ADM-05 — Detail tiket berizin",
+      "title": "UI ADM-05 \u2014 Detail tiket berizin",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -3136,7 +3143,7 @@
     },
     {
       "id": "P4-SCREEN-ADM-06",
-      "title": "UI ADM-06 — Insiden & antrean pekerjaan",
+      "title": "UI ADM-06 \u2014 Insiden & antrean pekerjaan",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -3150,7 +3157,7 @@
     },
     {
       "id": "P4-SCREEN-ADM-07",
-      "title": "UI ADM-07 — Audit operasional",
+      "title": "UI ADM-07 \u2014 Audit operasional",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -3164,7 +3171,7 @@
     },
     {
       "id": "P4-SCREEN-SYS-01",
-      "title": "UI SYS-01 — Ringkasan sistem",
+      "title": "UI SYS-01 \u2014 Ringkasan sistem",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -3178,7 +3185,7 @@
     },
     {
       "id": "P4-SCREEN-SYS-02",
-      "title": "UI SYS-02 — Integrasi & kredensial",
+      "title": "UI SYS-02 \u2014 Integrasi & kredensial",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -3192,7 +3199,7 @@
     },
     {
       "id": "P4-SCREEN-SYS-03",
-      "title": "UI SYS-03 — Kuota & biaya",
+      "title": "UI SYS-03 \u2014 Kuota & biaya",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -3206,7 +3213,7 @@
     },
     {
       "id": "P4-SCREEN-SYS-04",
-      "title": "UI SYS-04 — Feature flags",
+      "title": "UI SYS-04 \u2014 Feature flags",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -3220,7 +3227,7 @@
     },
     {
       "id": "P4-SCREEN-SYS-05",
-      "title": "UI SYS-05 — Peran & akses",
+      "title": "UI SYS-05 \u2014 Peran & akses",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -3234,7 +3241,7 @@
     },
     {
       "id": "P4-SCREEN-SYS-06",
-      "title": "UI SYS-06 — Kebijakan reminder",
+      "title": "UI SYS-06 \u2014 Kebijakan reminder",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -3248,7 +3255,7 @@
     },
     {
       "id": "P4-SCREEN-SYS-07",
-      "title": "UI SYS-07 — Konten & kebijakan publik",
+      "title": "UI SYS-07 \u2014 Konten & kebijakan publik",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -3262,7 +3269,7 @@
     },
     {
       "id": "P4-SCREEN-SYS-08",
-      "title": "UI SYS-08 — Backup & pemulihan",
+      "title": "UI SYS-08 \u2014 Backup & pemulihan",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -3276,7 +3283,7 @@
     },
     {
       "id": "P4-SCREEN-SYS-09",
-      "title": "UI SYS-09 — Audit sensitif",
+      "title": "UI SYS-09 \u2014 Audit sensitif",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -3290,7 +3297,7 @@
     },
     {
       "id": "P4-SCREEN-SYS-10",
-      "title": "UI SYS-10 — Permintaan data",
+      "title": "UI SYS-10 \u2014 Permintaan data",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -3304,7 +3311,7 @@
     },
     {
       "id": "P4-SCREEN-SYS-11",
-      "title": "UI SYS-11 — Insiden & pengumuman",
+      "title": "UI SYS-11 \u2014 Insiden & pengumuman",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -3318,7 +3325,7 @@
     },
     {
       "id": "P4-SCREEN-FLOW-01",
-      "title": "UI FLOW-01 — Catat angka cepat",
+      "title": "UI FLOW-01 \u2014 Catat angka cepat",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -3332,7 +3339,7 @@
     },
     {
       "id": "P4-SCREEN-FLOW-02",
-      "title": "UI FLOW-02 — Teks natural dan preview",
+      "title": "UI FLOW-02 \u2014 Teks natural dan preview",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -3346,7 +3353,7 @@
     },
     {
       "id": "P4-SCREEN-FLOW-03",
-      "title": "UI FLOW-03 — Catat transfer",
+      "title": "UI FLOW-03 \u2014 Catat transfer",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -3360,7 +3367,7 @@
     },
     {
       "id": "P4-SCREEN-FLOW-04",
-      "title": "UI FLOW-04 — Split kategori",
+      "title": "UI FLOW-04 \u2014 Split kategori",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -3374,7 +3381,7 @@
     },
     {
       "id": "P4-SCREEN-FLOW-05",
-      "title": "UI FLOW-05 — Atur anggaran periode",
+      "title": "UI FLOW-05 \u2014 Atur anggaran periode",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -3388,7 +3395,7 @@
     },
     {
       "id": "P4-SCREEN-FLOW-06",
-      "title": "UI FLOW-06 — Catat cicilan",
+      "title": "UI FLOW-06 \u2014 Catat cicilan",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -3402,7 +3409,7 @@
     },
     {
       "id": "P4-SCREEN-STATE-01",
-      "title": "UI STATE-01 — Belum ada transaksi",
+      "title": "UI STATE-01 \u2014 Belum ada transaksi",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -3415,7 +3422,7 @@
     },
     {
       "id": "P4-SCREEN-STATE-02",
-      "title": "UI STATE-02 — Upload gagal",
+      "title": "UI STATE-02 \u2014 Upload gagal",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -3428,7 +3435,7 @@
     },
     {
       "id": "P4-SCREEN-STATE-03",
-      "title": "UI STATE-03 — Kode whatsapp kedaluwarsa",
+      "title": "UI STATE-03 \u2014 Kode whatsapp kedaluwarsa",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -3441,7 +3448,7 @@
     },
     {
       "id": "P4-SCREEN-STATE-04",
-      "title": "UI STATE-04 — Lebih anggaran",
+      "title": "UI STATE-04 \u2014 Lebih anggaran",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -3454,7 +3461,7 @@
     },
     {
       "id": "P4-SCREEN-DARK-01",
-      "title": "UI DARK-01 — Beranda dark",
+      "title": "UI DARK-01 \u2014 Beranda dark",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -3467,7 +3474,7 @@
     },
     {
       "id": "P4-SCREEN-DARK-02",
-      "title": "UI DARK-02 — Review dark",
+      "title": "UI DARK-02 \u2014 Review dark",
       "phase": "P4",
       "source": "tasks/TASKS-P4.md",
       "dependencies": [
@@ -3504,7 +3511,7 @@
       "status": "todo",
       "evidence": [],
       "blockers": [],
-      "minimum_verification": "Airplane→online replay posts once; 409 conflict view resolvable."
+      "minimum_verification": "Airplane\u2192online replay posts once; 409 conflict view resolvable."
     },
     {
       "id": "P5-003",
@@ -3976,7 +3983,7 @@
       "status": "todo",
       "evidence": [],
       "blockers": [],
-      "minimum_verification": "Buktikan AC-WA-003-A dan AC-WA-003-B yang relevan: **Diberikan** pengguna telah memilih mode WhatsApp dan memberikan izin yang diperlukan, **ketika** pengguna menjalankan kemampuan \"Sesi pribadi per user, multi-device pada satu GOWA.\", **maka** Pemetaan user ↔ session/device unik; akses ke session orang lain tidak pernah diizinkan. Negative/boundary: Saat user A menebak ID device user B, status, login QR, logout, dan delete semua ditolak; tidak ada bocoran nomor/detail sesi B. Tes dua tenant + retry/idempotency jika operasi menyentuh data pengguna."
+      "minimum_verification": "Buktikan AC-WA-003-A dan AC-WA-003-B yang relevan: **Diberikan** pengguna telah memilih mode WhatsApp dan memberikan izin yang diperlukan, **ketika** pengguna menjalankan kemampuan \"Sesi pribadi per user, multi-device pada satu GOWA.\", **maka** Pemetaan user \u2194 session/device unik; akses ke session orang lain tidak pernah diizinkan. Negative/boundary: Saat user A menebak ID device user B, status, login QR, logout, dan delete semua ditolak; tidak ada bocoran nomor/detail sesi B. Tes dua tenant + retry/idempotency jika operasi menyentuh data pengguna."
     },
     {
       "id": "P7-WA-004-01",

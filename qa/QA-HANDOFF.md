@@ -45,7 +45,7 @@ Gunakan wrapper `tools/pnpm.sh` agar runtime repo-pinned Node 24 dipilih bila te
 | Perintah/suite | Hasil terakhir | Batas |
 |---|---:|---|
 | `./tools/pnpm.sh lint`, `typecheck` | PASS, Node 24.22.1 / pnpm 11.25.0 | Tidak membuktikan provider cloud |
-| `./tools/pnpm.sh test` | 93/93 PASS | Unit tests; provider auth route dan session management memakai mocks; tambahan replay revoked-cookie/stale-bearer ditolak pada Hono test fixture |
+| `./tools/pnpm.sh test` | 96/96 PASS | Unit tests; provider auth route dan session management memakai mocks; tambahan replay revoked-cookie/stale-bearer ditolak pada Hono test fixture |
 | `./tools/pnpm.sh test:contracts` | 21/21 PASS | Contract tests |
 | `./tools/pnpm.sh test:security` | 9/9 PASS + client bundle scan | Scan heuristic, bukan audit/RLS proof |
 | `./tools/pnpm.sh build` | PASS | Worker + PWA build disajikan ulang dari preview yang baru dimulai; belum deploy |
@@ -81,6 +81,12 @@ Setelah Worker staging dan inbox sintetis milik tester tersedia, jalankan urutan
 6. `QA-TRUST-AB`: login A dan B pada dua konteks browser; A tidak boleh mengganti cookie/session atau owner request untuk membaca data B. Logout A lalu pastikan app menutup cache privat A.
 
 Catat environment, status HTTP tanpa body sensitif, scenario/AC, `PASS/FAIL/BLOCKED`, serta screenshot/trace teredaksi. Jangan mencatat inbox nyata, OTP, cookie atau JWT. Ganti email dan sesi multi-perangkat memerlukan implementasi/proof terpisah; jangan laporkan lulus dari alur ini.
+
+### P2-004 — Guard role admin/system di Edge
+
+Implementasi lokal mengambil role hanya melalui RPC `current_platform_role` dengan JWT provider yang diverifikasi pada sesi; header role/browser bearer tidak dipercaya. Route `/api/v1/admin/*` mensyaratkan `admin` atau `superuser`, sedangkan `/api/v1/system/*` mensyaratkan `superuser`; kegagalan DB fail-closed. Tes lokal `role-gated operator routes` memeriksa user dengan header forged (403), admin ke admin route dan percobaan `/admin/users/:id/ledger` (404 karena belum ada handler ledger lintas user), admin ke system (403), superuser melewati guard (fallback 404), malformed role (403), serta database error (503) tanpa detail internal.
+
+**Status live: BLOCKED.** `P2-002` dan `P2-003` masih menunggu bukti Hono Worker + JWT identity + RLS pada staging memakai dua identitas provider nyata. Tes lokal ini tidak membuktikan assignment role staging, admin ledger isolation di database nyata, operator MFA/step-up, atau audit alur bootstrap; tidak ada role privileged yang diberikan. Jalankan hanya setelah app Worker staging, akun tester sintetis, dan gate P1-007/P0-005 tersedia.
 
 ### P2-IAM-004 — Daftar perangkat dan pencabutan sesi
 

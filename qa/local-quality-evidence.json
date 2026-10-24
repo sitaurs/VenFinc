@@ -1,22 +1,91 @@
 {
-  "checkedAtUtc": "2026-10-24T11:45:44Z",
+  "checkedAtUtc": "2026-10-24T11:56:58Z",
   "runtime": {
     "node": "24.22.1",
     "pnpm": "11.25.0",
     "browser": "Chromium 156.0.8078.4"
   },
   "results": {
-    "lint": { "status": "PASS", "exitCode": 0, "command": "./tools/pnpm.sh lint" },
-    "typecheck": { "status": "PASS", "exitCode": 0, "command": "./tools/pnpm.sh typecheck" },
-    "unit": { "status": "PASS", "passed": 93, "failed": 0, "command": "./tools/pnpm.sh test --reporter=json --outputFile=qa/unit-test-evidence.json" },
-    "contracts": { "status": "PASS", "passed": 21, "failed": 0, "command": "./tools/pnpm.sh test:contracts" },
-    "security": { "status": "PASS", "passed": 9, "failed": 0, "bundleScan": "PASS heuristic scan of 13 client files; not an audit", "command": "./tools/pnpm.sh test:security" },
-    "build": { "status": "PASS", "exitCode": 0, "command": "XDG_CONFIG_HOME=/tmp/venfinance-xdg-config ./tools/pnpm.sh build" },
-    "e2e": { "status": "PASS", "passed": 25, "failed": 0, "mode": "local application with mocked APIs", "command": "./tools/pnpm.sh test:e2e" },
-    "visual": { "status": "PASS", "passed": 14, "failed": 0, "viewports": [320, 360, 361, 390, 768, 1024, 1211, 1440, 1920], "comparison": "responsive overflow/state checks only; no pixel diff against 180 references", "command": "./tools/pnpm.sh test:visual" },
-    "infraSmoke": { "status": "PASS", "exitCode": 0, "scope": "local workerd/Hono + static assets; external providers not tested; unauthenticated private API returned 503", "command": "./tools/pnpm.sh infra:smoke" },
-    "databaseLocal": { "status": "BLOCKED", "exitCode": 2, "reason": "VENFINANCE_PG_BIN/PostgreSQL server tools unavailable", "commands": ["./tools/pnpm.sh db:test:local", "./tools/pnpm.sh db:check"] },
-    "integration": { "status": "BLOCKED", "exitCode": 2, "reason": "No disposable Neon/R2 integration fixture and current Hono Worker identity path is not configured for live staging", "command": "./tools/pnpm.sh test:integration" }
+    "lint": {
+      "status": "PASS",
+      "exitCode": 0,
+      "command": "./tools/pnpm.sh lint"
+    },
+    "typecheck": {
+      "status": "PASS",
+      "exitCode": 0,
+      "command": "./tools/pnpm.sh typecheck"
+    },
+    "unit": {
+      "status": "PASS",
+      "passed": 96,
+      "failed": 0,
+      "command": "./tools/pnpm.sh test --reporter=json --outputFile=qa/unit-test-evidence.json"
+    },
+    "contracts": {
+      "status": "PASS",
+      "passed": 21,
+      "failed": 0,
+      "command": "./tools/pnpm.sh test:contracts"
+    },
+    "security": {
+      "status": "PASS",
+      "passed": 9,
+      "failed": 0,
+      "bundleScan": "PASS heuristic scan of 13 client files; not an audit",
+      "command": "./tools/pnpm.sh test:security"
+    },
+    "build": {
+      "status": "PASS",
+      "exitCode": 0,
+      "command": "XDG_CONFIG_HOME=/tmp/venfinance-xdg-config ./tools/pnpm.sh build"
+    },
+    "e2e": {
+      "status": "PASS",
+      "passed": 25,
+      "failed": 0,
+      "mode": "local application with mocked APIs",
+      "command": "./tools/pnpm.sh test:e2e"
+    },
+    "visual": {
+      "status": "PASS",
+      "passed": 14,
+      "failed": 0,
+      "viewports": [
+        320,
+        360,
+        361,
+        390,
+        768,
+        1024,
+        1211,
+        1440,
+        1920
+      ],
+      "comparison": "responsive overflow/state checks only; no pixel diff against 180 references",
+      "command": "./tools/pnpm.sh test:visual"
+    },
+    "infraSmoke": {
+      "status": "PASS",
+      "exitCode": 0,
+      "scope": "local workerd/Hono + static assets; external providers not tested; unauthenticated private API returned 503",
+      "command": "./tools/pnpm.sh infra:smoke"
+    },
+    "databaseLocal": {
+      "status": "BLOCKED",
+      "exitCode": 2,
+      "reason": "VENFINANCE_PG_BIN/PostgreSQL server tools unavailable",
+      "commands": [
+        "./tools/pnpm.sh db:test:local",
+        "./tools/pnpm.sh db:check"
+      ]
+    },
+    "integration": {
+      "status": "BLOCKED",
+      "exitCode": 2,
+      "reason": "No disposable Neon/R2 integration fixture and current Hono Worker identity path is not configured for live staging",
+      "command": "./tools/pnpm.sh test:integration"
+    }
   },
   "liveServices": {
     "productionNeon": "read-only auth state check only; no production SQL or migration",

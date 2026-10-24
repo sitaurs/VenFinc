@@ -367,3 +367,78 @@ describe("private finance routes", () => {
     expect(crossOrigin.status).toBe(403);
   });
 });
+
+describe("role-gated operator routes", () => {
+  const operatorPath = (path: string) => `https://finance.test/api/v1/${path}`;
+
+  it("rejects a user who forges browser role headers or bearer claims", async () => {
+    let roleLookupAuthorization = "";
+    const setup = await testBindings(async (url, init) => {
+      expect(url.pathname).toBe("/neondb/rest/v1/rpc/current_platform_role");
+      expect(init.method).toBe("POST");
+      expect(init.body).toBe("{}");
+      roleLookupAuthorization = new Headers(init.headers).get("Authorization") ?? "";
+      return Response.json("user");
+    });
+
+    const response = await app.request(operatorPath("system/maintenance"), {
+      headers: {
+        Cookie: activeCookie(),
+        Authorization: "Bearer forged-browser-token",
+        "X-Platform-Role": "superuser",
+        "X-Role": "superuser",
+      },
+    }, setup.bindings);
+
+    expect(response.status).toBe(403);
+    expect(roleLookupAuthorization).toBe(`Bearer ${setup.token}`);
+    expect(await response.text()).not.toContain("forged-browser-token");
+  });
+
+  it("allows admin routes for admins but keeps system routes superuser-only", async () => {
+    let role = "admin";
+    const setup = await testBindings(async (url) => {
+      expect(url.pathname).toBe("/neondb/rest/v1/rpc/current_platform_role");
+      return Response.json(role);
+    });
+
+    const adminResponse = await app.request(operatorPath("admin/audit"), {
+      headers: { Cookie: activeCookie() },
+    }, setup.bindings);
+    expect(adminResponse.status).toBe(404);
+
+    const adminLedgerResponse = await app.request(operatorPath("admin/users/victim-user/ledger"), {
+      headers: { Cookie: activeCookie() },
+    }, setup.bindings);
+    expect(adminLedgerResponse.status).toBe(404);
+
+    const deniedSystemResponse = await app.request(operatorPath("system/maintenance"), {
+      headers: { Cookie: activeCookie() },
+    }, setup.bindings);
+    expect(deniedSystemResponse.status).toBe(403);
+
+    role = "superuser";
+    const systemResponse = await app.request(operatorPath("system/maintenance"), {
+      headers: { Cookie: activeCookie() },
+    }, setup.bindings);
+    expect(systemResponse.status).toBe(404);
+  });
+
+  it("fails closed for malformed roles and unavailable role storage", async () => {
+    const invalidRoleSetup = await testBindings(async () => Response.json({ role: "owner" }));
+    const invalidRoleResponse = await app.request(operatorPath("admin/audit"), {
+      headers: { Cookie: activeCookie() },
+    }, invalidRoleSetup.bindings);
+    const invalidRoleBody = await invalidRoleResponse.text();
+    expect(invalidRoleResponse.status).toBe(403);
+    expect(invalidRoleBody).not.toContain("owner");
+
+    const unavailableSetup = await testBindings(async () => Response.json({ message: "private-db-canary" }, { status: 500 }));
+    const unavailableResponse = await app.request(operatorPath("system/maintenance"), {
+      headers: { Cookie: activeCookie() },
+    }, unavailableSetup.bindings);
+    const unavailableBody = await unavailableResponse.text();
+    expect(unavailableResponse.status).toBe(503);
+    expect(unavailableBody).not.toContain("private-db-canary");
+  });
+});

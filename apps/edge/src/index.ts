@@ -1,4 +1,4 @@
-import { Hono, type Context } from "hono";
+import { Hono, type Context, type Next } from "hono";
 import { secureHeaders } from "hono/secure-headers";
 import {
   authDeviceSessionListSchema,
@@ -6,6 +6,7 @@ import {
   authSessionRevokeRequestSchema,
   errorEnvelope,
   healthSchema,
+  roleSchema,
   publicConfigSchema,
   successEnvelope,
 } from "@venfinance/contracts";
@@ -17,16 +18,70 @@ import {
 } from "./auth";
 import { manageNeonSessions } from "./session-management";
 import financeRoutes from "./finance";
-import type { DataApiBindings } from "./database";
+import { callDataApi, DataApiFailure, type DataApiBindings } from "./database";
+
+type PlatformRole = "user" | "admin" | "superuser";
 
 type Env = {
   Bindings: NeonAuthBindings & DataApiBindings & { APP_ENV: string; DATABASE_URL?: string };
   Variables: {
     requestId: string;
     identity: VerifiedNeonSession;
+    platformRole: PlatformRole;
   };
 };
 export const app = new Hono<Env>();
+
+function parsePlatformRole(value: unknown): PlatformRole | null {
+  if (roleSchema.safeParse(value).success) return value as PlatformRole;
+  if (Array.isArray(value)) return value.length === 1 ? parsePlatformRole(value[0]) : null;
+  if (!value || typeof value !== "object") return null;
+  const row = value as Record<string, unknown>;
+  for (const key of ["current_platform_role", "currentPlatformRole", "role"]) {
+    if (key in row) return parsePlatformRole(row[key]);
+  }
+  return null;
+}
+
+function roleGuard(allowed: readonly PlatformRole[]) {
+  return async (c: Context<Env>, next: Next) => {
+    const identity = c.get("identity");
+    let role: PlatformRole | null;
+    try {
+      const result = await callDataApi<unknown>(
+        c.env,
+        identity.providerJwt,
+        { kind: "rpc", name: "current_platform_role" },
+      );
+      // A user with no row is treated as the least-privileged public role.
+      role = result === null ? "user" : parsePlatformRole(result);
+    } catch (error) {
+      const status = error instanceof DataApiFailure ? error.status : 503;
+      if (status === 401) {
+        return c.json(
+          errorEnvelope("AUTH_REQUIRED", "Sesi perlu diperiksa kembali.", c.get("requestId")),
+          401,
+        );
+      }
+      return c.json(
+        errorEnvelope(
+          "DEPENDENCY_UNAVAILABLE",
+          "Hak akses belum dapat diverifikasi.",
+          c.get("requestId"),
+        ),
+        503,
+      );
+    }
+    if (!role || !allowed.includes(role)) {
+      return c.json(
+        errorEnvelope("FORBIDDEN", "Akses tidak diizinkan.", c.get("requestId")),
+        403,
+      );
+    }
+    c.set("platformRole", role);
+    return next();
+  };
+}
 
 async function readSessionCommand(request: Request): Promise<unknown | null> {
   if (request.headers.get("Content-Type")?.split(";", 1)[0]?.trim().toLowerCase() !== "application/json") {
@@ -141,6 +196,11 @@ app.use("/api/v1/*", async (c, next) => {
   c.set("identity", resolution.session);
   return next();
 });
+
+app.use("/api/v1/admin", roleGuard(["admin", "superuser"]));
+app.use("/api/v1/admin/*", roleGuard(["admin", "superuser"]));
+app.use("/api/v1/system", roleGuard(["superuser"]));
+app.use("/api/v1/system/*", roleGuard(["superuser"]));
 
 app.get("/api/v1/security/sessions", async (c) => {
   const result = await manageNeonSessions(c.req.raw, c.env, c.get("identity"), { type: "list" });
