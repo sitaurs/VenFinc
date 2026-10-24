@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-10-24T13:05:25Z",
+  "taskId": "P0-005",
+  "branch": "main",
+  "runtime": {
+    "node": "24.22.1",
+    "pnpm": "11.25.0",
+    "wrangler": "4.152.0"
+  },
+  "localWorker": {
+    "config": "infra/wrangler.staging.jsonc",
+    "command": "XDG_CONFIG_HOME=/tmp/venfinance-wrangler-config WRANGLER_LOG_PATH=/tmp/venfinance-wrangler-config/.wrangler/logs ./tools/pnpm.sh exec wrangler dev --config infra/wrangler.staging.jsonc --local --ip 127.0.0.1 --port 8787 --persist-to /tmp/venfinance-wrangler-persist --show-interactive-dev-session=false --log-level info",
+    "deployed": false,
+    "remoteMutationPerformed": false
+  },
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/v1/config/public",
+      "status": 200,
+      "observed": {
+        "authAvailable": true,
+        "registrationOpen": false
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/get-session",
+      "cookiePresent": false,
+      "status": 200,
+      "body": "null"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/session",
+      "cookiePresent": false,
+      "status": 401,
+      "errorCode": "AUTH_REQUIRED"
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/sign-up/email",
+      "syntheticProbe": true,
+      "status": 403,
+      "errorCode": "FORBIDDEN",
+      "countedAsSignupGateEvidence": false,
+      "limitation": "The local request origin did not match the staging APP_ORIGIN and the global origin guard rejected it before the auth proxy's signup flag check. No provider signup request or account creation occurred."
+    }
+  ],
+  "tests": {
+    "command": "./tools/pnpm.sh exec vitest run apps/edge/src/auth.test.ts apps/edge/src/security.test.ts",
+    "exitCode": 0,
+    "testFilesPassed": 2,
+    "testsPassed": 29
+  },
+  "conclusion": "Anonymous session handling and the private-session boundary respond as expected in local Worker mode. This does not verify live Worker deployment, two-tenant RLS through the application Worker, session revocation against the live provider, provider-side signup closure, operator MFA, or release readiness. P0-005 remains blocked.",
+  "secretsRecorded": false,
+  "productionTouched": false
+}

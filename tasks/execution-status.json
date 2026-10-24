@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-24 12:58:59 UTC",
+  "updated_at": "2026-10-24 13:05:25 UTC",
   "source_of_truth": "Execution status only; task source markdown keeps the original baseline wording. A blocked external gate is not done.",
   "status_values": [
     "todo",
@@ -107,7 +107,8 @@
         "tools/verify-local-postgres.py",
         "qa/local-postgres-evidence.json",
         "infra/neon-scope.json",
-        "infra/NEON-STAGING-PLAN.md"
+        "infra/NEON-STAGING-PLAN.md",
+        "qa/p0-005-local-worker-auth-boundary-2026-10-24.json"
       ],
       "blockers": [
         {
