@@ -1,27 +1,28 @@
 {
   "schemaVersion": 1,
-  "verifiedAt": "2026-10-24T13:22:04Z",
+  "verifiedAt": "2026-10-24T13:34:51Z",
   "taskId": "P1-009",
   "workflow": ".github/workflows/quality.yml",
   "hostedRun": {
-    "runId": 40096695066,
-    "commit": "3e312418bee6514674dfbb2e9059b6a63bb66580",
+    "runId": 40097983019,
+    "commit": "56e2ec7e845c650e38a4d3ea4b007870340a2026",
     "branch": "main",
     "event": "push",
     "status": "completed",
     "conclusion": "failure",
     "failedStep": "Run pnpm docs:check",
-    "url": "https://github.com/sitaurs/VenFinc/actions/runs/40096695066",
+    "url": "https://github.com/sitaurs/VenFinc/actions/runs/40097983019",
     "annotations": [
-      "GitHub warns checkout@v4, setup-node@v4 and upload-artifact@v4 target Node.js 20 and are forced to Node.js 24; warning only.",
-      "Failure artifact step found no test-results/ directory; warning only."
+      "A prior run failed at docs:check. The latest run after Node 24 action updates also failed at docs:check.",
+      "Action runtime warnings were addressed by pinning maintained Node 24 action releases."
     ]
   },
   "hostedLogAccess": {
     "jobId": 120880334543,
     "logsEndpointStatus": 403,
     "message": "Must have admin rights to Repository.",
-    "detailsAvailable": false
+    "detailsAvailable": false,
+    "observedForRun": 40096695066
   },
   "localReproduction": {
     "node": "24.22.1 via tools/pnpm.sh",
@@ -37,7 +38,25 @@
     ],
     "buildSandboxNote": "Wrangler emitted a read-only home log-file warning in this sandbox; the build exited 0 and generated the Worker and PWA artifacts."
   },
-  "conclusion": "The complete quality sequence passes locally, but the hosted run failed at docs:check and its detailed log is not available with current GitHub API permissions. P1-009 remains blocked until a successful hosted run is observed and the discrepancy is explained.",
+  "conclusion": "Hosted run 40097983019 failed at docs:check. Local docs:check passes on Python 3.14.4, and both constituent validators also pass on Python 3.12.14. The latest workflow now reports the Python version and runs the validators as separately named steps to expose the failing sub-check. Job-log access remains restricted (the previous observed logs endpoint returned 403: Must have admin rights to Repository). P1-009 remains blocked until a hosted pass and root-cause explanation are recorded.",
   "repositoryChangedByInspection": false,
-  "productionTouched": false
+  "productionTouched": false,
+  "python312Reproduction": {
+    "python": "3.12.14 installed in /tmp with uv; no repository dependency added",
+    "commands": [
+      "UV_CACHE_DIR=/tmp/venfinance-uv-cache UV_PYTHON_INSTALL_DIR=/tmp/venfinance-python uv run --no-project --python 3.12.14 -- python tools/validate_handoff.py",
+      "UV_CACHE_DIR=/tmp/venfinance-uv-cache UV_PYTHON_INSTALL_DIR=/tmp/venfinance-python uv run --no-project --python 3.12.14 -- python tools/check_execution.py"
+    ],
+    "exitCodes": [0, 0],
+    "results": {
+      "handoffValidator": "PASS; 65 Markdown files, 1,444 internal links, 177 REQ, 14 decisions, 373 tasks, all 180 screenshots and 59 assets hashed",
+      "executionValidator": "PASS; 373 tasks, 14 decisions, 11 gates, zero consistency issues; production_ready false"
+    },
+    "conclusion": "Python 3.12.14 locally passes both validators; the Python minor-version difference does not reproduce the hosted failure. Hosted root cause remains unknown."
+  },
+  "diagnosticWorkflowChange": {
+    "file": ".github/workflows/quality.yml",
+    "change": "Replace the combined docs:check step with a Python-version step and separately named handoff/execution validators so the next hosted run identifies the failing sub-check in run metadata.",
+    "awaitingHostedRun": true
+  }
 }

@@ -19,7 +19,12 @@ jobs:
       - run: pnpm test
       - run: pnpm build
       - run: pnpm test:security
-      - run: pnpm docs:check
+      - name: Report docs-check Python version
+        run: python3 --version
+      - name: Validate handoff documents
+        run: python3 tools/validate_handoff.py
+      - name: Validate execution tracker
+        run: python3 tools/check_execution.py
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm test:e2e
       - run: pnpm test:visual

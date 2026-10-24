@@ -375,7 +375,7 @@
         "qa/github-quality-run-2026-10-24.json"
       ],
       "blockers": [
-        "Hosted CI run 40096695066 failed at docs:check on commit 3e31241 even though the exact local workflow command sequence passes. GitHub restricts job-log download with HTTP 403 ('Must have admin rights to Repository'), so the environment-specific failure is unresolved. Require a passing hosted run and an explanation before marking done."
+        "Hosted run 40097983019 on commit 56e2ec7 failed at docs:check. Local docs:check passes on Python 3.14.4, and both constituent validators pass on Python 3.12.14. Previous GitHub job-log download returned HTTP 403 ('Must have admin rights to Repository'). The workflow now reports Python version and splits the validators so the next run identifies the failing sub-check. Keep blocked until a hosted pass and root-cause explanation are recorded."
       ],
       "minimum_verification": "Pipeline fail when test/lint fails."
     },
