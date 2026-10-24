@@ -1,13 +1,13 @@
-import { useMemo, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { Link, Navigate, NavLink, Route, Routes, useLocation, useNavigate, useSearchParams } from "react-router";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowDownLeft, ArrowLeftRight, ArrowRight, ArrowUpRight, Banknote,
   ChartNoAxesCombined, CircleHelp, Eye, EyeOff, Home, List, LoaderCircle,
-  LogOut, Plus, RefreshCw, WalletCards, X,
+  CloudOff, LogOut, Plus, RefreshCw, WalletCards, X,
 } from "lucide-react";
 import {
-  categorySchema, financeEventPageSchema, financePostResultSchema,
+  categorySchema, financeEventPageSchema, financePostResultSchema, financePostSchema,
   privateSessionSchema, publicConfigSchema, profileCreateResultSchema,
   profileReadResultSchema, walletSchema, type FinanceEvent,
   type FinanceEventPage, type UserProfile, type Wallet,
@@ -15,6 +15,15 @@ import {
 import { formatIdr, parseIdrInput, sumMinor } from "@venfinance/domain";
 import { Button, Card, EmptyState, TextField } from "@venfinance/ui";
 import { ApiClientError, apiData, authPost } from "./api-client";
+import { OfflineVaultPage } from "./offline-page";
+import {
+  isOfflineVaultUnlocked,
+  lockOfflineVault,
+  readOfflineSnapshot,
+  saveLocalDraft,
+  saveOfflineSnapshot,
+  setOfflineOwner,
+} from "./offline-store";
 import { usePreferences } from "./preferences";
 
 const walletArraySchema = walletSchema.array();
@@ -28,6 +37,10 @@ function loadingPanel(message: string) {
 
 function unavailablePanel(retry: () => void, message: string) {
   return <Card className="finance-state"><EmptyState icon={<CircleHelp />} title="Data belum dapat dimuat" action={<Button variant="secondary" onClick={retry}><RefreshCw size={17} />Coba lagi</Button>}>{message}</EmptyState></Card>;
+}
+
+function offlineRecoveryPanel(retry: () => void, message: string, label: string) {
+  return <Card className="finance-state"><EmptyState icon={<CloudOff />} title="Data belum dapat dimuat" action={<div className="offline-recovery-actions"><Button variant="secondary" onClick={retry}><RefreshCw size={17} />Coba lagi</Button><Button asChild variant="ghost"><Link to="/offline-unlock">{label}</Link></Button></div>}>{message}</EmptyState></Card>;
 }
 
 export function PrivateFinanceApp() {
@@ -46,38 +59,48 @@ export function PrivateFinanceApp() {
     staleTime: 0,
   });
   if (config.isPending) return loadingPanel(t("Memeriksa sesi aman…", "Checking your secure session…"));
-  if (config.isError) return unavailablePanel(() => void config.refetch(), t("Koneksi layanan belum dapat dipastikan. Data keuangan tidak ditampilkan.", "The service connection cannot be confirmed. Financial data is hidden."));
+  if (config.isError) return offlineRecoveryPanel(() => void config.refetch(), t("Koneksi layanan belum dapat dipastikan. Data keuangan tidak ditampilkan.", "The service connection cannot be confirmed. Financial data is hidden."), t("Buka draf lokal", "Open local drafts"));
   if (!config.data.authAvailable) return <Navigate to="/login" replace />;
   if (session.isPending) return loadingPanel(t("Memeriksa sesi aman…", "Checking your secure session…"));
   if (session.isError) {
     if (session.error instanceof ApiClientError && session.error.status === 401) {
       return <Navigate to="/login" replace state={{ from: window.location.pathname }} />;
     }
-    return unavailablePanel(() => void session.refetch(), t("Sesi belum dapat diverifikasi. Coba lagi saat koneksi tersedia.", "The session could not be verified. Try again when the connection is available."));
+    return offlineRecoveryPanel(() => void session.refetch(), t("Sesi belum dapat diverifikasi. Coba lagi saat koneksi tersedia.", "The session could not be verified. Try again when the connection is available."), t("Buka draf lokal", "Open local drafts"));
   }
-  return <ProfileGate />;
+  return <ProfileGate key={session.data.userId} ownerId={session.data.userId} />;
 }
 
-function ProfileGate() {
+function ProfileGate({ ownerId }: { ownerId: string }) {
   const { t } = usePreferences();
   const queryClient = useQueryClient();
+  useEffect(() => {
+    setOfflineOwner(ownerId);
+    return () => lockOfflineVault();
+  }, [ownerId]);
   const profile = useQuery({
-    queryKey: ["finance-profile"],
+    queryKey: ["finance-profile", ownerId],
     queryFn: () => apiData("/api/v1/me", profileReadResultSchema),
     retry: false,
   });
+  const currentProfile = profile.data?.profile;
+  useEffect(() => {
+    if (currentProfile && isOfflineVaultUnlocked(ownerId)) {
+      void saveOfflineSnapshot(ownerId, "profile", currentProfile).catch(() => undefined);
+    }
+  }, [currentProfile, ownerId]);
   const createProfile = useMutation({
     mutationFn: (payload: { displayName: string; locale: "id-ID" | "en-US"; timezone: string }) =>
       apiData("/api/v1/me", profileCreateResultSchema, { method: "POST", body: JSON.stringify(payload) }),
-    onSuccess: async () => queryClient.invalidateQueries({ queryKey: ["finance-profile"] }),
+    onSuccess: async () => queryClient.invalidateQueries({ queryKey: ["finance-profile", ownerId] }),
   });
   if (profile.isPending) return loadingPanel(t("Memuat profil pribadi…", "Loading your private profile…"));
-  if (profile.isError) return unavailablePanel(() => void profile.refetch(), t("Profil tidak dapat dimuat. Data akun tetap tersembunyi sampai server berhasil merespons.", "Your profile could not be loaded. Account data remains hidden until the server responds."));
+  if (profile.isError) return offlineRecoveryPanel(() => void profile.refetch(), t("Profil tidak dapat dimuat. Data akun tetap tersembunyi sampai server berhasil merespons.", "Your profile could not be loaded. Account data remains hidden until the server responds."), t("Buka draf lokal", "Open local drafts"));
   if (!profile.data.profile) {
     return <ProfileSetup busy={createProfile.isPending} error={createProfile.error} onSubmit={(payload) => createProfile.mutate(payload)} />;
   }
   if (profile.data.profile.accountStatus !== "active") return <RestrictedProfile />;
-  return <FinanceShell profile={profile.data.profile} />;
+  return <FinanceShell profile={profile.data.profile} ownerId={ownerId} />;
 }
 
 function RestrictedProfile() {
@@ -89,6 +112,7 @@ function RestrictedProfile() {
     setError(false);
     try {
       await authPost("sign-out", {});
+      lockOfflineVault();
       window.location.assign("/login");
     } catch {
       setError(true);
@@ -127,19 +151,21 @@ function ProfileSetup({ busy, error, onSubmit }: {
   );
 }
 
-function FinanceShell({ profile }: { profile: UserProfile }) {
+function FinanceShell({ profile, ownerId }: { profile: UserProfile; ownerId: string }) {
   const { t, theme, setTheme, locale, setLocale } = usePreferences();
   const location = useLocation();
   const queryClient = useQueryClient();
   const [signOutError, setSignOutError] = useState(false);
   const active = location.pathname.endsWith("/transactions") || location.pathname.includes("/transactions/")
     ? "transactions"
-    : location.pathname.includes("/wallets") ? "wallets" : "home";
+    : location.pathname.includes("/wallets") ? "wallets"
+      : location.pathname.includes("/offline") ? "offline" : "home";
   async function signOut() {
     setSignOutError(false);
     try {
       await authPost("sign-out", {});
       queryClient.clear();
+      lockOfflineVault();
       window.location.assign("/login");
     } catch {
       setSignOutError(true);
@@ -154,6 +180,7 @@ function FinanceShell({ profile }: { profile: UserProfile }) {
           <NavLink end to="/app" className={({ isActive }) => isActive ? "active" : ""}><Home size={19} />{t("Beranda", "Home")}</NavLink>
           <NavLink to="/app/transactions" className={({ isActive }) => isActive ? "active" : ""}><List size={19} />{t("Transaksi", "Transactions")}</NavLink>
           <NavLink to="/app/wallets" className={({ isActive }) => isActive ? "active" : ""}><WalletCards size={19} />{t("Dompet", "Wallets")}</NavLink>
+          <NavLink to="/app/offline" className={({ isActive }) => isActive ? "active" : ""}><CloudOff size={19} />{t("Draf offline", "Offline drafts")}</NavLink>
         </nav>
         <div className="private-sidebar-bottom">
           <Link to="/faq"><CircleHelp size={18} />{t("Pusat bantuan", "Help center")}</Link>
@@ -171,10 +198,11 @@ function FinanceShell({ profile }: { profile: UserProfile }) {
         {signOutError ? <div className="private-signout-error" role="alert">{t("Belum dapat keluar. Coba lagi.", "Could not sign out. Try again.")}</div> : null}
         <main className="private-content" id="main-content">
           <Routes>
-            <Route index element={<Dashboard profile={profile} />} />
-            <Route path="transactions" element={<TransactionsPage profile={profile} />} />
-            <Route path="transactions/new" element={<TransactionsPage profile={profile} />} />
-            <Route path="wallets" element={<WalletsPage />} />
+            <Route index element={<Dashboard profile={profile} ownerId={ownerId} />} />
+            <Route path="transactions" element={<TransactionsPage profile={profile} ownerId={ownerId} />} />
+            <Route path="transactions/new" element={<TransactionsPage profile={profile} ownerId={ownerId} />} />
+            <Route path="wallets" element={<WalletsPage ownerId={ownerId} />} />
+            <Route path="offline" element={<OfflineVaultPage ownerId={ownerId} allowSetup />} />
             <Route path="*" element={<PrivateNotFound />} />
           </Routes>
         </main>
@@ -183,7 +211,7 @@ function FinanceShell({ profile }: { profile: UserProfile }) {
           <NavLink to="/app/transactions" className={active === "transactions" ? "active" : ""}><List size={20} /><span>{t("Transaksi", "Transactions")}</span></NavLink>
           <Link className="private-add-button" to="/app/transactions/new" aria-label={t("Catat transaksi", "Record transaction")}><Plus size={22} /><span>{t("Catat", "Record")}</span></Link>
           <NavLink to="/app/wallets" className={active === "wallets" ? "active" : ""}><WalletCards size={20} /><span>{t("Dompet", "Wallets")}</span></NavLink>
-          <button type="button" onClick={() => void signOut()}><LogOut size={19} /><span>{t("Keluar", "Sign out")}</span></button>
+          <NavLink to="/app/offline" className={active === "offline" ? "active" : ""}><CloudOff size={19} /><span>{t("Lainnya", "More")}</span></NavLink>
         </nav>
       </div>
     </div>
@@ -194,35 +222,72 @@ function FinanceHeading({ title, description, action }: { title: string; descrip
   return <div className="finance-heading"><div><h1>{title}</h1>{description ? <p>{description}</p> : null}</div>{action}</div>;
 }
 
-function useWallets() {
-  return useQuery({ queryKey: ["finance-wallets"], queryFn: () => apiData("/api/v1/wallets", walletArraySchema) });
+type WalletQueryResult = { items: Wallet[]; source: "server" | "device"; savedAt: string | null };
+type Category = ReturnType<typeof categorySchema.parse>;
+type CategoryQueryResult = { items: Category[]; source: "server" | "device" };
+
+async function fetchWallets(ownerId: string): Promise<WalletQueryResult> {
+  try {
+    const items = await apiData("/api/v1/wallets", walletArraySchema);
+    if (isOfflineVaultUnlocked(ownerId)) await saveOfflineSnapshot(ownerId, "wallets", items).catch(() => undefined);
+    return { items, source: "server", savedAt: null };
+  } catch (error) {
+    if (isOfflineVaultUnlocked(ownerId) && (!navigator.onLine || (error instanceof ApiClientError && error.status >= 500))) {
+      const snapshot = await readOfflineSnapshot<unknown>(ownerId, "wallets");
+      if (snapshot) return { items: walletArraySchema.parse(snapshot.value), source: "device", savedAt: snapshot.savedAt };
+    }
+    throw error;
+  }
 }
 
-function useRecentEvents(limit: number) {
+function useWallets(ownerId: string) {
+  return useQuery({ queryKey: ["finance-wallets", ownerId], queryFn: () => fetchWallets(ownerId), retry: false });
+}
+
+async function fetchCategories(ownerId: string): Promise<CategoryQueryResult> {
+  try {
+    const items = await apiData("/api/v1/categories", categoryArraySchema);
+    if (isOfflineVaultUnlocked(ownerId)) await saveOfflineSnapshot(ownerId, "categories", items).catch(() => undefined);
+    return { items, source: "server" };
+  } catch (error) {
+    if (isOfflineVaultUnlocked(ownerId) && (!navigator.onLine || (error instanceof ApiClientError && error.status >= 500))) {
+      const snapshot = await readOfflineSnapshot<unknown>(ownerId, "categories");
+      if (snapshot) return { items: categoryArraySchema.parse(snapshot.value), source: "device" };
+    }
+    throw error;
+  }
+}
+
+function useCategories(ownerId: string) {
+  return useQuery({ queryKey: ["finance-categories", ownerId], queryFn: () => fetchCategories(ownerId), retry: false });
+}
+
+function useRecentEvents(ownerId: string, limit: number) {
   const query = new URLSearchParams({ limit: String(limit) });
-  return useQuery({ queryKey: ["finance-events", "recent", limit], queryFn: () => apiData(`/api/v1/transactions?${query}`, financeEventPageSchema) });
+  return useQuery({ queryKey: ["finance-events", ownerId, "recent", limit], queryFn: () => apiData(`/api/v1/transactions?${query}`, financeEventPageSchema), retry: false });
 }
 
-function Dashboard({ profile }: { profile: UserProfile }) {
+function Dashboard({ profile, ownerId }: { profile: UserProfile; ownerId: string }) {
   const { t, locale, hidden, toggleHidden } = usePreferences();
-  const wallets = useWallets();
-  const recent = useRecentEvents(5);
+  const wallets = useWallets(ownerId);
+  const recent = useRecentEvents(ownerId, 5);
   if (wallets.isPending || recent.isPending) return loadingPanel(t("Memuat ringkasan keuangan…", "Loading your finance overview…"));
   if (wallets.isError || recent.isError) return unavailablePanel(() => { void wallets.refetch(); void recent.refetch(); }, t("Saldo atau catatan terbaru tidak dapat dimuat.", "Balances or recent records could not be loaded."));
-  const total = sumMinor(wallets.data.filter((wallet) => wallet.archivedAt === null).map((wallet) => wallet.balanceMinor));
+  const total = sumMinor(wallets.data.items.filter((wallet) => wallet.archivedAt === null).map((wallet) => wallet.balanceMinor));
   const events = recent.data.items;
   return (
     <>
       <FinanceHeading title={t("Ringkasan keuangan", "Finance overview")} description={new Intl.DateTimeFormat(locale, { dateStyle: "full", timeZone: profile.timezone }).format(new Date())} action={<Button asChild><Link to="/app/transactions/new"><Plus size={18} />{t("Catat transaksi", "Record transaction")}</Link></Button>} />
+      {wallets.data.source === "device" ? <p className="offline-stale-notice" role="status">{t(`Saldo terakhir dimuat ${wallets.data.savedAt ? new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeZone: profile.timezone }).format(new Date(wallets.data.savedAt)) : "sebelumnya"}. Data ini belum diverifikasi oleh server.`, `Balances were last loaded ${wallets.data.savedAt ? new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeZone: profile.timezone }).format(new Date(wallets.data.savedAt)) : "earlier"}. The server has not verified this data.`)}</p> : null}
       <div className="private-summary-grid">
-        <Card className="private-balance-card"><div className="private-card-title"><span>{t("Saldo tercatat", "Recorded balance")}</span><Button variant="ghost" size="icon" aria-label={hidden ? t("Tampilkan saldo", "Show balance") : t("Sembunyikan saldo", "Hide balance")} onClick={toggleHidden}>{hidden ? <EyeOff size={18} /> : <Eye size={18} />}</Button></div><strong>{hidden ? "Rp••••••" : formatIdr(total, locale)}</strong><span><WalletCards size={17} />{t(`${wallets.data.filter((wallet) => !wallet.archivedAt).length} sumber uang`, `${wallets.data.filter((wallet) => !wallet.archivedAt).length} wallets`)}</span></Card>
+        <Card className="private-balance-card"><div className="private-card-title"><span>{t("Saldo tercatat", "Recorded balance")}</span><Button variant="ghost" size="icon" aria-label={hidden ? t("Tampilkan saldo", "Show balance") : t("Sembunyikan saldo", "Hide balance")} onClick={toggleHidden}>{hidden ? <EyeOff size={18} /> : <Eye size={18} />}</Button></div><strong>{hidden ? "Rp••••••" : formatIdr(total, locale)}</strong><span><WalletCards size={17} />{t(`${wallets.data.items.filter((wallet) => !wallet.archivedAt).length} sumber uang`, `${wallets.data.items.filter((wallet) => !wallet.archivedAt).length} wallets`)}</span></Card>
         <Card className="private-summary-note"><ChartNoAxesCombined size={24} /><div><strong>{t("Ringkasan dari catatanmu", "Based on your records")}</strong><p>{t("Saldo dijumlahkan dari mutasi dompet yang sudah dikonfirmasi. Anggaran dan ringkasan bulanan akan muncul setelah fiturnya tersedia.", "Balances come from confirmed wallet postings. Budget and monthly summaries will appear when those features are available.")}</p></div></Card>
       </div>
       <Card className="private-recent-card">
         <div className="private-section-heading"><div><h2>{t("Transaksi terbaru", "Recent transactions")}</h2><p>{t("Catatan yang sudah masuk ke buku besar", "Records posted to your ledger")}</p></div><Link to="/app/transactions">{t("Lihat semua", "View all")}<ArrowRight size={16} /></Link></div>
         {events.length ? <EventList events={events} locale={locale} timezone={profile.timezone} hidden={hidden} /> : <EmptyState icon={<Banknote />} title={t("Belum ada transaksi", "No transactions yet")} action={<Button asChild><Link to="/app/transactions/new"><Plus size={17} />{t("Catat transaksi pertama", "Record your first transaction")}</Link></Button>}>{t("Transaksi contoh hanya ada di demo. Catatan pribadi mulai muncul setelah kamu mencatatnya.", "Sample transactions live in the demo only. Your private records appear after you add one.")}</EmptyState>}
       </Card>
-      {!wallets.data.some((wallet) => !wallet.archivedAt) ? <Card className="private-first-wallet"><div><WalletCards size={23} /><div><strong>{t("Tambahkan sumber uang", "Add a wallet")}</strong><p>{t("Dompet menyimpan saldo virtual untuk membantu rekonsiliasi catatanmu.", "Wallets keep virtual balances to help reconcile your records.")}</p></div></div><Button asChild variant="secondary"><Link to="/app/wallets">{t("Siapkan dompet", "Set up a wallet")}<ArrowRight size={17} /></Link></Button></Card> : null}
+      {!wallets.data.items.some((wallet) => !wallet.archivedAt) ? <Card className="private-first-wallet"><div><WalletCards size={23} /><div><strong>{t("Tambahkan sumber uang", "Add a wallet")}</strong><p>{t("Dompet menyimpan saldo virtual untuk membantu rekonsiliasi catatanmu.", "Wallets keep virtual balances to help reconcile your records.")}</p></div></div><Button asChild variant="secondary"><Link to="/app/wallets">{t("Siapkan dompet", "Set up a wallet")}<ArrowRight size={17} /></Link></Button></Card> : null}
     </>
   );
 }
@@ -258,7 +323,7 @@ function EventList({ events, locale, timezone, hidden }: { events: FinanceEvent[
   })}</div>;
 }
 
-function TransactionsPage({ profile }: { profile: UserProfile }) {
+function TransactionsPage({ profile, ownerId }: { profile: UserProfile; ownerId: string }) {
   const { t, locale } = usePreferences();
   const [params, setParams] = useSearchParams();
   const location = useLocation();
@@ -266,7 +331,7 @@ function TransactionsPage({ profile }: { profile: UserProfile }) {
   const [kind, setKind] = useState("all");
   const [search, setSearch] = useState("");
   const query = useInfiniteQuery({
-    queryKey: ["finance-events", "list", kind],
+    queryKey: ["finance-events", ownerId, "list", kind],
     initialPageParam: null as string | null,
     queryFn: async ({ pageParam }): Promise<EventPage> => {
       const searchParams = new URLSearchParams({ limit: "20" });
@@ -283,8 +348,8 @@ function TransactionsPage({ profile }: { profile: UserProfile }) {
     return events.filter((event) => `${eventTitle(event, t)} ${event.categoryName ?? ""} ${event.walletName ?? ""}`.toLocaleLowerCase(locale).includes(term));
   }, [events, locale, search, t]);
   const openForm = location.pathname.endsWith("/new") || params.get("new") === "1";
-  if (query.isPending) return loadingPanel(t("Memuat transaksi…", "Loading transactions…"));
-  if (query.isError) return unavailablePanel(() => void query.refetch(), t("Riwayat transaksi tidak dapat dimuat.", "Transaction history could not be loaded."));
+  if (query.isPending && !openForm) return loadingPanel(t("Memuat transaksi…", "Loading transactions…"));
+  if (query.isError && !openForm) return unavailablePanel(() => void query.refetch(), t("Riwayat transaksi tidak dapat dimuat.", "Transaction history could not be loaded."));
   const closeForm = () => {
     if (location.pathname.endsWith("/new")) void navigate("/app/transactions", { replace: true });
     else setParams({}, { replace: true });
@@ -292,8 +357,9 @@ function TransactionsPage({ profile }: { profile: UserProfile }) {
   return (
     <>
       <FinanceHeading title={t("Riwayat transaksi", "Transaction history")} description={t("Catatan yang sudah dikonfirmasi. Draf dan hasil bacaan belum masuk ke saldo.", "Confirmed records. Drafts and extracted items are excluded from balances.")} action={<Button onClick={() => setParams({ new: "1" })}><Plus size={18} />{t("Catat transaksi", "Record transaction")}</Button>} />
-      {openForm ? <TransactionForm profile={profile} onCancel={closeForm} onSaved={() => { closeForm(); void query.refetch(); void navigate("/app/transactions"); }} /> : null}
+      {openForm ? <TransactionForm profile={profile} ownerId={ownerId} onCancel={closeForm} onSaved={() => { closeForm(); void query.refetch(); void navigate("/app/transactions"); }} /> : null}
       <Card className="private-transactions-card">
+        {query.isError ? <div className="offline-stale-notice" role="status">{t("Riwayat transaksi server sedang tidak tersedia. Draf lokal tetap tersimpan terpisah dan belum mengubah saldo.", "Server transaction history is unavailable. Local drafts remain separate and do not change balances.")}</div> : null}
         <div className="private-filter-row">
           <TextField label={t("Cari catatan yang sudah dimuat", "Search loaded records")} value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t("Nama, kategori, atau dompet", "Name, category, or wallet")} />
           <label className="private-select-field"><span>{t("Jenis transaksi", "Transaction type")}</span><select value={kind} onChange={(event) => setKind(event.target.value)}><option value="all">{t("Semua", "All")}</option><option value="expense">{t("Pengeluaran", "Expenses")}</option><option value="income">{t("Pemasukan", "Income")}</option><option value="transfer">{t("Transfer", "Transfers")}</option><option value="refund">{t("Refund", "Refunds")}</option><option value="opening">{t("Saldo awal", "Opening balance")}</option><option value="adjustment">{t("Penyesuaian", "Adjustments")}</option></select></label>
@@ -333,11 +399,11 @@ function localDateTimeToIso(value: string, timezone: string): string {
   return new Date(candidate).toISOString();
 }
 
-function TransactionForm({ profile, onCancel, onSaved }: { profile: UserProfile; onCancel: () => void; onSaved: () => void }) {
+function TransactionForm({ profile, ownerId, onCancel, onSaved }: { profile: UserProfile; ownerId: string; onCancel: () => void; onSaved: () => void }) {
   const { t } = usePreferences();
   const queryClient = useQueryClient();
-  const wallets = useWallets();
-  const categories = useQuery({ queryKey: ["finance-categories"], queryFn: () => apiData("/api/v1/categories", categoryArraySchema) });
+  const wallets = useWallets(ownerId);
+  const categories = useCategories(ownerId);
   const [kind, setKind] = useState<EventKind>("expense");
   const [walletId, setWalletId] = useState("");
   const [destinationWalletId, setDestinationWalletId] = useState("");
@@ -347,8 +413,9 @@ function TransactionForm({ profile, onCancel, onSaved }: { profile: UserProfile;
   const [note, setNote] = useState("");
   const [allowNegative, setAllowNegative] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [offlineNotice, setOfflineNotice] = useState<string | null>(null);
   const stableCommand = useRef<{ fingerprint: string; key: string } | null>(null);
-  const activeWallets = wallets.data?.filter((wallet) => !wallet.archivedAt) ?? [];
+  const activeWallets = wallets.data?.items.filter((wallet) => !wallet.archivedAt) ?? [];
   const selectedWalletId = activeWallets.find((wallet) => wallet.id === walletId)?.id ?? activeWallets[0]?.id ?? "";
   const selectedDestinationWalletId = activeWallets.find((wallet) => wallet.id === destinationWalletId && wallet.id !== selectedWalletId)?.id ?? activeWallets.find((wallet) => wallet.id !== selectedWalletId)?.id ?? "";
   const mutation = useMutation({
@@ -365,77 +432,110 @@ function TransactionForm({ profile, onCancel, onSaved }: { profile: UserProfile;
     onSuccess: async () => {
       stableCommand.current = null;
       await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ["finance-wallets"] }),
-        queryClient.invalidateQueries({ queryKey: ["finance-events"] }),
+        queryClient.invalidateQueries({ queryKey: ["finance-wallets", ownerId] }),
+        queryClient.invalidateQueries({ queryKey: ["finance-events", ownerId] }),
       ]);
       onSaved();
     },
-    onError: (cause) => {
+    onError: (cause, payload) => {
       setError(cause instanceof ApiClientError ? cause.publicMessage ?? t("Transaksi belum tersimpan. Coba lagi.", "The transaction was not saved. Try again.") : t("Periksa waktu, nominal, dan dompet yang dipilih.", "Check the time, amount, and selected wallets."));
+      if (isOfflineVaultUnlocked(ownerId) && (cause instanceof ApiClientError ? cause.status >= 500 : !navigator.onLine)) {
+        const key = stableCommand.current?.key;
+        if (key) setPendingOffline({ id: key, command: payload.command });
+      }
     },
   });
+  const [pendingOffline, setPendingOffline] = useState<{ id: string; command: Record<string, unknown> } | null>(null);
+  function buildCommand() {
+    const amountMinor = parseIdrInput(amount);
+    return financePostSchema.parse({
+      kind, walletId: selectedWalletId, ...(kind === "transfer" ? { destinationWalletId: selectedDestinationWalletId } : {}),
+      amountMinor, currency: "IDR", effectiveAt: localDateTimeToIso(effectiveAt, profile.timezone),
+      timezone: profile.timezone,
+      ...(kind === "expense" && categoryId ? { allocations: [{ categoryId, amountMinor }] } : {}),
+      ...(note.trim() ? { note: note.trim() } : {}), allowNegative,
+    });
+  }
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
     try {
-      const amountMinor = parseIdrInput(amount);
-      const command = {
-        kind, walletId: selectedWalletId, ...(kind === "transfer" ? { destinationWalletId: selectedDestinationWalletId } : {}),
-        amountMinor, currency: "IDR", effectiveAt: localDateTimeToIso(effectiveAt, profile.timezone),
-        timezone: profile.timezone,
-        ...(kind === "expense" && categoryId ? { allocations: [{ categoryId, amountMinor }] } : {}),
-        ...(note.trim() ? { note: note.trim() } : {}), allowNegative,
-      };
+      const command = buildCommand();
       mutation.mutate({ command, fingerprint: JSON.stringify(command) });
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : t("Periksa kembali isian transaksi.", "Check the transaction details."));
     }
   }
-  if (wallets.isError) return <Card role="alert" className="private-form-card">{t("Daftar dompet belum dapat dimuat.", "Wallets could not be loaded.")}</Card>;
+  async function saveDraft() {
+    if (!isOfflineVaultUnlocked(ownerId)) {
+      setError(t("Buka kunci draf offline terlebih dahulu.", "Unlock offline drafts first."));
+      return;
+    }
+    setError(null);
+    try {
+      const command = pendingOffline?.command ?? buildCommand();
+      const fingerprint = JSON.stringify(command);
+      if (!stableCommand.current || stableCommand.current.fingerprint !== fingerprint) {
+        stableCommand.current = { fingerprint, key: crypto.randomUUID() };
+      }
+      await saveLocalDraft(ownerId, stableCommand.current.key, financePostSchema.parse(command));
+      setOfflineNotice(t("Draf tersimpan terenkripsi di perangkat. Saldo belum berubah; buka Draf offline untuk memeriksa atau menyinkronkannya nanti.", "Draft encrypted on this device. The balance is unchanged; open Offline drafts to review or sync it later."));
+      setPendingOffline(null);
+      setAmount("");
+      setNote("");
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : t("Draf belum dapat disimpan di perangkat.", "The draft could not be saved on this device."));
+    }
+  }
+  if (wallets.isError) return <Card role="alert" className="private-form-card">{t("Daftar dompet belum dapat dimuat. Buka Draf offline saat online untuk menyiapkan perangkat sebelum mencoba lagi tanpa jaringan.", "Wallets could not be loaded. Open Offline drafts while online to prepare this device before working without a connection.")}</Card>;
   return (
     <Card className="private-form-card" aria-labelledby="transaction-form-title">
       <div className="private-form-heading"><div><span className="section-kicker">{t("Catatan pribadi", "Private record")}</span><h2 id="transaction-form-title">{t("Catat transaksi", "Record a transaction")}</h2></div><Button variant="ghost" size="icon" aria-label={t("Tutup", "Close")} onClick={onCancel}><X size={20} /></Button></div>
-      {wallets.isPending ? <p role="status">{t("Memuat dompet…", "Loading wallets…")}</p> : wallets.data?.length ? (
+      {offlineNotice ? <p className="offline-notice" role="status">{offlineNotice}</p> : null}
+      {wallets.isPending ? <p role="status">{t("Memuat dompet…", "Loading wallets…")}</p> : wallets.data?.items.length ? (
         <form className="finance-form" onSubmit={submit}>
           <label className="private-select-field"><span>{t("Jenis", "Type")}</span><select value={kind} onChange={(event) => setKind(event.target.value as EventKind)}><option value="expense">{t("Pengeluaran", "Expense")}</option><option value="income">{t("Pemasukan", "Income")}</option><option value="transfer">{t("Transfer", "Transfer")}</option><option value="opening">{t("Saldo awal", "Opening balance")}</option></select></label>
           <TextField label={t("Nominal rupiah", "Amount in rupiah")} inputMode="numeric" autoComplete="off" value={amount} onChange={(event) => setAmount(event.target.value)} placeholder="10.000" required />
           <label className="private-select-field"><span>{kind === "income" || kind === "opening" ? t("Masuk ke dompet", "To wallet") : t("Dari dompet", "From wallet")}</span><select value={selectedWalletId} onChange={(event) => setWalletId(event.target.value)} required>{activeWallets.map((wallet) => <option value={wallet.id} key={wallet.id}>{wallet.name} · {formatIdr(wallet.balanceMinor)}</option>)}</select></label>
           {kind === "transfer" ? <label className="private-select-field"><span>{t("Ke dompet", "To wallet")}</span><select value={selectedDestinationWalletId} onChange={(event) => setDestinationWalletId(event.target.value)} required>{activeWallets.filter((wallet) => wallet.id !== selectedWalletId).map((wallet) => <option value={wallet.id} key={wallet.id}>{wallet.name}</option>)}</select></label> : null}
-          {kind === "expense" && categories.data?.length ? <label className="private-select-field"><span>{t("Kategori (opsional)", "Category (optional)")}</span><select value={categoryId} onChange={(event) => setCategoryId(event.target.value)}><option value="">{t("Tanpa kategori", "Uncategorized")}</option>{categories.data.map((category) => <option value={category.id} key={category.id}>{category.name}</option>)}</select></label> : null}
+          {kind === "expense" && categories.data?.items.length ? <label className="private-select-field"><span>{t("Kategori (opsional)", "Category (optional)")}</span><select value={categoryId} onChange={(event) => setCategoryId(event.target.value)}><option value="">{t("Tanpa kategori", "Uncategorized")}</option>{categories.data.items.map((category) => <option value={category.id} key={category.id}>{category.name}</option>)}</select></label> : null}
           <TextField label={t("Waktu transaksi", "Transaction time")} type="datetime-local" value={effectiveAt} onChange={(event) => setEffectiveAt(event.target.value)} required />
           <TextField label={t("Catatan (opsional)", "Note (optional)")} value={note} onChange={(event) => setNote(event.target.value)} maxLength={500} />
           {kind === "expense" ? <label className="negative-confirmation"><input type="checkbox" checked={allowNegative} onChange={(event) => setAllowNegative(event.target.checked)} /><span>{t("Saya memahami saldo catatan dompet ini dapat menjadi negatif.", "I understand this recorded wallet balance may become negative.")}</span></label> : null}
+          {wallets.data.source === "device" ? <p className="offline-stale-notice" role="status">{t(`Dompet dipilih dari snapshot perangkat ${wallets.data.savedAt ? new Intl.DateTimeFormat("id-ID", { dateStyle: "medium", timeZone: profile.timezone }).format(new Date(wallets.data.savedAt)) : "lama"}. Server akan memeriksa ulang sebelum menyimpan.`, `Wallets are selected from a device snapshot${wallets.data.savedAt ? ` saved ${new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeZone: profile.timezone }).format(new Date(wallets.data.savedAt))}` : ""}. The server revalidates them before saving.`)}</p> : null}
           {error ? <p className="form-error" role="alert">{error}</p> : null}
-          <div className="private-form-actions"><Button type="submit" loading={mutation.isPending}>{t("Simpan transaksi", "Save transaction")}</Button><Button type="button" variant="secondary" onClick={onCancel}>{t("Batal", "Cancel")}</Button></div>
+          <div className="private-form-actions"><Button type="submit" loading={mutation.isPending}>{t("Simpan transaksi", "Save transaction")}</Button><Button type="button" variant="secondary" onClick={() => void saveDraft()} disabled={!isOfflineVaultUnlocked(ownerId)}>{t("Simpan draf offline", "Save offline draft")}</Button><Button type="button" variant="secondary" onClick={onCancel}>{t("Batal", "Cancel")}</Button></div>
+          {!isOfflineVaultUnlocked(ownerId) ? <p className="muted">{t("Untuk menyimpan tanpa jaringan, aktifkan kunci perangkat terlebih dahulu.", "To save without a connection, first enable the device key.")} <Link to="/app/offline">{t("Buka Draf offline", "Open Offline drafts")}</Link></p> : null}
         </form>
       ) : <EmptyState icon={<WalletCards />} title={t("Siapkan dompet terlebih dahulu", "Set up a wallet first")} action={<Button asChild><Link to="/app/wallets">{t("Tambah dompet", "Add wallet")}</Link></Button>}>{t("Transaksi perlu memiliki sumber uang yang valid.", "A transaction needs a valid wallet.")}</EmptyState>}
     </Card>
   );
 }
 
-function WalletsPage() {
+function WalletsPage({ ownerId }: { ownerId: string }) {
   const { t, locale } = usePreferences();
   const queryClient = useQueryClient();
-  const wallets = useWallets();
+  const wallets = useWallets(ownerId);
   const [adding, setAdding] = useState(false);
   const [name, setName] = useState("");
   const [type, setType] = useState("cash");
   const [error, setError] = useState<string | null>(null);
   const create = useMutation({
     mutationFn: (payload: { name: string; type: string }) => apiData("/api/v1/wallets", walletSchema, { method: "POST", body: JSON.stringify(payload) }),
-    onSuccess: async () => { setName(""); setAdding(false); await queryClient.invalidateQueries({ queryKey: ["finance-wallets"] }); },
+    onSuccess: async () => { setName(""); setAdding(false); await queryClient.invalidateQueries({ queryKey: ["finance-wallets", ownerId] }); },
     onError: (cause) => setError(cause instanceof ApiClientError ? cause.publicMessage ?? t("Dompet belum dapat dibuat.", "The wallet could not be created.") : t("Periksa nama dan jenis dompet.", "Check the wallet name and type.")),
   });
-  const total = wallets.data ? sumMinor(wallets.data.filter((wallet) => !wallet.archivedAt).map((wallet) => wallet.balanceMinor)) : "0";
+  const total = wallets.data ? sumMinor(wallets.data.items.filter((wallet) => !wallet.archivedAt).map((wallet) => wallet.balanceMinor)) : "0";
   return (
     <>
       <FinanceHeading title={t("Daftar dompet", "Wallets")} description={t("Sumber uang virtual yang digunakan pada catatanmu.", "Virtual money sources used in your records.")} action={<Button onClick={() => { setAdding((current) => !current); setError(null); }}><Plus size={18} />{t("Tambah dompet", "Add wallet")}</Button>} />
       {adding ? <Card className="private-form-card"><div className="private-form-heading"><h2>{t("Dompet baru", "New wallet")}</h2><Button variant="ghost" size="icon" aria-label={t("Tutup", "Close")} onClick={() => setAdding(false)}><X size={19} /></Button></div><form className="finance-form" onSubmit={(event) => { event.preventDefault(); setError(null); create.mutate({ name: name.trim(), type }); }}><TextField label={t("Nama dompet", "Wallet name")} value={name} onChange={(event) => setName(event.target.value)} maxLength={100} placeholder={t("Contoh: Tunai", "Example: Cash")} required /><label className="private-select-field"><span>{t("Jenis dompet", "Wallet type")}</span><select value={type} onChange={(event) => setType(event.target.value)}><option value="cash">{t("Tunai", "Cash")}</option><option value="bank">{t("Bank", "Bank")}</option><option value="e_wallet">E-wallet</option><option value="savings">{t("Tabungan", "Savings")}</option><option value="other">{t("Lainnya", "Other")}</option></select></label>{error ? <p className="form-error" role="alert">{error}</p> : null}<div className="private-form-actions"><Button type="submit" loading={create.isPending}>{t("Buat dompet", "Create wallet")}</Button><Button type="button" variant="secondary" onClick={() => setAdding(false)}>{t("Batal", "Cancel")}</Button></div><p className="muted">{t("Saldo awal dicatat sebagai transaksi pembuka setelah dompet dibuat.", "Record an opening balance as a separate opening transaction after creating the wallet.")}</p></form></Card> : null}
       {wallets.isPending ? loadingPanel(t("Memuat dompet…", "Loading wallets…")) : wallets.isError ? unavailablePanel(() => void wallets.refetch(), t("Saldo dompet belum dapat dimuat.", "Wallet balances could not be loaded.")) : (
         <>
-          <Card className="private-balance-card private-wallet-total"><div className="private-card-title">{t("Total saldo dompet aktif", "Total active wallet balance")}</div><strong>{formatIdr(total, locale)}</strong><span><WalletCards size={17} />{t(`${wallets.data.filter((wallet) => !wallet.archivedAt).length} sumber uang`, `${wallets.data.filter((wallet) => !wallet.archivedAt).length} wallets`)}</span></Card>
-          {wallets.data.filter((wallet) => !wallet.archivedAt).length ? <div className="private-wallet-list">{wallets.data.filter((wallet) => !wallet.archivedAt).map((wallet) => <Card className="private-wallet-row" key={wallet.id}><span className={`private-wallet-icon ${wallet.type}`}><WalletCards size={22} /></span><div className="private-event-description"><strong>{wallet.name}</strong><span>{walletTypeName(wallet.type, t)}</span></div><strong>{formatIdr(wallet.balanceMinor, locale)}</strong></Card>)}</div> : <Card><EmptyState icon={<WalletCards />} title={t("Belum ada dompet", "No wallets yet")} action={<Button onClick={() => setAdding(true)}><Plus size={17} />{t("Tambah dompet", "Add wallet")}</Button>}>{t("Tambahkan sumber uang virtual sebelum mencatat transaksi.", "Add a virtual money source before recording transactions.")}</EmptyState></Card>}
-          {wallets.data.some((wallet) => wallet.archivedAt) ? <Card className="private-archived-note"><strong>{t("Dompet arsip", "Archived wallets")}</strong><p>{t("Dompet arsip tidak dihitung pada total saldo aktif.", "Archived wallets are excluded from the active balance total.")}</p></Card> : null}
+          {wallets.data.source === "device" ? <p className="offline-stale-notice" role="status">{t("Saldo ini terakhir dimuat sebelum koneksi terputus dan belum diverifikasi ulang.", "These balances were last loaded before the connection was lost and have not been reverified.")}</p> : null}
+          <Card className="private-balance-card private-wallet-total"><div className="private-card-title">{t("Total saldo dompet aktif", "Total active wallet balance")}</div><strong>{formatIdr(total, locale)}</strong><span><WalletCards size={17} />{t(`${wallets.data.items.filter((wallet) => !wallet.archivedAt).length} sumber uang`, `${wallets.data.items.filter((wallet) => !wallet.archivedAt).length} wallets`)}</span></Card>
+          {wallets.data.items.filter((wallet) => !wallet.archivedAt).length ? <div className="private-wallet-list">{wallets.data.items.filter((wallet) => !wallet.archivedAt).map((wallet) => <Card className="private-wallet-row" key={wallet.id}><span className={`private-wallet-icon ${wallet.type}`}><WalletCards size={22} /></span><div className="private-event-description"><strong>{wallet.name}</strong><span>{walletTypeName(wallet.type, t)}</span></div><strong>{formatIdr(wallet.balanceMinor, locale)}</strong></Card>)}</div> : <Card><EmptyState icon={<WalletCards />} title={t("Belum ada dompet", "No wallets yet")} action={<Button onClick={() => setAdding(true)}><Plus size={17} />{t("Tambah dompet", "Add wallet")}</Button>}>{t("Tambahkan sumber uang virtual sebelum mencatat transaksi.", "Add a virtual money source before recording transactions.")}</EmptyState></Card>}
+          {wallets.data.items.some((wallet) => wallet.archivedAt) ? <Card className="private-archived-note"><strong>{t("Dompet arsip", "Archived wallets")}</strong><p>{t("Dompet arsip tidak dihitung pada total saldo aktif.", "Archived wallets are excluded from the active balance total.")}</p></Card> : null}
         </>
       )}
     </>

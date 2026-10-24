@@ -162,6 +162,10 @@ test("navigation has no browser errors across implemented demo routes", async ({
 }) => {
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
+  await page.goto("/demo");
+  const navigation = page.getByRole("navigation", {
+    name: "Navigasi demo desktop",
+  });
   for (const path of [
     "",
     "/transactions",
@@ -175,7 +179,10 @@ test("navigation has no browser errors across implemented demo routes", async ({
     "/settings",
     "/whatsapp",
   ]) {
-    await page.goto(`/demo${path}`);
+    if (path) {
+      await navigation.locator(`a[href="/demo${path}"]`).click();
+    }
+    await expect(page).toHaveURL(`http://127.0.0.1:5173/demo${path}`);
     await expect(page.locator("main h1")).toBeVisible();
   }
   expect(errors).toEqual([]);

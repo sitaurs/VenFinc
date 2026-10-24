@@ -25,6 +25,9 @@ const Demo = lazy(() => import("./demo/demo"));
 const PrivateFinanceApp = lazy(() =>
   import("./finance-app").then((module) => ({ default: module.PrivateFinanceApp })),
 );
+const OfflineUnlockPage = lazy(() =>
+  import("./offline-page").then((module) => ({ default: module.OfflineUnlockPage })),
+);
 const UiComponentGallery = import.meta.env.DEV
   ? lazy(() => import("../../../qa/fixtures/ui-components"))
   : null;
@@ -540,6 +543,7 @@ export function App() {
             )}
             <Route path="/login" element={<AuthGate />} />
             <Route path="/register" element={<AuthGate />} />
+            <Route path="/offline-unlock" element={<OfflineUnlockPage />} />
             <Route path="/status" element={<StatusPage />} />
             <Route path="/faq" element={<HelpPage />} />
             <Route path="/app/*" element={<PrivateFinanceApp />} />

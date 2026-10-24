@@ -145,6 +145,7 @@ export function AuthPage({ register, authAvailable, registrationOpen, loading, u
           ) : null}
 
           {!register && authAvailable ? <Link className="auth-forgot" to="/faq">{t("Butuh bantuan untuk masuk?", "Need help signing in?")}</Link> : null}
+          {!register ? <Link className="auth-offline-link" to="/offline-unlock">{t("Buka draf offline di perangkat ini", "Open offline drafts on this device")}</Link> : null}
           <p className="auth-switch">{register ? t("Sudah punya akun?", "Already have an account?") : t("Belum punya akun?", "New to VenFinance?")} {register
             ? <Link to="/login">{t("Masuk", "Sign in")}</Link>
             : registrationOpen ? <Link to="/register">{t("Daftar", "Create account")}</Link> : <span>{t("Pendaftaran ditutup sementara", "Registration is temporarily closed")}</span>}</p>
