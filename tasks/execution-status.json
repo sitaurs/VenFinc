@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-24 12:00:22 UTC",
+  "updated_at": "2026-10-24 12:10:45 UTC",
   "source_of_truth": "Execution status only; task source markdown keeps the original baseline wording. A blocked external gate is not done.",
   "status_values": [
     "todo",
@@ -138,11 +138,13 @@
         "P0-002"
       ],
       "status": "blocked",
-      "evidence": [],
+      "evidence": [
+        "qa/staging-host-readiness-2026-10-24.json"
+      ],
       "blockers": [
         {
           "gate": "G-INFRA",
-          "reason": "No VenFinance ingress/Access application or live path/HMAC/replay/bypass test evidence; existing arm tunnel ownership not confirmed."
+          "reason": "Staging Access application exists and is deny-by-default, but there is no staging Worker domain or DNS yet; service-token + Tunnel routing, live HMAC/replay checks, and negative Access/Tunnel path-bypass tests have not run. Existing ARM tunnel ownership is not confirmed."
         }
       ],
       "minimum_verification": "401/403 unauthenticated dan token salah, sukses token valid, pencegahan replay, serta **uji negative bypass Cloudflare Tunnel/Access**: path GOWA biasa tidak bisa mengakses `/internal/v1/*` termasuk encoded slash, dot-segment, alternate case, redirect, dan canonicalization path. Dokumentasikan observed routing serta policies. Sebelum lolos, endpoint internal tidak boleh dianggap aman."
@@ -948,10 +950,11 @@
         "apps/edge/src/auth.ts",
         "apps/edge/src/auth.test.ts",
         "apps/edge/src/index.ts",
-        "qa/neon-readiness-2026-10-24.json"
+        "qa/neon-readiness-2026-10-24.json",
+        "qa/staging-host-readiness-2026-10-24.json"
       ],
       "blockers": [
-        "P0-005 still lacks a live post-signout Worker/JWT/RLS revocation proof; the staging POC's direct Data API replay remained accepted. P2-001 is blocked on P1-007's fresh migration/rollback and role-assignment checks. Local Edge tests now cover revoked-cookie and stale-browser-bearer denial, but mocks do not close the staging dependency."
+        "Staging hostname is trusted by the staging Neon Auth branch and the Access app is default-deny, but the app Worker is not deployed because Wrangler CLI is unauthenticated. Live post-signout Worker/JWT/RLS revocation remains unproved; the separate raw Data API replay POC accepts a JWT until expiry. P2-001 still depends on the fresh migration/rollback and role-assignment checks."
       ],
       "minimum_verification": "Anonymous, expired, invalid user impersonation rejected."
     },
@@ -1036,10 +1039,11 @@
         "apps/web/src/auth-flows.tsx",
         "apps/edge/src/auth.test.ts",
         "qa/e2e/auth-flows.spec.ts",
-        "qa/QA-HANDOFF.md"
+        "qa/QA-HANDOFF.md",
+        "qa/staging-host-readiness-2026-10-24.json"
       ],
       "blockers": [
-        "P2-002 remains blocked and no app Worker staging origin or tester-owned synthetic inbox is available. Neon staging auth is configured with shared email transport, but live signup/OTP delivery and account status enforcement have not been verified; public signup remains closed."
+        "Staging Neon Auth and staging trusted origin exist, but app Worker deployment is blocked on Wrangler CLI login; Access remains default-deny until an MFA-capable IdP and approved tester allowlist are configured. No tester-owned synthetic inbox or live OTP-delivery proof is available; public signup remains closed."
       ],
       "minimum_verification": "Buktikan AC-IAM-001-A dan AC-IAM-001-B yang relevan: **Diberikan** identitas, status akun, dan kewenangan telah diperiksa, **ketika** pengguna menjalankan kemampuan \"Daftar publik dengan email dan password, disertai verifikasi email.\", **maka** Akun baru selalu `user`, status belum terverifikasi dibatasi, password disimpan oleh provider auth tepercaya. Negative/boundary: Orang yang tidak berhak, akun belum sah, atau sesi kedaluwarsa tidak memperoleh akses privat; respons tidak membocorkan informasi akun. Tes dua tenant + retry/idempotency jika operasi menyentuh data pengguna."
     },
@@ -1057,10 +1061,11 @@
         "apps/web/src/auth-flows.tsx",
         "apps/edge/src/auth.test.ts",
         "qa/neon-auth-reset-route-probe-2026-10-24.json",
-        "qa/QA-HANDOFF.md"
+        "qa/QA-HANDOFF.md",
+        "qa/staging-host-readiness-2026-10-24.json"
       ],
       "blockers": [
-        "P2-002 remains blocked. The Neon reset route has validation-only staging evidence but no successful inbox/OTP/password-reset test; email change and verification resend also lack end-to-end staging evidence."
+        "Staging Neon Auth endpoint has only validation-probe evidence for reset; app Worker deployment is blocked on Wrangler CLI login, Access has no Allow policy, and no tester-owned inbox is available. Successful OTP/password reset, email change and verification-resend remain untested."
       ],
       "minimum_verification": "Buktikan AC-IAM-002-A dan AC-IAM-002-B yang relevan: **Diberikan** identitas, status akun, dan kewenangan telah diperiksa, **ketika** pengguna menjalankan kemampuan \"Login, logout, lupa password, reset password, ganti email, verifikasi ulang email.\", **maka** Sesi lama yang relevan dapat dicabut setelah tindakan keamanan kritis. Negative/boundary: Orang yang tidak berhak, akun belum sah, atau sesi kedaluwarsa tidak memperoleh akses privat; respons tidak membocorkan informasi akun. Tes dua tenant + retry/idempotency jika operasi menyentuh data pengguna."
     },
@@ -1093,10 +1098,11 @@
         "apps/edge/src/auth.test.ts",
         "apps/web/src/finance-app.tsx",
         "qa/e2e/session-management.spec.ts",
-        "qa/QA-HANDOFF.md"
+        "qa/QA-HANDOFF.md",
+        "qa/staging-host-readiness-2026-10-24.json"
       ],
       "blockers": [
-        "P2-002 remains blocked pending a live Worker session-revocation proof. Local provider/API mocks cover list, revoke-one, revoke-other, revoke-all, stale-cookie and token-redaction behavior; no app Worker staging hostname or live multi-device QA accounts are available."
+        "Live session-revocation proof still requires a deployed staging Worker, approved Access MFA/allowlist and QA-owned synthetic multi-device accounts. Local mocks cover list/revoke/revocation behavior only."
       ],
       "minimum_verification": "Buktikan AC-IAM-004-A dan AC-IAM-004-B yang relevan: **Diberikan** identitas, status akun, dan kewenangan telah diperiksa, **ketika** pengguna menjalankan kemampuan \"Session management mandiri: daftar perangkat aktif, revoke sesi, logout semua perangkat.\", **maka** Operasi tidak membocorkan token atau rincian autentikasi. Negative/boundary: Orang yang tidak berhak, akun belum sah, atau sesi kedaluwarsa tidak memperoleh akses privat; respons tidak membocorkan informasi akun. Tes dua tenant + retry/idempotency jika operasi menyentuh data pengguna."
     },

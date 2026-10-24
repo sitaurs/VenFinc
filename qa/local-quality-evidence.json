@@ -1,5 +1,5 @@
 {
-  "checkedAtUtc": "2026-10-24T12:00:22Z",
+  "checkedAtUtc": "2026-10-24T12:11:48Z",
   "runtime": {
     "node": "24.22.1",
     "pnpm": "11.25.0",
@@ -20,7 +20,7 @@
       "status": "PASS",
       "passed": 97,
       "failed": 0,
-      "command": "./tools/pnpm.sh test --reporter=json --outputFile=qa/unit-test-evidence.json"
+      "command": "XDG_CONFIG_HOME=/tmp/venfinance-xdg-config ./tools/pnpm.sh test --reporter=json --outputFile=qa/unit-test-evidence.json"
     },
     "contracts": {
       "status": "PASS",
@@ -85,15 +85,27 @@
       "exitCode": 2,
       "reason": "No disposable Neon/R2 integration fixture and current Hono Worker identity path is not configured for live staging",
       "command": "./tools/pnpm.sh test:integration"
+    },
+    "wranglerStagingDryRun": {
+      "status": "PASS",
+      "exitCode": 0,
+      "assets": 31,
+      "totalUploadKiB": 336.84,
+      "bindings": "staging Neon Auth/Data API endpoints only; no R2; public signup disabled",
+      "command": "XDG_CONFIG_HOME=/tmp/venfinance-xdg-config ./tools/pnpm.sh exec wrangler deploy --dry-run --config infra/wrangler.staging.jsonc"
+    },
+    "wranglerLogin": {
+      "status": "BLOCKED",
+      "reason": "wrangler whoami reports not authenticated; upload/deploy requires Wrangler auth for Cloudflare Worker Static Assets upload flow"
     }
   },
   "liveServices": {
     "productionNeon": "read-only auth state check only; no production SQL or migration",
-    "neonStaging": "migrations 0000-0004 applied/read back on the approved branch; no live application Worker or mail-delivery test",
-    "cloudflare": "inventory read only; no Worker/DNS/Access resource created or modified",
+    "neonStaging": "Managed Better Auth and migrations 0000-0004 on approved staging branch; staging trusted origin added; compute idle; no live app Worker/session or mail-delivery test",
+    "cloudflare": "staging Access app created deny-by-default with no Allow policy; no staging DNS/custom Worker domain/script deployed; production unchanged",
     "r2": "only metadata for bucket ven inspected; no object content read or written; sap untouched",
     "gowa": "not connected/tested",
     "ai": "not connected/tested"
   },
-  "scope": "Local build and mocked/browser tests are not production release signoff. Pixel review, staging Worker+JWT/RLS, R2 owner authorization, email delivery, and integration/provider QA remain open."
+  "scope": "Local tests and Wrangler dry-run are not production release signoff. Staging deploy requires Wrangler login; Access MFA allowlist, synthetic inbox, live Worker/RLS, R2 ownership, email delivery, backups, cost and other gates remain open."
 }

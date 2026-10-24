@@ -482,7 +482,7 @@ export async function proxyNeonAuth(
     });
   }
 
-  const response = responseHeaders(upstream, base.hostname, env.APP_ENV === "production");
+  const response = responseHeaders(upstream, base.hostname, env.APP_ENV !== "local");
   let responseBody: BodyInit | null = null;
   if (upstream.status !== 204 && upstream.status !== 304) {
     const bounded = await readBoundedBody(upstream.body, MAX_AUTH_BODY_BYTES);
@@ -613,7 +613,7 @@ export async function resolveNeonSession(
   const refreshedCookies = normalizeRefreshedCookies(
     upstream,
     base.hostname,
-    env.APP_ENV === "production",
+    env.APP_ENV !== "local",
   );
   if (upstream.status === 401 || upstream.status === 403) {
     return { ok: true, session: null, refreshedCookies };

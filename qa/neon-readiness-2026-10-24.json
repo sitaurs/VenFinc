@@ -294,5 +294,38 @@
     },
     "productionBranchModified": false,
     "r2SapAccessed": false
+  },
+  "latestLiveRecheck": {
+    "checkedAt": "2026-10-24T12:10:45Z",
+    "projectId": "hidden-unit-95812377",
+    "branchId": "br-aged-mode-b4rcy9i0",
+    "branchName": "venfinance-p0-auth-20261024",
+    "productionBranchTouched": false,
+    "authProvider": "better_auth",
+    "trustedOrigins": [
+      "http://127.0.0.1:5173",
+      "https://staging-finance.venlab.tech"
+    ],
+    "dataApi": {
+      "status": "active",
+      "dbSchemas": [
+        "p0_005_poc",
+        "public"
+      ],
+      "dbMaxRows": 100,
+      "openapiMode": "disabled"
+    },
+    "compute": {
+      "endpointId": "ep-rapid-flower-b46lkbp1",
+      "state": "idle",
+      "autoscalingMinCu": 0.25,
+      "autoscalingMaxCu": 0.25,
+      "suspendTimeoutSeconds": 0,
+      "suspendedAt": "2026-10-24T12:09:23Z",
+      "suspendWasManual": true
+    },
+    "sqlExecutedDuringThisRecheck": false,
+    "authUsersCreatedDuringThisRecheck": false,
+    "productionMigrationOrAuthMutation": false
   }
 }

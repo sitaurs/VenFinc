@@ -1,0 +1,28 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "venfinance-staging",
+  "main": "../apps/web/dist/worker/index.js",
+  "compatibility_date": "2026-10-24",
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [
+    { "pattern": "staging-finance.venlab.tech", "custom_domain": true }
+  ],
+  "assets": {
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"],
+    "directory": "../apps/web/dist/client"
+  },
+  "vars": {
+    "APP_ENV": "staging",
+    "APP_ORIGIN": "https://staging-finance.venlab.tech",
+    "AUTH_PROXY_ENABLED": "1",
+    "PUBLIC_SIGNUP_ENABLED": "0",
+    "EMAIL_VERIFICATION_ENABLED": "1",
+    "NEON_AUTH_URL": "https://ep-rapid-flower-b46lkbp1.neonauth.c-6.us-east-2.aws.neon.tech/neondb/auth",
+    "NEON_AUTH_ISSUER": "https://ep-rapid-flower-b46lkbp1.neonauth.c-6.us-east-2.aws.neon.tech",
+    "NEON_AUTH_JWKS_URL": "https://ep-rapid-flower-b46lkbp1.neonauth.c-6.us-east-2.aws.neon.tech/neondb/auth/.well-known/jwks.json",
+    "NEON_DATA_API_URL": "https://ep-rapid-flower-b46lkbp1.apirest.c-6.us-east-2.aws.neon.tech/neondb/rest/v1"
+  },
+  "observability": { "enabled": true }
+}

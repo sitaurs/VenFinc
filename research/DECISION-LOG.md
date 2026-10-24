@@ -5,7 +5,7 @@
 | ID | Keputusan dari PRD | Working baseline | Status & gate |
 |---|---|---|---|
 | `DEC-001` | Nama produk | **VenFinance** | Working name; cek nama/merk sebelum publik |
-| `DEC-002` | Domain | `finance.venlab.tech`, `gowa.venlab.tech`, `9r.venlab.tech` | **Tiga hostname baseline**; jalur mesin `https://gowa.venlab.tech/internal/v1/jobs/notify` di-route **lebih dahulu** oleh Cloudflare Tunnel ke Finance Worker, sedangkan path lainnya ke GOWA. Uji ingress/Access path di P0; hostname keempat hanya jika ADR disetujui. |
+| `DEC-002` | Domain | Produksi: `finance.venlab.tech`, `gowa.venlab.tech`, `9r.venlab.tech`; staging: `staging-finance.venlab.tech` | **ADR-0002 disetujui untuk staging saja** pada 24 Okt 2026. Produksi tetap tiga hostname baseline; staging wajib memakai Worker/Neon branch terpisah dan Access deny-by-default. Tidak ada perubahan produksi yang disetujui. |
 | `DEC-003` | Platform | React PWA + CF Worker/Hono, Neon, R2, Armbian | Baseline locked TRD; go/no-go cloud/free verification P0 |
 | `DEC-004` | Registrasi & role | public signup; `user`, `admin`, `superuser` | Harus implement identity+authorization+isolation, no user self-promotion |
 | `DEC-005` | Model WA | Shared bot default + personal session opt-in | **Policy/legal/privacy gate** sebelum public personal link, flag disabled by default |

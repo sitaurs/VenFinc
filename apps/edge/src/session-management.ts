@@ -235,7 +235,7 @@ export async function manageNeonSessions(
       kind: "mutation",
       revoked: true,
       currentSessionRevoked,
-      ...(currentSessionRevoked ? { clearCookie: clearSessionCookie(identity, env.APP_ENV === "production") } : {}),
+      ...(currentSessionRevoked ? { clearCookie: clearSessionCookie(identity, env.APP_ENV !== "local") } : {}),
     };
   }
 
@@ -248,6 +248,6 @@ export async function manageNeonSessions(
     kind: "mutation",
     revoked: true,
     currentSessionRevoked,
-    ...(currentSessionRevoked ? { clearCookie: clearSessionCookie(identity, env.APP_ENV === "production") } : {}),
+    ...(currentSessionRevoked ? { clearCookie: clearSessionCookie(identity, env.APP_ENV !== "local") } : {}),
   };
 }

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-24T03:36:07.767058+00:00",
-  "basis": "PRD baseline and owner-authorized development; no new product/security decision approved by this register",
+  "updated_at": "2026-10-24T12:10:45Z",
+  "basis": "PRD baseline; owner-approved staging-only hostname via ADR-0002; no production change approved",
   "decisions": [
     {
       "id": "DEC-001",
@@ -15,9 +15,12 @@
       "id": "DEC-002",
       "topic": "Domain",
       "baseline": "`finance.venlab.tech`, `gowa.venlab.tech`, `9r.venlab.tech`",
-      "gate": "**Tiga hostname baseline**; jalur mesin `https://gowa.venlab.tech/internal/v1/jobs/notify` di-route **lebih dahulu** oleh Cloudflare Tunnel ke Finance Worker, sedangkan path lainnya ke GOWA. Uji ingress/Access path di P0; hostname keempat hanya jika ADR disetujui.",
+      "gate": "Production remains limited to finance.venlab.tech, gowa.venlab.tech and 9r.venlab.tech. Owner approved staging-only fourth hostname staging-finance.venlab.tech via ADR-0002; configure isolated staging Worker/Neon branch and default-deny Access. No production DNS/Worker/Auth/database change is approved.",
       "owner": "Pemilik produk",
-      "status": "working_baseline"
+      "status": "staging_hostname_approved",
+      "evidence": [
+        "research/adr/ADR-0002-STAGING-HOSTNAME.md"
+      ]
     },
     {
       "id": "DEC-003",
@@ -212,12 +215,14 @@
     }
   ],
   "observed_evidence": [
+    "qa/consistency-report.json",
     "qa/infrastructure-readiness-2026-10-24.json",
-    "qa/consistency-report.json"
+    "qa/staging-host-readiness-2026-10-24.json",
+    "research/adr/ADR-0002-STAGING-HOSTNAME.md"
   ],
   "unresolved_decisions": [
     "Proof of operator identity binding, enforced MFA/step-up and auth/RLS/email PoCs",
-    "staging hostname without an approved fourth domain"
+    "Staging Access allowlist identity and MFA provider evidence"
   ],
   "production_ready": false
 }

@@ -1,0 +1,72 @@
+{
+  "checkedAt": "2026-10-24T12:11:48Z",
+  "decision": {
+    "adr": "research/adr/ADR-0002-STAGING-HOSTNAME.md",
+    "ownerApproved": true,
+    "approvedHostname": "staging-finance.venlab.tech",
+    "scope": "staging only; production remains unchanged"
+  },
+  "cloudflare": {
+    "accountId": "2fc0560ffb9a6f811898ebaeb2d63edd",
+    "zoneId": "7ccb1ab867276b4d6ea5ad523bedb2b9",
+    "zone": "venlab.tech",
+    "zoneStatus": "active",
+    "stagingDnsRecords": [],
+    "stagingWorkerDomains": [],
+    "stagingWorkerScriptDeployed": false,
+    "stagingAccessApplication": {
+      "id": "36dfce7c-2b74-4a97-b1cf-6986e4020886",
+      "name": "VenFinance staging",
+      "type": "self_hosted",
+      "allowedIdpTypes": [
+        "onetimepin"
+      ],
+      "allowPolicies": [],
+      "accessState": "default_deny",
+      "documentedDefaultDeny": "https://developers.cloudflare.com/cloudflare-one/access-controls/applications/http-apps/saas-apps/generic-oidc-saas/",
+      "mfaProved": false
+    },
+    "r2BucketUsed": null,
+    "sapAccessed": false
+  },
+  "neon": {
+    "projectId": "hidden-unit-95812377",
+    "productionBranchId": "br-rapid-band-b4jw3tlq",
+    "productionBranchTouched": false,
+    "stagingBranchId": "br-aged-mode-b4rcy9i0",
+    "stagingBranchName": "venfinance-p0-auth-20261024",
+    "authProvider": "better_auth",
+    "stagingTrustedOriginAdded": true,
+    "stagingDataApiStatus": "active",
+    "stagingComputeEndpointId": "ep-rapid-flower-b46lkbp1",
+    "stagingComputeState": "idle",
+    "stagingComputeSuspendTimeoutSeconds": 0
+  },
+  "local": {
+    "node": "24.22.1",
+    "pnpm": "11.25.0",
+    "lint": "PASS",
+    "typecheck": "PASS",
+    "unitTests": {
+      "passed": 97,
+      "failed": 0,
+      "report": "qa/unit-test-evidence.json"
+    },
+    "build": "PASS",
+    "wranglerDryRun": "PASS; 31 assets; 336.84 KiB total upload; no R2 binding",
+    "checkedAt": "2026-10-24T12:11:48Z"
+  },
+  "deployment": {
+    "wranglerCliAuthenticated": false,
+    "wranglerWhoamiObserved": "not authenticated",
+    "mcpApiUploadBlockedBy": "Workers Static Assets flow requires the manifest upload JWT as Authorization header; current Cloudflare MCP request helper does not expose custom headers for this API call.",
+    "dnsAndWorkerDeployment": "not performed"
+  },
+  "openBlockers": [
+    "Wrangler CLI must be logged in to upload the compiled Worker and PWA assets.",
+    "Access Allow policy needs an approved operator/tester email allowlist and an IdP that proves MFA; current One-time PIN provider is not accepted as MFA.",
+    "No tester-owned synthetic inbox; public signup remains disabled.",
+    "Live Hono Worker session/revocation, role propagation and two-tenant RLS tests remain outstanding."
+  ],
+  "productionReady": false
+}

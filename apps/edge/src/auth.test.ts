@@ -66,7 +66,7 @@ describe("same-origin Neon Auth boundary", () => {
         },
         body: JSON.stringify({ email: "a@example.invalid", password: "synthetic-only" }),
       },
-      bindings(),
+      bindings({ APP_ENV: "staging" }),
     );
 
     const body = await response.text();
