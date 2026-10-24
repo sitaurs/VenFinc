@@ -140,12 +140,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 13965,
+                  "duration": 11094,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-24T05:54:39.941Z",
+                  "startTime": "2026-10-24T13:18:37.247Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -155,7 +155,7 @@
           ],
           "id": "c31ff144dc4fee3acd0a-d88d6e10caf2c33535df",
           "file": "app.spec.ts",
-          "line": 182,
+          "line": 191,
           "column": 3
         },
         {
@@ -176,12 +176,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 11076,
+                  "duration": 11518,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-24T05:54:54.146Z",
+                  "startTime": "2026-10-24T13:18:48.744Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -191,7 +191,7 @@
           ],
           "id": "c31ff144dc4fee3acd0a-5a1d98661553cb83c9b9",
           "file": "app.spec.ts",
-          "line": 182,
+          "line": 191,
           "column": 3
         },
         {
@@ -212,12 +212,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 10667,
+                  "duration": 23961,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-24T05:55:05.300Z",
+                  "startTime": "2026-10-24T13:19:00.300Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -227,7 +227,7 @@
           ],
           "id": "c31ff144dc4fee3acd0a-0f3aa2a91ea4aa94ec12",
           "file": "app.spec.ts",
-          "line": 182,
+          "line": 191,
           "column": 3
         },
         {
@@ -248,12 +248,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 10754,
+                  "duration": 14906,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-24T05:55:16.043Z",
+                  "startTime": "2026-10-24T13:19:24.309Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -263,7 +263,7 @@
           ],
           "id": "c31ff144dc4fee3acd0a-a257e25c6e34561e4ce8",
           "file": "app.spec.ts",
-          "line": 182,
+          "line": 191,
           "column": 3
         },
         {
@@ -284,12 +284,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 10631,
+                  "duration": 9502,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-24T05:55:26.847Z",
+                  "startTime": "2026-10-24T13:19:39.277Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -299,7 +299,7 @@
           ],
           "id": "c31ff144dc4fee3acd0a-99e25e602b21fd9a75e0",
           "file": "app.spec.ts",
-          "line": 182,
+          "line": 191,
           "column": 3
         },
         {
@@ -320,12 +320,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 11659,
+                  "duration": 8616,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-24T05:55:37.514Z",
+                  "startTime": "2026-10-24T13:19:48.827Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -335,7 +335,7 @@
           ],
           "id": "c31ff144dc4fee3acd0a-a4643ad19a69952e866d",
           "file": "app.spec.ts",
-          "line": 182,
+          "line": 191,
           "column": 3
         },
         {
@@ -356,12 +356,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 11858,
+                  "duration": 8933,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-24T05:55:49.205Z",
+                  "startTime": "2026-10-24T13:19:57.487Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -371,7 +371,7 @@
           ],
           "id": "c31ff144dc4fee3acd0a-b1b8d64e539856fd0cf0",
           "file": "app.spec.ts",
-          "line": 182,
+          "line": 191,
           "column": 3
         },
         {
@@ -392,12 +392,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 12122,
+                  "duration": 8722,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-24T05:56:01.095Z",
+                  "startTime": "2026-10-24T13:20:06.457Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -407,7 +407,7 @@
           ],
           "id": "c31ff144dc4fee3acd0a-fb7bacb903b7eec6c09a",
           "file": "app.spec.ts",
-          "line": 182,
+          "line": 191,
           "column": 3
         },
         {
@@ -428,12 +428,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 15094,
+                  "duration": 8502,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-24T05:56:13.253Z",
+                  "startTime": "2026-10-24T13:20:15.213Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -443,7 +443,211 @@
           ],
           "id": "c31ff144dc4fee3acd0a-49fb311358b20362eb01",
           "file": "app.spec.ts",
-          "line": 182,
+          "line": 191,
+          "column": 3
+        }
+      ]
+    },
+    {
+      "title": "auth-flows.spec.ts",
+      "file": "auth-flows.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "verification and recovery screens fit supported viewport widths @visual",
+          "ok": true,
+          "tags": [
+            "visual"
+          ],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 21852,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-24T13:20:23.786Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0c6c160bbdde4ceadf0a-7c418135fec5dec5cbd0",
+          "file": "auth-flows.spec.ts",
+          "line": 96,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "session-management.spec.ts",
+      "file": "session-management.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "settings and security screens fit supported phone, tablet, and desktop widths @visual",
+          "ok": true,
+          "tags": [
+            "visual"
+          ],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 17886,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-24T13:20:45.712Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "6e375e9083bcc45cdb6c-fdb24e898659b469cbff",
+          "file": "session-management.spec.ts",
+          "line": 124,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "ui-components.spec.ts",
+      "file": "ui-components.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "@visual P4-002 component gallery fits 320px",
+          "ok": true,
+          "tags": [
+            "visual"
+          ],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1957,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-24T13:21:03.652Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ff675a35eb2076990d40-448e465f9ea3cf1716ad",
+          "file": "ui-components.spec.ts",
+          "line": 186,
+          "column": 3
+        },
+        {
+          "title": "@visual P4-002 component gallery fits 390px",
+          "ok": true,
+          "tags": [
+            "visual"
+          ],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1929,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-24T13:21:05.634Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ff675a35eb2076990d40-dd4ae2f4507422eccbd0",
+          "file": "ui-components.spec.ts",
+          "line": 186,
+          "column": 3
+        },
+        {
+          "title": "@visual P4-002 component gallery fits 1440px",
+          "ok": true,
+          "tags": [
+            "visual"
+          ],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1920,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-24T13:21:07.586Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ff675a35eb2076990d40-d96332728bcf581ea49f",
+          "file": "ui-components.spec.ts",
+          "line": 186,
           "column": 3
         }
       ]
@@ -451,9 +655,9 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-10-24T05:54:38.193Z",
-    "duration": 110408.85399999999,
-    "expected": 9,
+    "startTime": "2026-10-24T13:18:27.855Z",
+    "duration": 161945.99699999997,
+    "expected": 14,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "verifiedAt": "2026-10-24T13:05:25Z",
+  "verifiedAt": "2026-10-24T13:22:04Z",
   "taskId": "P0-005",
   "branch": "main",
   "runtime": {
@@ -48,6 +48,61 @@
       "limitation": "The local request origin did not match the staging APP_ORIGIN and the global origin guard rejected it before the auth proxy's signup flag check. No provider signup request or account creation occurred."
     }
   ],
+  "exactStagingOriginHttpsCheck": {
+    "localWorkerCommand": "XDG_CONFIG_HOME=/tmp/venfinance-wrangler-config WRANGLER_LOG_PATH=/tmp/venfinance-wrangler-config/.wrangler/logs ./tools/pnpm.sh exec wrangler dev --config infra/wrangler.staging.jsonc --local --local-protocol https --ip 127.0.0.1 --port 8788 --persist-to /tmp/venfinance-wrangler-persist-https --show-interactive-dev-session=false --log-level info",
+    "requestOrigin": "https://staging-finance.venlab.tech",
+    "transport": "Local HTTPS Worker, curl mapped staging hostname to 127.0.0.1:8788 using --connect-to; TLS verification skipped only for Wrangler's local certificate.",
+    "requests": [
+      {
+        "method": "GET",
+        "path": "/api/v1/config/public",
+        "status": 200,
+        "observed": {
+          "authAvailable": true,
+          "registrationOpen": false
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/api/auth/get-session",
+        "cookiePresent": false,
+        "status": 200,
+        "body": "null"
+      },
+      {
+        "method": "POST",
+        "path": "/api/auth/sign-up/email",
+        "syntheticProbe": true,
+        "globalOriginGuardPassed": true,
+        "status": 403,
+        "errorCode": "FORBIDDEN",
+        "message": "Pendaftaran belum dibuka.",
+        "providerSignupRequestMade": false,
+        "accountCreated": false
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/session",
+        "cookiePresent": false,
+        "status": 401,
+        "errorCode": "AUTH_REQUIRED"
+      }
+    ],
+    "remoteMutationPerformed": false,
+    "workerStoppedAfterTest": true
+  },
+  "neonStagingAuthConfigObservation": {
+    "readOnlyAt": "2026-10-24T13:09:47Z",
+    "projectId": "hidden-unit-95812377",
+    "branchId": "br-aged-mode-b4rcy9i0",
+    "emailPasswordEnabled": true,
+    "providerAllowSignUp": true,
+    "verifyEmailOnSignUp": false,
+    "requireEmailVerification": false,
+    "workerProxyRegistrationOpen": false,
+    "providerConfigChanged": false,
+    "impact": "The application proxy blocks signup, but direct access to the configured Neon Auth provider can still create an unverified account."
+  },
   "tests": {
     "command": "./tools/pnpm.sh exec vitest run apps/edge/src/auth.test.ts apps/edge/src/security.test.ts",
     "exitCode": 0,

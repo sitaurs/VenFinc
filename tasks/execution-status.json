@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-24 13:05:25 UTC",
+  "updated_at": "2026-10-24 13:22:04 UTC",
   "source_of_truth": "Execution status only; task source markdown keeps the original baseline wording. A blocked external gate is not done.",
   "status_values": [
     "todo",
@@ -371,10 +371,11 @@
       "status": "blocked",
       "evidence": [
         ".github/workflows/quality.yml",
-        "qa/negative-gate-evidence.json"
+        "qa/negative-gate-evidence.json",
+        "qa/github-quality-run-2026-10-24.json"
       ],
       "blockers": [
-        "GitHub remote/hosted workflow execution unavailable. Local failure behavior verified; no claim of a completed hosted CI run."
+        "Hosted CI run 40096695066 failed at docs:check on commit 3e31241 even though the exact local workflow command sequence passes. GitHub restricts job-log download with HTTP 403 ('Must have admin rights to Repository'), so the environment-specific failure is unresolved. Require a passing hosted run and an explanation before marking done."
       ],
       "minimum_verification": "Pipeline fail when test/lint fails."
     },

@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-10-24T13:22:04Z",
+  "taskId": "P1-009",
+  "workflow": ".github/workflows/quality.yml",
+  "hostedRun": {
+    "runId": 40096695066,
+    "commit": "3e312418bee6514674dfbb2e9059b6a63bb66580",
+    "branch": "main",
+    "event": "push",
+    "status": "completed",
+    "conclusion": "failure",
+    "failedStep": "Run pnpm docs:check",
+    "url": "https://github.com/sitaurs/VenFinc/actions/runs/40096695066",
+    "annotations": [
+      "GitHub warns checkout@v4, setup-node@v4 and upload-artifact@v4 target Node.js 20 and are forced to Node.js 24; warning only.",
+      "Failure artifact step found no test-results/ directory; warning only."
+    ]
+  },
+  "hostedLogAccess": {
+    "jobId": 120880334543,
+    "logsEndpointStatus": 403,
+    "message": "Must have admin rights to Repository.",
+    "detailsAvailable": false
+  },
+  "localReproduction": {
+    "node": "24.22.1 via tools/pnpm.sh",
+    "commands": [
+      { "command": "./tools/pnpm.sh lint", "exitCode": 0 },
+      { "command": "./tools/pnpm.sh typecheck", "exitCode": 0 },
+      { "command": "./tools/pnpm.sh test", "exitCode": 0, "testsPassed": 97 },
+      { "command": "./tools/pnpm.sh build", "exitCode": 0, "workerBundleKiB": 328.07, "clientPrecacheEntries": 21 },
+      { "command": "./tools/pnpm.sh test:security", "exitCode": 0, "testsPassed": 9, "clientArtifactScan": "PASS" },
+      { "command": "./tools/pnpm.sh docs:check", "exitCode": 0, "productionReady": false },
+      { "command": "./tools/pnpm.sh test:e2e", "exitCode": 0, "testsPassed": 25 },
+      { "command": "./tools/pnpm.sh test:visual", "exitCode": 0, "testsPassed": 14 }
+    ],
+    "buildSandboxNote": "Wrangler emitted a read-only home log-file warning in this sandbox; the build exited 0 and generated the Worker and PWA artifacts."
+  },
+  "conclusion": "The complete quality sequence passes locally, but the hosted run failed at docs:check and its detailed log is not available with current GitHub API permissions. P1-009 remains blocked until a successful hosted run is observed and the discrepancy is explained.",
+  "repositoryChangedByInspection": false,
+  "productionTouched": false
+}
