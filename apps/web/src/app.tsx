@@ -23,6 +23,9 @@ import { healthSchema, publicConfigSchema } from "@venfinance/contracts";
 import { PreferencesProvider, usePreferences } from "./preferences";
 
 const Demo = lazy(() => import("./demo/demo"));
+const UiComponentGallery = import.meta.env.DEV
+  ? lazy(() => import("../../../qa/fixtures/ui-components"))
+  : null;
 export function Brand({ compact = false }: { compact?: boolean }) {
   return (
     <Link to="/" className="brand" aria-label="VenFinance — Beranda">
@@ -619,6 +622,12 @@ export function App() {
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/demo/*" element={<Demo />} />
+            {UiComponentGallery && (
+              <Route
+                path="/__qa/ui-components"
+                element={<UiComponentGallery />}
+              />
+            )}
             <Route path="/login" element={<AuthGate />} />
             <Route path="/register" element={<AuthGate />} />
             <Route path="/status" element={<StatusPage />} />
