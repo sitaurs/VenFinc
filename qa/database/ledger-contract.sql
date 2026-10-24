@@ -23,6 +23,9 @@ DECLARE
   bank_wallet_id uuid;
   makan_category_id uuid;
 BEGIN
+  IF public.current_platform_role() <> 'user' THEN
+    RAISE EXCEPTION 'new profile did not receive the default user role';
+  END IF;
   SELECT id INTO STRICT cash_wallet_id FROM public.wallets WHERE user_id = 'qa-user-a' AND name = 'Cash';
   SELECT id INTO STRICT bank_wallet_id FROM public.wallets WHERE user_id = 'qa-user-a' AND name = 'Bank';
   SELECT id INTO STRICT makan_category_id FROM public.categories WHERE user_id = 'qa-user-a' AND name = 'Makan';
@@ -152,6 +155,36 @@ BEGIN
   END;
 END $$;
 COMMIT;
+RESET ROLE;
+
+-- Role grants are not directly writable by the authenticated app role, and
+-- the non-login mutator can only insert the trigger's default `user` role.
+BEGIN;
+SET ROLE authenticated;
+SELECT set_config('request.jwt.claims', '{"role":"authenticated","sub":"qa-user-a"}', true);
+DO $$
+BEGIN
+  IF has_schema_privilege('authenticated', 'platform', 'USAGE') THEN
+    RAISE EXCEPTION 'authenticated role can access the platform schema';
+  END IF;
+  IF has_table_privilege('authenticated', 'platform.roles', 'INSERT') THEN
+    RAISE EXCEPTION 'authenticated role can insert its own role';
+  END IF;
+END $$;
+RESET ROLE;
+SET ROLE neondb_owner;
+SET ROLE venfinance_mutator;
+SELECT set_config('request.jwt.claims', '{"role":"authenticated","sub":"qa-user-a"}', true);
+DO $$
+BEGIN
+  BEGIN
+    INSERT INTO platform.roles (user_id, role, assigned_by)
+    VALUES ('qa-user-a', 'admin', 'qa-user-a');
+    RAISE EXCEPTION 'mutator accepted self-assigned admin role';
+  EXCEPTION WHEN insufficient_privilege THEN NULL;
+  END;
+END $$;
+ROLLBACK;
 RESET ROLE;
 
 -- Anonymous/malformed claims never resolve a tenant identity.

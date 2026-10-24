@@ -1,0 +1,33 @@
+{
+  "observed_at_utc": "2026-10-24T10:29:09Z",
+  "project_id": "hidden-unit-95812377",
+  "branch_id": "br-aged-mode-b4rcy9i0",
+  "branch_name": "venfinance-p0-auth-20261024",
+  "database_name": "neondb",
+  "environment": "VenFinance staging; production branch was not queried for this probe",
+  "tool": "Neon MCP run_sql_transaction",
+  "migration_file": "packages/db/migrations/0004_platform-role-default-deny.sql",
+  "migration_sha256": "8e884e8903951530b050cfd642d9fb376e6e276f9b03ca58f8d7b297010a33ff",
+  "method": "Executed the migration DDL and synthetic owner A/B/C checks inside a savepoint, rolled back to that savepoint before the MCP transaction committed, then queried policy and fixture counts read-only.",
+  "result": "PASS: staging PostgreSQL policy simulation; no persistent DDL or synthetic rows",
+  "assertions": {
+    "owner_a_reads_only_its_own_role": "PASS",
+    "owner_a_cannot_read_owner_b_role": "PASS",
+    "authenticated_role_cannot_access_platform_schema_or_insert_role": "PASS",
+    "default_user_role_insert_is_allowed": "PASS",
+    "self_assignment_to_admin_is_denied": "PASS",
+    "cross_tenant_role_insert_is_denied": "PASS",
+    "savepoint_rollback_restores_original_policy": "PASS",
+    "temporary_policy_absent_after_rollback": "PASS",
+    "drizzle_migration_count_after_rollback": 4,
+    "persisted_synthetic_profiles_after_rollback": 0
+  },
+  "limitations": [
+    "JWT claims were set synthetically in SQL; this does not verify Neon Auth JWT signature handling or Cloudflare Worker identity propagation.",
+    "The MCP could not connect as the no-login authenticated role; the probe switched the database owner to venfinance_mutator for role-policy checks.",
+    "Migration 0004 was not committed to staging or production; it remains a reviewed local migration awaiting the normal migration approval path.",
+    "This probe does not close session revocation, operator MFA, or production release gates."
+  ],
+  "production_modified": false,
+  "r2_accessed": false
+}

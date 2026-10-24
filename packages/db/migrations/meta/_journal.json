@@ -29,6 +29,13 @@
       "when": 1792833430657,
       "tag": "0003_read-models",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792837546782,
+      "tag": "0004_platform-role-default-deny",
+      "breakpoints": true
     }
   ]
 }

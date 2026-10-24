@@ -6,6 +6,8 @@
 
 Kasus aplikasi meliputi pembuatan ID di server, profil/peran default, dua tenant, FORCE RLS, penolakan insert ledger langsung, posting seimbang, transfer bukan konsumsi, replay idempotent, refund terlacak, konfirmasi saldo negatif, dan nilai BIGINT di atas batas aman JavaScript. Harness mengisi `request.jwt.claims` secara langsung untuk menguji SQL; ia tidak membuktikan bahwa Neon Data API memvalidasi JWT atau mengisi klaim tersebut. Bukti staging melalui Worker tetap wajib.
 
+Migration `packages/db/migrations/0004_platform-role-default-deny.sql` mempersempit policy pada `platform.roles`: role sendiri bisa dibaca, hanya assignment default `user` yang bisa dimasukkan oleh role definer, dan assignment elevated ditolak. Staging policy probe ada di [`../staging-role-policy-probe-2026-10-24.json`](../staging-role-policy-probe-2026-10-24.json); DDL dan fixture sintetis dijalankan lalu di-rollback sebelum transaksi commit. Ini bukan migration yang sudah dipasang ke branch staging, bukan bukti JWT/Worker, dan tidak mengubah status P0/P1.
+
 Harness sebelumnya di bawah ini adalah probe terpisah untuk eksperimen P0-005 dan bukan implementasi ledger aplikasi.
 
 Persiapan P0-005 berupa SQL dan harness terisolasi, sesuai izin mock/staging pada AGENTS §8. Dependensi P0-001 sudah selesai; P0-005 tetap **blocked** karena Neon Managed Auth, revocation dan propagasi identitas melalui Worker belum diuji. Ini bukan migrasi Drizzle atau implementasi P3.

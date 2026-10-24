@@ -44,7 +44,9 @@ Jika browser belum terpasang: `pnpm exec playwright install chromium`. Tes visua
 | `pnpm test:security` | 9/9 PASS + client bundle scan | Scan heuristic, bukan audit/RLS proof |
 | `pnpm test:e2e` | 20/20 PASS, Chromium, local app + mocked APIs | Tidak menguji provider nyata; termasuk 2 skenario offline pribadi |
 | `pnpm test:visual` | 12/12 PASS pada 320–1920px + component gallery | Pemeriksaan layout dasar; belum dibandingkan dengan 180 PNG sumber |
-| `pnpm db:test:local` | BLOCKED, exit 2 | `VENFINANCE_PG_BIN`/PostgreSQL server tools tidak tersedia di runner ini; SQL ledger belum diuji lokal |
+| Neon staging role-policy probe | PASS; `qa/staging-role-policy-probe-2026-10-24.json` | A/B sintetis, claims disetel SQL, DDL/fixture di-rollback; tidak menguji Worker/JWT nyata |
+| `tools/verify-local-postgres.py` (P0 generic probe) | 22/22 PASS pada bukti lokal sebelumnya | Probe schema generik P0-005, bukan migration aplikasi Drizzle/P3 |
+| `pnpm db:test:local` | BLOCKED, exit 2 | `VENFINANCE_PG_BIN`/PostgreSQL server tools tidak tersedia saat run; `packages/db` migration contract lokal belum lulus di run ini |
 | `pnpm docs:check` | PASS; 177 REQ, 90 screen, 373 task tervalidasi | Hanya validator dokumen |
 
 Ulangi semuanya pada commit SHA yang diuji. Cantumkan versi browser, environment dan exit code aktual.
@@ -134,6 +136,7 @@ Live test `BLOCKED` sampai build GOWA dipin, perangkat tes owner disetujui, kepu
 ### Admin, privasi, biaya, recovery — `OPS-*`, `TRUST-*`, `QUAL-013…019/022/024`
 
 - Admin tanpa support grant hanya melihat metadata tiket. Grant salah tiket/expired/revoked tidak membuka raw transaction/chat/proof; akses sah dibatasi dan diaudit.
+- User tidak dapat memberi dirinya role `admin`/`superuser`; bootstrap atau perubahan role privileged harus memakai alur trusted, MFA/reauth, reason, dan audit. Bukti staging saat ini menguji policy PostgreSQL dengan claims sintetis, bukan Worker.
 - Export/delete milik sendiri, schema version, secure expiring download, step-up, consent revoke, request lifecycle, retensi/backups yang dijelaskan; A tidak dapat unduh hasil B.
 - Perubahan roles/flags/quotas/policy/rotation perlu role tepat, MFA/reauth, reason, version, audit, safe rollback; response/log tak mengandung nilai credential.
 - Inject Neon/R2/provider outage, R2 quota, stuck queue, worker restart; health freshness, redacted alert dan fallback manual harus benar.
