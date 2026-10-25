@@ -4,6 +4,8 @@ const requestId = "90bb7219-cbb1-4a49-9c72-d00e05048d77";
 const walletId = "7b9be51e-0607-4c60-8315-e57ae8f61aba";
 const savingsWalletId = "8d4a5f5d-63e1-43e1-83aa-bd4311e33e51";
 const eventId = "12d474d1-0470-4c65-a9c2-15f80b73f72e";
+const goalId = "3bf4f79b-fdbc-43ee-9726-c5784e550704";
+const savingsEventId = "d96f06d6-107d-4f87-99c8-36d1475b203b";
 
 function success(data: unknown) {
   return { data, meta: { requestId, version: 1 } };
@@ -13,7 +15,11 @@ async function mockPrivateApi(page: Page) {
   let postedCommand: Record<string, unknown> | undefined;
   let postedIdempotencyKey: string | undefined;
   let postedBudget: Record<string, unknown> | undefined;
+  let postedGoal: Record<string, unknown> | undefined;
+  let postedContribution: Record<string, unknown> | undefined;
   const budgets: Array<Record<string, unknown>> = [];
+  const goals: Array<Record<string, unknown>> = [];
+  const contributions: Array<Record<string, unknown>> = [];
   await page.route("**/api/v1/**", async (route) => {
     const request = route.request();
     const url = new URL(request.url());
@@ -116,6 +122,71 @@ async function mockPrivateApi(page: Page) {
       await route.fulfill({ json: success(budgets) });
       return;
     }
+    if (path === "/api/v1/savings-goals" && request.method() === "POST") {
+      postedGoal = request.postDataJSON() as Record<string, unknown>;
+      const goal = {
+        id: goalId,
+        name: postedGoal.name,
+        targetMinor: postedGoal.targetMinor,
+        targetDate: postedGoal.targetDate,
+        savingsWalletId: postedGoal.savingsWalletId,
+      };
+      goals.push({
+        ...goal,
+        savingsWalletName: postedGoal.savingsWalletId ? "Tabungan Tujuan" : null,
+        savedMinor: "0",
+        remainingMinor: postedGoal.targetMinor,
+        progressPercent: 0,
+        archivedAt: null,
+      });
+      await route.fulfill({ json: success(goal) });
+      return;
+    }
+    if (path === "/api/v1/savings-goals") {
+      await route.fulfill({ json: success(goals) });
+      return;
+    }
+    if (path === `/api/v1/savings-goals/${goalId}/contributions` && request.method() === "POST") {
+      postedContribution = request.postDataJSON() as Record<string, unknown>;
+      const goal = goals.find((item) => item.id === goalId);
+      if (goal) {
+        const saved = BigInt(String(goal.savedMinor)) + BigInt(String(postedContribution.amountMinor));
+        const target = BigInt(String(goal.targetMinor));
+        goal.savedMinor = saved.toString();
+        goal.remainingMinor = (target - saved).toString();
+        goal.progressPercent = Number(saved * 100n / target > 100n ? 100n : saved * 100n / target);
+      }
+      const contribution = {
+        eventId: savingsEventId,
+        amountMinor: postedContribution.amountMinor,
+        effectiveAt: postedContribution.effectiveAt,
+        note: postedContribution.note ?? null,
+        sourceWalletId: postedContribution.sourceWalletId,
+        sourceWalletName: "Rekening Utama",
+        destinationWalletId: postedContribution.destinationWalletId,
+        destinationWalletName: "Tabungan Tujuan",
+      };
+      contributions.push(contribution);
+      await route.fulfill({ json: success(contribution) });
+      return;
+    }
+    if (path === `/api/v1/savings-goals/${goalId}/contributions`) {
+      await route.fulfill({ json: success(contributions) });
+      return;
+    }
+    if (path === `/api/v1/savings-goals/${goalId}` && request.method() === "PATCH") {
+      const update = request.postDataJSON() as Record<string, unknown>;
+      const goal = goals.find((item) => item.id === goalId);
+      if (goal) {
+        goal.name = update.name;
+        goal.targetMinor = update.targetMinor;
+        goal.targetDate = update.targetDate;
+        goal.savingsWalletId = update.savingsWalletId;
+        goal.archivedAt = update.archived ? "2026-10-25T00:00:00Z" : null;
+      }
+      await route.fulfill({ json: success({ id: goalId, archivedAt: goal?.archivedAt ?? null }) });
+      return;
+    }
     if (path === "/api/v1/transactions" && request.method() === "POST") {
       postedCommand = request.postDataJSON() as Record<string, unknown>;
       postedIdempotencyKey = request.headers()["idempotency-key"];
@@ -168,6 +239,8 @@ async function mockPrivateApi(page: Page) {
     postedCommand: () => postedCommand,
     postedIdempotencyKey: () => postedIdempotencyKey,
     postedBudget: () => postedBudget,
+    postedGoal: () => postedGoal,
+    postedContribution: () => postedContribution,
   };
 }
 
@@ -233,6 +306,55 @@ test("savings transfer selects a savings wallet and stays out of expense categor
     amountMinor: "100000",
     allocations: [],
   });
+});
+
+test("savings goal progress follows a confirmed transfer and preserves exact IDR", async ({ page }) => {
+  const api = await mockPrivateApi(page);
+  await page.goto("/app/goals");
+  await expect(page.getByRole("heading", { name: "Daftar target tabungan", exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Tambah target tabungan", exact: true }).first().click();
+  await page.getByLabel("Nama target", { exact: true }).fill("Dana darurat");
+  await page.getByLabel("Nominal target (rupiah)", { exact: true }).fill("5.000.000");
+  await page.getByLabel("Tanggal target (opsional)", { exact: true }).fill("2027-06-30");
+  await page.getByRole("combobox", { name: "Dompet tabungan khusus (opsional)", exact: true }).selectOption(savingsWalletId);
+  await page.getByRole("button", { name: "Simpan target", exact: true }).click();
+  await expect(page.getByRole("link", { name: /Dana darurat/ })).toBeVisible();
+  expect(api.postedGoal()).toMatchObject({ name: "Dana darurat", targetMinor: "5000000", savingsWalletId });
+  await page.getByRole("link", { name: "Kelola", exact: true }).click();
+  await page.getByRole("button", { name: "Catat setoran", exact: true }).click();
+  await page.getByLabel("Nominal setoran (rupiah)", { exact: true }).fill("200.000");
+  await page.getByLabel("Catatan (opsional)", { exact: true }).fill("Setoran awal");
+  await page.getByRole("button", { name: "Konfirmasi setoran", exact: true }).click();
+  await expect(page.getByText("Rekening Utama → Tabungan Tujuan", { exact: true })).toBeVisible();
+  expect(api.postedContribution()).toMatchObject({
+    sourceWalletId: walletId,
+    destinationWalletId: savingsWalletId,
+    amountMinor: "200000",
+    note: "Setoran awal",
+    timezone: "Asia/Jakarta",
+  });
+});
+
+test("savings goals can be edited, archived, and restored without deleting their history", async ({ page }) => {
+  await mockPrivateApi(page);
+  await page.goto("/app/goals");
+  await page.getByRole("button", { name: "Tambah target tabungan", exact: true }).first().click();
+  await page.getByLabel("Nama target", { exact: true }).fill("Dana liburan");
+  await page.getByLabel("Nominal target (rupiah)", { exact: true }).fill("2.000.000");
+  await page.getByRole("button", { name: "Simpan target", exact: true }).click();
+  await page.getByRole("link", { name: "Kelola", exact: true }).click();
+  await page.getByRole("button", { name: "Edit target", exact: true }).click();
+  await page.getByLabel("Nama target", { exact: true }).fill("Liburan keluarga");
+  await page.getByLabel("Nominal target (rupiah)", { exact: true }).fill("2.500.000");
+  await page.getByRole("button", { name: "Simpan target", exact: true }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "Liburan keluarga", exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Arsipkan", exact: true }).click();
+  await page.getByRole("button", { name: "Konfirmasi arsip", exact: true }).click();
+  await expect(page.getByText("Diarsipkan", { exact: true })).toBeVisible();
+  await page.getByRole("link", { name: "Semua target", exact: true }).click();
+  await page.getByText("Target arsip · 1", { exact: true }).click();
+  await page.getByRole("button", { name: "Pulihkan", exact: true }).click();
+  await expect(page.getByRole("link", { name: /Liburan keluarga/ })).toBeVisible();
 });
 
 test("a provider sign-in without a verified application session cannot open private data", async ({ page }) => {

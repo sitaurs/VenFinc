@@ -5,6 +5,14 @@ import {
   budgetCreateSchema,
   budgetCreateResultSchema,
   budgetListSchema,
+  savingsContributionCreateSchema,
+  savingsContributionListSchema,
+  savingsContributionSchema,
+  savingsGoalCreateSchema,
+  savingsGoalCreateResultSchema,
+  savingsGoalListSchema,
+  savingsGoalUpdateSchema,
+  savingsGoalUpdateResultSchema,
   localDateSchema,
   effectiveAtSchema,
   errorEnvelope,
@@ -171,6 +179,37 @@ function mapBudget(row: DbRow) {
     ...(row.used_minor !== undefined ? { usedMinor: row.used_minor } : {}),
     ...(row.remaining_minor !== undefined ? { remainingMinor: row.remaining_minor } : {}),
   };
+}
+
+function mapSavingsGoal(row: DbRow) {
+  const targetMinor = String(row.target_minor);
+  const savedMinor = String(row.saved_minor ?? "0");
+  const ratio = BigInt(savedMinor) * 100n / BigInt(targetMinor);
+  return {
+    id: row.goal_id ?? row.id,
+    name: row.name,
+    targetMinor,
+    targetDate: row.target_date ?? null,
+    savingsWalletId: row.savings_wallet_id ?? null,
+    savingsWalletName: row.savings_wallet_name ?? null,
+    savedMinor,
+    remainingMinor: String(row.remaining_minor ?? targetMinor),
+    progressPercent: Number(ratio > 100n ? 100n : ratio),
+    archivedAt: row.archived_at ?? null,
+  };
+}
+
+function mapSavingsContribution(row: DbRow) {
+  return savingsContributionSchema.parse({
+    eventId: row.event_id,
+    amountMinor: row.amount_minor,
+    effectiveAt: row.effective_at,
+    note: row.note ?? null,
+    sourceWalletId: row.source_wallet_id,
+    sourceWalletName: row.source_wallet_name,
+    destinationWalletId: row.destination_wallet_id,
+    destinationWalletName: row.destination_wallet_name,
+  });
 }
 
 function isValidDateRange(startsOn: string, endsOn: string): boolean {
@@ -445,6 +484,143 @@ api.post("/budgets", async (c) => {
       plannedMinor: row.planned_minor,
     });
     return c.json(successEnvelope(data, c.get("requestId")), 201);
+  } catch (error) {
+    return dataFailure(c, error, true);
+  }
+});
+
+api.get("/savings-goals", async (c) => {
+  if ([...new URL(c.req.url).searchParams.keys()].length) {
+    return fail(c, "INVALID_INPUT", "Filter tujuan tabungan tidak valid.", 400);
+  }
+  try {
+    const identity = c.get("identity");
+    const result = rows(await callDataApi(c.env, identity.providerJwt, {
+      kind: "rpc",
+      name: "list_savings_goals",
+    })).map(mapSavingsGoal);
+    return c.json(successEnvelope(savingsGoalListSchema.parse(result), c.get("requestId")));
+  } catch (error) {
+    return dataFailure(c, error);
+  }
+});
+
+api.post("/savings-goals", async (c) => {
+  const idempotencyKey = idempotencyKeySchema.safeParse(c.req.header("Idempotency-Key"));
+  if (!idempotencyKey.success) return fail(c, "INVALID_INPUT", "Kunci tujuan tabungan wajib berupa UUID.", 400);
+  const body = await requestJson(c, 8 * 1024);
+  if (!body.ok) return fail(c, "INVALID_INPUT", "Data tujuan tabungan tidak valid.", body.tooLarge ? 413 : 400);
+  const parsed = savingsGoalCreateSchema.safeParse(body.value);
+  if (!parsed.success) return fail(c, "INVALID_INPUT", "Data tujuan tabungan tidak valid.", 400);
+  try {
+    const identity = c.get("identity");
+    const result = rows(await callDataApi(c.env, identity.providerJwt, {
+      kind: "rpc",
+      name: "create_savings_goal",
+      body: {
+        p_idempotency_key: idempotencyKey.data,
+        p_name: parsed.data.name,
+        p_target_minor: parsed.data.targetMinor,
+        p_target_date: parsed.data.targetDate,
+        p_savings_wallet_id: parsed.data.savingsWalletId,
+      },
+    }));
+    if (result.length !== 1) return fail(c, "DEPENDENCY_UNAVAILABLE", "Tujuan tabungan belum dapat dibuat.", 503);
+    const row = result[0]!;
+    return c.json(successEnvelope(savingsGoalCreateResultSchema.parse({
+      id: row.goal_id,
+      name: row.name,
+      targetMinor: row.target_minor,
+      targetDate: row.target_date ?? null,
+      savingsWalletId: row.savings_wallet_id ?? null,
+    }), c.get("requestId")), 201);
+  } catch (error) {
+    return dataFailure(c, error, true);
+  }
+});
+
+api.patch("/savings-goals/:goalId", async (c) => {
+  const goalId = c.req.param("goalId");
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(goalId)) {
+    return fail(c, "INVALID_INPUT", "Tujuan tabungan tidak valid.", 400);
+  }
+  const body = await requestJson(c, 8 * 1024);
+  if (!body.ok) return fail(c, "INVALID_INPUT", "Perubahan tujuan tabungan tidak valid.", body.tooLarge ? 413 : 400);
+  const parsed = savingsGoalUpdateSchema.safeParse(body.value);
+  if (!parsed.success) return fail(c, "INVALID_INPUT", "Perubahan tujuan tabungan tidak valid.", 400);
+  try {
+    const identity = c.get("identity");
+    const result = rows(await callDataApi(c.env, identity.providerJwt, {
+      kind: "rpc",
+      name: "update_savings_goal",
+      body: {
+        p_goal_id: goalId,
+        p_name: parsed.data.name,
+        p_target_minor: parsed.data.targetMinor,
+        p_target_date: parsed.data.targetDate,
+        p_savings_wallet_id: parsed.data.savingsWalletId,
+        p_archived: parsed.data.archived,
+      },
+    }));
+    if (result.length !== 1) return fail(c, "NOT_FOUND", "Tujuan tabungan tidak ditemukan.", 404);
+    return c.json(successEnvelope(savingsGoalUpdateResultSchema.parse({
+      id: result[0]!.goal_id,
+      archivedAt: result[0]!.archived_at ?? null,
+    }), c.get("requestId")));
+  } catch (error) {
+    return dataFailure(c, error);
+  }
+});
+
+api.get("/savings-goals/:goalId/contributions", async (c) => {
+  const goalId = c.req.param("goalId");
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(goalId)) {
+    return fail(c, "INVALID_INPUT", "Tujuan tabungan tidak valid.", 400);
+  }
+  try {
+    const identity = c.get("identity");
+    const result = rows(await callDataApi(c.env, identity.providerJwt, {
+      kind: "rpc",
+      name: "list_savings_goal_contributions",
+      body: { p_goal_id: goalId },
+    })).map(mapSavingsContribution);
+    return c.json(successEnvelope(savingsContributionListSchema.parse(result), c.get("requestId")));
+  } catch (error) {
+    return dataFailure(c, error);
+  }
+});
+
+api.post("/savings-goals/:goalId/contributions", async (c) => {
+  const goalId = c.req.param("goalId");
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(goalId)) {
+    return fail(c, "INVALID_INPUT", "Tujuan tabungan tidak valid.", 400);
+  }
+  const idempotencyKey = idempotencyKeySchema.safeParse(c.req.header("Idempotency-Key"));
+  if (!idempotencyKey.success) return fail(c, "INVALID_INPUT", "Kunci setoran tabungan wajib berupa UUID.", 400);
+  const body = await requestJson(c, 8 * 1024);
+  if (!body.ok) return fail(c, "INVALID_INPUT", "Data setoran tabungan tidak valid.", body.tooLarge ? 413 : 400);
+  const parsed = savingsContributionCreateSchema.safeParse(body.value);
+  if (!parsed.success) return fail(c, "INVALID_INPUT", "Data setoran tabungan tidak valid.", 400);
+  try {
+    const identity = c.get("identity");
+    const result = rows(await callDataApi(c.env, identity.providerJwt, {
+      kind: "rpc",
+      name: "contribute_to_savings_goal",
+      body: {
+        p_goal_id: goalId,
+        p_source_wallet_id: parsed.data.sourceWalletId,
+        p_destination_wallet_id: parsed.data.destinationWalletId,
+        p_amount_minor: parsed.data.amountMinor,
+        p_effective_at: parsed.data.effectiveAt,
+        p_timezone: parsed.data.timezone,
+        p_idempotency_key: idempotencyKey.data,
+        p_note: parsed.data.note ?? null,
+        p_allow_negative: false,
+        p_trace_id: c.get("requestId"),
+      },
+    }));
+    if (result.length !== 1) return fail(c, "DEPENDENCY_UNAVAILABLE", "Setoran tabungan belum dapat dikonfirmasi.", 503);
+    return c.json(successEnvelope(mapSavingsContribution(result[0]!), c.get("requestId")), 201);
   } catch (error) {
     return dataFailure(c, error, true);
   }

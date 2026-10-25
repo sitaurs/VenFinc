@@ -498,6 +498,125 @@ describe("role-gated operator routes", () => {
     expect(await response.text()).not.toContain("forged-browser-token");
   });
 
+  it("returns savings goal progress as exact money and a capped integer percentage", async () => {
+    const setup = await testBindings(async (url) => {
+      expect(url.pathname).toBe("/neondb/rest/v1/rpc/list_savings_goals");
+      return Response.json([{
+        goal_id: "c36df782-e943-4ab5-80d5-07b8f6eef620",
+        name: "Dana darurat",
+        target_minor: "1000000",
+        target_date: "2027-06-30",
+        savings_wallet_id: "8d4a5f5d-63e1-43e1-83aa-bd4311e33e51",
+        savings_wallet_name: "Tabungan",
+        saved_minor: "1200000",
+        remaining_minor: "-200000",
+        progress_percent: 100,
+        archived_at: null,
+      }]);
+    });
+    const response = await app.request("https://finance.test/api/v1/savings-goals", {
+      headers: { Cookie: activeCookie() },
+    }, setup.bindings);
+    const body = await response.text();
+    expect(response.status).toBe(200);
+    expect(body).toContain('"savedMinor":"1200000"');
+    expect(body).toContain('"remainingMinor":"-200000"');
+    expect(body).toContain('"progressPercent":100');
+  });
+
+  it("creates savings goals with the verified owner session and idempotency key", async () => {
+    let captured: Record<string, unknown> | undefined;
+    let authorization: string | null = null;
+    const setup = await testBindings(async (url, init) => {
+      expect(url.pathname).toBe("/neondb/rest/v1/rpc/create_savings_goal");
+      captured = JSON.parse(String(init.body)) as Record<string, unknown>;
+      authorization = new Headers(init.headers).get("Authorization");
+      return Response.json([{
+        goal_id: "c36df782-e943-4ab5-80d5-07b8f6eef620",
+        name: "Dana darurat",
+        target_minor: "5000000",
+        target_date: "2027-06-30",
+        savings_wallet_id: null,
+      }]);
+    });
+    const response = await app.request("https://finance.test/api/v1/savings-goals", {
+      method: "POST",
+      headers: {
+        Cookie: activeCookie(),
+        Origin: "https://finance.test",
+        "Content-Type": "application/json",
+        "Idempotency-Key": "1212c76b-8875-4bf3-ace5-1e584e0a8d0d",
+      },
+      body: JSON.stringify({ name: "Dana darurat", targetMinor: "5000000", targetDate: "2027-06-30", savingsWalletId: null }),
+    }, setup.bindings);
+    expect(response.status).toBe(201);
+    expect(captured).toEqual({
+      p_idempotency_key: "1212c76b-8875-4bf3-ace5-1e584e0a8d0d",
+      p_name: "Dana darurat",
+      p_target_minor: "5000000",
+      p_target_date: "2027-06-30",
+      p_savings_wallet_id: null,
+    });
+    expect(authorization).toMatch(/^Bearer /);
+  });
+
+  it("posts a savings contribution through the atomic ledger RPC with the selected tenant-owned wallets", async () => {
+    let captured: Record<string, unknown> | undefined;
+    const setup = await testBindings(async (url, init) => {
+      expect(url.pathname).toBe("/neondb/rest/v1/rpc/contribute_to_savings_goal");
+      captured = JSON.parse(String(init.body)) as Record<string, unknown>;
+      return Response.json([{
+        event_id: "12d474d1-0470-4c65-a9c2-15f80b73f72e",
+        amount_minor: "200000",
+        effective_at: "2026-10-25T00:00:00Z",
+        note: "Setoran awal",
+        source_wallet_id: "7b9be51e-0607-4c60-8315-e57ae8f61aba",
+        source_wallet_name: "Tunai",
+        destination_wallet_id: "8d4a5f5d-63e1-43e1-83aa-bd4311e33e51",
+        destination_wallet_name: "Tabungan",
+      }]);
+    });
+    const response = await app.request("https://finance.test/api/v1/savings-goals/c36df782-e943-4ab5-80d5-07b8f6eef620/contributions", {
+      method: "POST",
+      headers: {
+        Cookie: activeCookie(),
+        Origin: "https://finance.test",
+        "Content-Type": "application/json",
+        "Idempotency-Key": "2212c76b-8875-4bf3-ace5-1e584e0a8d0d",
+      },
+      body: JSON.stringify({
+        sourceWalletId: "7b9be51e-0607-4c60-8315-e57ae8f61aba",
+        destinationWalletId: "8d4a5f5d-63e1-43e1-83aa-bd4311e33e51",
+        amountMinor: "200000",
+        effectiveAt: "2026-10-25T00:00:00Z",
+        timezone: "Asia/Jakarta",
+        note: "Setoran awal",
+      }),
+    }, setup.bindings);
+    expect(response.status).toBe(201);
+    expect(captured).toMatchObject({
+      p_goal_id: "c36df782-e943-4ab5-80d5-07b8f6eef620",
+      p_source_wallet_id: "7b9be51e-0607-4c60-8315-e57ae8f61aba",
+      p_destination_wallet_id: "8d4a5f5d-63e1-43e1-83aa-bd4311e33e51",
+      p_amount_minor: "200000",
+      p_idempotency_key: "2212c76b-8875-4bf3-ace5-1e584e0a8d0d",
+      p_allow_negative: false,
+    });
+  });
+
+  it("rejects invalid savings goal IDs before querying private data", async () => {
+    const upstream = vi.fn();
+    const setup = await testBindings(async () => {
+      upstream();
+      return Response.json([]);
+    });
+    const response = await app.request("https://finance.test/api/v1/savings-goals/not-a-uuid/contributions", {
+      headers: { Cookie: activeCookie() },
+    }, setup.bindings);
+    expect(response.status).toBe(400);
+    expect(upstream).not.toHaveBeenCalled();
+  });
+
   it("allows admin routes for admins but keeps system routes superuser-only", async () => {
     let role = "admin";
     const setup = await testBindings(async (url) => {

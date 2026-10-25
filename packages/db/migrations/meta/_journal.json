@@ -43,6 +43,13 @@
       "when": 1792894354018,
       "tag": "0005_budgeting",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792894608468,
+      "tag": "0006_savings-goals",
+      "breakpoints": true
     }
   ]
 }

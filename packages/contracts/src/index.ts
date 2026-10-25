@@ -269,6 +269,58 @@ export const budgetCreateResultSchema = z.strictObject({
   endsOn: localDateSchema,
   plannedMinor: positiveMinorAmountSchema,
 });
+export const savingsGoalCreateSchema = z.strictObject({
+  name: z.string().trim().min(1).max(100),
+  targetMinor: positiveMinorAmountSchema,
+  targetDate: localDateSchema.nullable().default(null),
+  savingsWalletId: z.uuid().nullable().default(null),
+});
+export const savingsGoalUpdateSchema = savingsGoalCreateSchema.extend({
+  archived: z.boolean().default(false),
+});
+export const savingsGoalSchema = z.strictObject({
+  id: z.uuid(),
+  name: z.string().max(100),
+  targetMinor: positiveMinorAmountSchema,
+  targetDate: localDateSchema.nullable(),
+  savingsWalletId: z.uuid().nullable(),
+  savingsWalletName: z.string().max(100).nullable(),
+  savedMinor: signedMinorAmountSchema,
+  remainingMinor: signedMinorAmountSchema,
+  progressPercent: z.number().int().min(0).max(100),
+  archivedAt: effectiveAtSchema.nullable(),
+});
+export const savingsGoalListSchema = z.array(savingsGoalSchema).max(100);
+export const savingsGoalCreateResultSchema = z.strictObject({
+  id: z.uuid(),
+  name: z.string().max(100),
+  targetMinor: positiveMinorAmountSchema,
+  targetDate: localDateSchema.nullable(),
+  savingsWalletId: z.uuid().nullable(),
+});
+export const savingsGoalUpdateResultSchema = z.strictObject({
+  id: z.uuid(),
+  archivedAt: effectiveAtSchema.nullable(),
+});
+export const savingsContributionCreateSchema = z.strictObject({
+  sourceWalletId: z.uuid(),
+  destinationWalletId: z.uuid(),
+  amountMinor: positiveMinorAmountSchema,
+  effectiveAt: effectiveAtSchema,
+  timezone: timezoneSchema,
+  note: z.string().trim().max(500).optional(),
+});
+export const savingsContributionSchema = z.strictObject({
+  eventId: z.uuid(),
+  amountMinor: positiveMinorAmountSchema,
+  effectiveAt: effectiveAtSchema,
+  note: z.string().max(500).nullable(),
+  sourceWalletId: z.uuid(),
+  sourceWalletName: z.string().max(100),
+  destinationWalletId: z.uuid(),
+  destinationWalletName: z.string().max(100),
+});
+export const savingsContributionListSchema = z.array(savingsContributionSchema).max(100);
 export const financeAllocationSchema = z.strictObject({
   categoryId: z.uuid(),
   amountMinor: positiveMinorAmountSchema,
@@ -378,6 +430,9 @@ export type PublicConfig = z.infer<typeof publicConfigSchema>;
 export type Wallet = z.infer<typeof walletSchema>;
 export type Budget = z.infer<typeof budgetSchema>;
 export type BudgetCreate = z.infer<typeof budgetCreateSchema>;
+export type SavingsGoal = z.infer<typeof savingsGoalSchema>;
+export type SavingsGoalCreate = z.infer<typeof savingsGoalCreateSchema>;
+export type SavingsGoalUpdate = z.infer<typeof savingsGoalUpdateSchema>;
 export type FinancePost = z.infer<typeof financePostSchema>;
 export type FinanceEvent = z.infer<typeof financeEventSchema>;
 export type FinanceEventPage = z.infer<typeof financeEventPageSchema>;

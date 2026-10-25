@@ -1,15 +1,18 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from "react";
-import { Link, Navigate, NavLink, Route, Routes, useLocation, useNavigate, useSearchParams } from "react-router";
+import { Link, Navigate, NavLink, Route, Routes, useLocation, useNavigate, useParams, useSearchParams } from "react-router";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowDownLeft, ArrowLeftRight, ArrowRight, ArrowUpRight, Banknote,
   ChartNoAxesCombined, CircleHelp, Eye, EyeOff, Home, List, LoaderCircle,
   CloudOff, ChevronRight, KeyRound, LaptopMinimal, LogOut, Plus, RefreshCw,
-  Settings, ShieldCheck, Smartphone, WalletCards, X, PiggyBank, CalendarDays,
+  Settings, ShieldCheck, Smartphone, WalletCards, X, PiggyBank, CalendarDays, Target,
 } from "lucide-react";
 import {
   authDeviceSessionListSchema, authSessionMutationSchema, budgetCreateResultSchema,
   budgetCreateSchema, budgetListSchema, categorySchema,
+  savingsContributionCreateSchema, savingsContributionListSchema, savingsContributionSchema,
+  savingsGoalCreateResultSchema, savingsGoalCreateSchema,
+  savingsGoalListSchema, savingsGoalUpdateResultSchema, type SavingsGoal, type SavingsGoalUpdate,
   financeEventPageSchema, financePostResultSchema, financePostSchema,
   privateSessionSchema, publicConfigSchema, profileCreateResultSchema,
   profileReadResultSchema, walletSchema, type Budget, type BudgetCreate,
@@ -169,6 +172,7 @@ function FinanceShell({ profile, ownerId }: { profile: UserProfile; ownerId: str
   const active = location.pathname.endsWith("/transactions") || location.pathname.includes("/transactions/")
     ? "transactions"
     : location.pathname.includes("/budgets") ? "budgets"
+      : location.pathname.includes("/goals") ? "goals"
       : location.pathname.includes("/wallets") ? "wallets"
       : location.pathname.includes("/offline") ? "offline"
         : location.pathname.includes("/settings") ? "settings" : "home";
@@ -192,6 +196,7 @@ function FinanceShell({ profile, ownerId }: { profile: UserProfile; ownerId: str
           <NavLink end to="/app" className={({ isActive }) => isActive ? "active" : ""}><Home size={19} />{t("Beranda", "Home")}</NavLink>
           <NavLink to="/app/transactions" className={({ isActive }) => isActive ? "active" : ""}><List size={19} />{t("Transaksi", "Transactions")}</NavLink>
           <NavLink to="/app/budgets" className={({ isActive }) => isActive ? "active" : ""}><PiggyBank size={19} />{t("Anggaran", "Budgets")}</NavLink>
+          <NavLink to="/app/goals" className={({ isActive }) => isActive ? "active" : ""}><Target size={19} />{t("Target tabungan", "Savings goals")}</NavLink>
           <NavLink to="/app/wallets" className={({ isActive }) => isActive ? "active" : ""}><WalletCards size={19} />{t("Dompet", "Wallets")}</NavLink>
           <NavLink to="/app/offline" className={({ isActive }) => isActive ? "active" : ""}><CloudOff size={19} />{t("Draf offline", "Offline drafts")}</NavLink>
           <NavLink to="/app/settings" className={({ isActive }) => isActive ? "active" : ""}><Settings size={19} />{t("Pengaturan", "Settings")}</NavLink>
@@ -216,6 +221,8 @@ function FinanceShell({ profile, ownerId }: { profile: UserProfile; ownerId: str
             <Route path="transactions" element={<TransactionsPage profile={profile} ownerId={ownerId} />} />
             <Route path="transactions/new" element={<TransactionsPage profile={profile} ownerId={ownerId} />} />
             <Route path="budgets" element={<BudgetsPage profile={profile} ownerId={ownerId} />} />
+            <Route path="goals" element={<SavingsGoalsPage profile={profile} ownerId={ownerId} />} />
+            <Route path="goals/:goalId" element={<SavingsGoalsPage profile={profile} ownerId={ownerId} />} />
             <Route path="wallets" element={<WalletsPage ownerId={ownerId} />} />
             <Route path="offline" element={<OfflineVaultPage ownerId={ownerId} allowSetup />} />
             <Route path="settings" element={<MoreSettingsPage profile={profile} />} />
@@ -249,6 +256,11 @@ function MoreSettingsPage({ profile }: { profile: UserProfile }) {
         <Link className="settings-directory-card" to="/app/wallets">
           <span className="settings-directory-icon"><WalletCards size={22} /></span>
           <span><strong>{t("Sumber uang", "Money sources")}</strong><small>{t("Kelola dompet virtual dan saldo yang tercatat.", "Manage virtual wallets and recorded balances.")}</small></span>
+          <ChevronRight size={20} />
+        </Link>
+        <Link className="settings-directory-card" to="/app/goals">
+          <span className="settings-directory-icon"><Target size={22} /></span>
+          <span><strong>{t("Target tabungan", "Savings goals")}</strong><small>{t("Pantau target dan setoran dari transfer nyata.", "Track a goal and contributions from actual transfers.")}</small></span>
           <ChevronRight size={20} />
         </Link>
         <Link className="settings-directory-card" to="/app/settings/security">
@@ -427,6 +439,14 @@ function useBudgets(ownerId: string, month: string) {
   });
 }
 
+function useSavingsGoals(ownerId: string) {
+  return useQuery({
+    queryKey: ["finance-savings-goals", ownerId],
+    queryFn: () => apiData("/api/v1/savings-goals", savingsGoalListSchema),
+    retry: false,
+  });
+}
+
 function BudgetSummary({ budgets, month, locale }: { budgets: Budget[]; month: string; locale: "id-ID" | "en-US" }) {
   const { t, hidden } = usePreferences();
   // A global cap overlaps every category cap. Show the global plan alone when it exists.
@@ -553,6 +573,250 @@ function BudgetsPage({ profile, ownerId }: { profile: UserProfile; ownerId: stri
       </> : <Card className="budget-empty-card"><EmptyState icon={<PiggyBank />} title={t("Belum ada rencana untuk bulan ini", "No plan for this month yet")} action={<Button onClick={() => setEditing(true)}><Plus size={17} />{t("Buat anggaran", "Create budget")}</Button>}>{t("Mulai dari satu kategori. Angka rencana terpisah dari saldo dompet, dan transaksi tetap dapat dicatat saat anggaran terlampaui.", "Start with one category. Plans stay separate from wallet balances, and transactions remain recordable when a budget is exceeded.")}</EmptyState></Card>}
     </section>
   );
+}
+
+function SavingsGoalsPage({ profile, ownerId }: { profile: UserProfile; ownerId: string }) {
+  const { t, locale, hidden } = usePreferences();
+  const queryClient = useQueryClient();
+  const params = useParams();
+  const goalId = params.goalId;
+  const goals = useSavingsGoals(ownerId);
+  const wallets = useWallets(ownerId);
+  const contributions = useQuery({
+    queryKey: ["finance-savings-contributions", ownerId, goalId],
+    queryFn: () => apiData(`/api/v1/savings-goals/${goalId}/contributions`, savingsContributionListSchema),
+    enabled: Boolean(goalId),
+    retry: false,
+  });
+  const [formGoal, setFormGoal] = useState<SavingsGoal | null | "new">(null);
+  const [contributing, setContributing] = useState(false);
+  const [archivingGoalId, setArchivingGoalId] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<"newest" | "date" | "progress">("newest");
+  const [error, setError] = useState<string | null>(null);
+  const createKey = useRef<{ fingerprint: string; value: string } | null>(null);
+  const contributionKey = useRef<{ fingerprint: string; value: string } | null>(null);
+  const activeWallets = (wallets.data?.items ?? []).filter((wallet) => wallet.archivedAt === null);
+  const create = useMutation({
+    mutationFn: (payload: ReturnType<typeof savingsGoalCreateSchema.parse>) => {
+      const fingerprint = JSON.stringify(payload);
+      if (!createKey.current || createKey.current.fingerprint !== fingerprint) {
+        createKey.current = { fingerprint, value: crypto.randomUUID() };
+      }
+      return apiData("/api/v1/savings-goals", savingsGoalCreateResultSchema, {
+        method: "POST",
+        headers: { "Idempotency-Key": createKey.current.value },
+        body: JSON.stringify(payload),
+      });
+    },
+    onSuccess: async () => {
+      createKey.current = null;
+      setFormGoal(null);
+      setError(null);
+      await queryClient.invalidateQueries({ queryKey: ["finance-savings-goals", ownerId] });
+    },
+    onError: (cause) => setError(cause instanceof ApiClientError ? cause.publicMessage ?? t("Target belum dapat dibuat.", "The goal could not be created.") : t("Periksa kembali detail target.", "Check the goal details.")),
+  });
+  const update = useMutation({
+    mutationFn: ({ goal, payload }: { goal: SavingsGoal; payload: SavingsGoalUpdate }) =>
+      apiData(`/api/v1/savings-goals/${goal.id}`, savingsGoalUpdateResultSchema, {
+        method: "PATCH",
+        body: JSON.stringify(payload),
+      }),
+    onSuccess: async () => {
+      setFormGoal(null);
+      setArchivingGoalId(null);
+      setError(null);
+      await queryClient.invalidateQueries({ queryKey: ["finance-savings-goals", ownerId] });
+    },
+    onError: (cause) => setError(cause instanceof ApiClientError ? cause.publicMessage ?? t("Target belum dapat diperbarui.", "The goal could not be updated.") : t("Perubahan target belum berhasil.", "The goal could not be updated.")),
+  });
+  const contribute = useMutation({
+    mutationFn: ({ goal, payload }: { goal: SavingsGoal; payload: ReturnType<typeof savingsContributionCreateSchema.parse> }) => {
+      const fingerprint = `${goal.id}:${JSON.stringify(payload)}`;
+      if (!contributionKey.current || contributionKey.current.fingerprint !== fingerprint) {
+        contributionKey.current = { fingerprint, value: crypto.randomUUID() };
+      }
+      return apiData(`/api/v1/savings-goals/${goal.id}/contributions`, savingsContributionSchema, {
+        method: "POST",
+        headers: { "Idempotency-Key": contributionKey.current.value },
+        body: JSON.stringify(payload),
+      });
+    },
+    onSuccess: async () => {
+      contributionKey.current = null;
+      setContributing(false);
+      setError(null);
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["finance-savings-goals", ownerId] }),
+        queryClient.invalidateQueries({ queryKey: ["finance-savings-contributions", ownerId, goalId] }),
+        queryClient.invalidateQueries({ queryKey: ["finance-wallets", ownerId] }),
+        queryClient.invalidateQueries({ queryKey: ["finance-events", ownerId] }),
+      ]);
+    },
+    onError: (cause) => setError(cause instanceof ApiClientError ? cause.publicMessage ?? t("Setoran belum dapat dicatat.", "The contribution could not be recorded.") : t("Periksa kembali sumber, dompet tabungan, dan nominal.", "Check the source, savings wallet, and amount.")),
+  });
+
+  const selectedGoal = goalId ? goals.data?.find((goal) => goal.id === goalId) : undefined;
+  const savingWallets = activeWallets.filter((wallet) => wallet.type === "savings");
+  const displayMoney = (amount: string) => hidden ? "Rp••••••" : formatIdr(amount, locale);
+  const refresh = () => {
+    void goals.refetch();
+    void wallets.refetch();
+    if (goalId) void contributions.refetch();
+  };
+
+  if (goals.isPending || wallets.isPending) return loadingPanel(t("Memuat target tabungan…", "Loading savings goals…"));
+  if (goals.isError || wallets.isError) return unavailablePanel(refresh, t("Target dan saldo tidak dapat diverifikasi. Tidak ada setoran yang dicatat.", "Goals and balances could not be verified. No contribution was recorded."));
+
+  const editor = formGoal !== null ? <SavingsGoalEditor
+    key={formGoal === "new" ? "new" : formGoal.id}
+    goal={formGoal === "new" ? null : formGoal}
+    wallets={savingWallets}
+    busy={create.isPending || update.isPending}
+    error={error}
+    onCancel={() => { setFormGoal(null); setError(null); }}
+    onSubmit={(payload) => {
+      setError(null);
+      if (formGoal === "new") create.mutate(payload);
+      else update.mutate({ goal: formGoal, payload: { ...payload, archived: false } });
+    }}
+  /> : null;
+
+  if (goalId) {
+    if (!selectedGoal) return <Card><EmptyState icon={<Target />} title={t("Target tabungan tidak ditemukan", "Savings goal not found")} action={<Button asChild variant="secondary"><Link to="/app/goals">{t("Kembali ke target", "Back to goals")}</Link></Button>}>{t("Target mungkin sudah diarsipkan atau tidak tersedia untuk akun ini.", "This goal may be archived or unavailable to this account.")}</EmptyState></Card>;
+    return <section className="savings-goals-page" aria-label={t("Detail target tabungan", "Savings goal details")}>
+      <div className="goal-back-row"><Button asChild variant="ghost" size="small"><Link to="/app/goals"><ArrowRight className="goal-back-icon" size={16} />{t("Semua target", "All goals")}</Link></Button></div>
+      <FinanceHeading title={selectedGoal.name} description={t("Target dan progres berdasarkan transfer tabungan yang terkonfirmasi.", "Progress reflects confirmed savings transfers.")} action={!selectedGoal.archivedAt ? <div className="goal-heading-actions"><Button variant="secondary" onClick={() => setFormGoal(selectedGoal)}>{t("Edit target", "Edit goal")}</Button>{archivingGoalId === selectedGoal.id ? <><Button size="small" loading={update.isPending} onClick={() => update.mutate({ goal: selectedGoal, payload: { name: selectedGoal.name, targetMinor: selectedGoal.targetMinor, targetDate: selectedGoal.targetDate, savingsWalletId: selectedGoal.savingsWalletId, archived: true } })}>{t("Konfirmasi arsip", "Confirm archive")}</Button><Button variant="ghost" size="small" onClick={() => setArchivingGoalId(null)}>{t("Batal", "Cancel")}</Button></> : <Button variant="ghost" size="small" onClick={() => { setArchivingGoalId(selectedGoal.id); setError(null); }}>{t("Arsipkan", "Archive")}</Button>}</div> : undefined} />
+      <SavingsGoalCard goal={selectedGoal} locale={locale} hidden={hidden} t={t} />
+      {!selectedGoal.archivedAt ? contributing ? <SavingsContributionEditor
+        goal={selectedGoal}
+        wallets={activeWallets}
+        timezone={profile.timezone}
+        busy={contribute.isPending}
+        error={error}
+        onCancel={() => { setContributing(false); setError(null); }}
+        onSubmit={(payload) => { setError(null); contribute.mutate({ goal: selectedGoal, payload }); }}
+      /> : <div className="goal-detail-actions">
+        <Button onClick={() => { setContributing(true); setError(null); }} disabled={!savingWallets.length}><Plus size={17} />{t("Catat setoran", "Record contribution")}</Button>
+        <Button variant="secondary" onClick={() => setFormGoal(selectedGoal)}>{t("Ubah detail", "Edit details")}</Button>
+      </div> : null}
+      {error && !contributing && !formGoal ? <p className="form-error" role="alert">{error}</p> : null}
+      {contributions.isPending ? loadingPanel(t("Memuat riwayat setoran…", "Loading contribution history…")) : contributions.isError ? unavailablePanel(() => void contributions.refetch(), t("Riwayat setoran belum dapat dimuat.", "Contribution history is unavailable.")) : <Card className="goal-history-card">
+        <div className="private-section-heading"><div><h2>{t("Riwayat setoran", "Contribution history")}</h2><p>{t("Setoran tersimpan sebagai transfer, bukan pengeluaran.", "Contributions are transfers, not expenses.")}</p></div></div>
+        {contributions.data.length ? <div className="goal-contribution-list">{contributions.data.map((item) => <div className="goal-contribution-row" key={item.eventId}><span className="goal-contribution-icon"><ArrowDownLeft size={18} /></span><div><strong>{item.sourceWalletName} → {item.destinationWalletName}</strong><small>{new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeZone: profile.timezone }).format(new Date(item.effectiveAt))}{item.note ? ` · ${item.note}` : ""}</small></div><strong>{displayMoney(item.amountMinor)}</strong></div>)}</div> : <EmptyState icon={<Banknote />} title={t("Belum ada setoran", "No contributions yet")}>{t("Setoran akan muncul setelah transfer dari dompet sumber ke dompet bertipe tabungan dicatat.", "Contributions appear after a transfer from a source wallet to a savings wallet is recorded.")}</EmptyState>}
+      </Card>}
+      {editor}
+    </section>;
+  }
+
+  const activeGoals = goals.data.filter((goal) => !goal.archivedAt);
+  const visibleGoals = sortBy === "date"
+    ? [...activeGoals].sort((left, right) => (left.targetDate ?? "9999-12-31").localeCompare(right.targetDate ?? "9999-12-31"))
+    : sortBy === "progress"
+      ? [...activeGoals].sort((left, right) => right.progressPercent - left.progressPercent || left.name.localeCompare(right.name, locale))
+      : activeGoals;
+  const archivedGoals = goals.data.filter((goal) => goal.archivedAt);
+  return <section className="savings-goals-page" aria-label={t("Daftar target tabungan", "Savings goals")}>
+    <FinanceHeading title={t("Daftar target tabungan", "Savings goals")} description={t("Pantau target dari setoran yang benar-benar dipindahkan. Rencana target tidak mengunci saldo dompet.", "Track goals using funds actually transferred. A goal does not lock wallet balances.")} action={<Button onClick={() => { setFormGoal("new"); setError(null); }}><Plus size={18} />{t("Tambah target tabungan", "Add savings goal")}</Button>} />
+    <Card className="goal-hero"><span className="goal-hero-icon"><Target size={30} /></span><div><h2>{t("Wujudkan tujuan keuangan Anda", "Bring your financial goals to life")}</h2><p>{t("Buat target tabungan untuk berbagai rencana masa depan, seperti dana darurat atau pembelian besar.", "Create savings goals for future plans, such as an emergency fund or a major purchase.")}</p></div></Card>
+    <Button className="goal-add-mobile" onClick={() => { setFormGoal("new"); setError(null); }}><Plus size={19} />{t("Tambah target tabungan", "Add savings goal")}</Button>
+    {editor}
+    <div className="goal-list-heading"><h2>{t(`${visibleGoals.length} target tabungan`, `${visibleGoals.length} savings goals`)}</h2><label><span className="sr-only">{t("Urutkan target", "Sort goals")}</span><select value={sortBy} onChange={(event) => setSortBy(event.target.value as typeof sortBy)}><option value="newest">{t("Terbaru", "Newest")}</option><option value="date">{t("Tanggal target", "Target date")}</option><option value="progress">{t("Kemajuan", "Progress")}</option></select></label></div>
+    {visibleGoals.length ? <>
+      <div className="goal-table-wrap"><table className="savings-goal-table"><thead><tr><th>{t("Nama target", "Goal")}</th><th>{t("Realisasi / Target", "Saved / target")}</th><th>{t("Kemajuan", "Progress")}</th><th>{t("Target tanggal", "Target date")}</th><th>{t("Sumber dana", "Funding source")}</th><th><span className="sr-only">{t("Aksi", "Actions")}</span></th></tr></thead><tbody>{visibleGoals.map((goal) => <tr key={goal.id}><td><Link className="goal-table-name" to={`/app/goals/${goal.id}`}><span className="goal-card-icon"><Target size={18} /></span><span><strong>{goal.name}</strong><small>{t("Untuk kebutuhan masa depan", "For a future goal")}</small></span></Link></td><td><strong>{displayMoney(goal.savedMinor)}</strong><span> / {displayMoney(goal.targetMinor)}</span></td><td><div className="goal-table-progress"><div className="goal-progress" role="progressbar" aria-label={t(`Progres target ${goal.name}`, `${goal.name} progress`)} aria-valuemin={0} aria-valuemax={100} aria-valuenow={goal.progressPercent}><span style={{ width: `${goal.progressPercent}%` }} /></div><span>{goal.progressPercent}%</span></div></td><td>{goal.targetDate ? new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeZone: "UTC" }).format(new Date(`${goal.targetDate}T12:00:00Z`)) : t("Tanpa tanggal", "No date")}</td><td><span className="goal-source-label"><WalletCards size={17} />{goal.savingsWalletName ?? t("Pilih saat setoran", "Choose when contributing")}</span><small className="goal-source-secondary">{goal.savingsWalletName ? t("Dompet bertipe tabungan", "Savings-type wallet") : t("Tujuan tanpa dompet khusus", "Goal without a dedicated wallet")}</small></td><td><Button asChild variant="ghost" size="small"><Link to={`/app/goals/${goal.id}`}>{t("Kelola", "Manage")}<ChevronRight size={15} /></Link></Button></td></tr>)}</tbody></table></div>
+      <div className="savings-goals-list">{visibleGoals.map((goal) => <SavingsGoalCard key={goal.id} goal={goal} locale={locale} hidden={hidden} t={t} actions={<>
+      <Button asChild variant="ghost" size="small"><Link to={`/app/goals/${goal.id}`}>{t("Lihat detail", "View details")}<ArrowRight size={15} /></Link></Button>
+      <Button variant="secondary" size="small" onClick={() => setFormGoal(goal)}>{t("Edit", "Edit")}</Button>
+      {archivingGoalId === goal.id ? <span className="goal-confirm-actions"><Button size="small" loading={update.isPending} onClick={() => update.mutate({ goal, payload: { name: goal.name, targetMinor: goal.targetMinor, targetDate: goal.targetDate, savingsWalletId: goal.savingsWalletId, archived: true } })}>{t("Arsipkan", "Archive")}</Button><Button variant="ghost" size="small" onClick={() => setArchivingGoalId(null)}>{t("Batal", "Cancel")}</Button></span> : <Button variant="ghost" size="small" onClick={() => { setArchivingGoalId(goal.id); setError(null); }}>{t("Arsipkan", "Archive")}</Button>}
+    </>} />)}</div>
+    </> : <p className="goal-empty-copy">{t("Belum ada target yang tercatat. Tambahkan target dan progresnya akan mengikuti transfer terkonfirmasi.", "No goals yet. Add a goal and its progress will follow confirmed transfers.")}</p>}
+    <button className="goal-add-tile" type="button" onClick={() => { setFormGoal("new"); setError(null); }}><span><Plus size={23} /></span><strong>{t("Tambah target tabungan", "Add savings goal")}</strong><small>{t("Mulai menabung untuk tujuan finansial Anda.", "Start saving for your financial goal.")}</small></button>
+    {archivedGoals.length ? <details className="goal-archive-section"><summary>{t("Target arsip", "Archived goals")} · {archivedGoals.length}</summary><div className="savings-goals-list">{archivedGoals.map((goal) => <SavingsGoalCard key={goal.id} goal={goal} locale={locale} hidden={hidden} t={t} actions={<Button variant="secondary" size="small" loading={update.isPending} onClick={() => update.mutate({ goal, payload: { name: goal.name, targetMinor: goal.targetMinor, targetDate: goal.targetDate, savingsWalletId: goal.savingsWalletId, archived: false } })}>{t("Pulihkan", "Restore")}</Button>} />)}</div></details> : null}
+    {error && !formGoal ? <p className="form-error" role="alert">{error}</p> : null}
+  </section>;
+}
+
+function SavingsGoalCard({ goal, locale, hidden, t, actions }: {
+  goal: SavingsGoal; locale: "id-ID" | "en-US"; hidden: boolean;
+  t: (id: string, en: string) => string; actions?: ReactNode;
+}) {
+  const percent = Math.min(100, goal.progressPercent);
+  const money = (amount: string) => hidden ? "Rp••••••" : formatIdr(amount, locale);
+  const targetLabel = goal.targetDate
+    ? new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeZone: "UTC" }).format(new Date(`${goal.targetDate}T12:00:00Z`))
+    : t("Tanpa tanggal target", "No target date");
+  return <Card className={`savings-goal-card${goal.archivedAt ? " is-archived" : ""}`}>
+    <div className="goal-card-heading"><span className="goal-card-icon"><Target size={20} /></span><div><h2>{goal.name}</h2><p>{targetLabel} · {goal.savingsWalletName ?? t("Dompet tabungan dipilih saat setoran", "Choose a savings wallet when contributing")}</p></div>{goal.archivedAt ? <span className="goal-archived-badge">{t("Diarsipkan", "Archived")}</span> : null}</div>
+    <div className="goal-card-amounts"><div><span>{t("Terkumpul", "Saved")}</span><strong>{money(goal.savedMinor)}</strong></div><div><span>{t("Target", "Target")}</span><strong>{money(goal.targetMinor)}</strong></div><div><span>{goal.remainingMinor.startsWith("-") ? t("Melebihi", "Over target") : t("Kekurangan", "To go")}</span><strong>{money(goal.remainingMinor)}</strong></div></div>
+    <div className="goal-progress" role="progressbar" aria-label={t(`Progres target ${goal.name}`, `${goal.name} progress`)} aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent}><span style={{ width: `${percent}%` }} /></div>
+    <p className="goal-progress-caption">{t(`${percent}% tercapai · progres menghitung transfer terkonfirmasi saja.`, `${percent}% reached · progress counts confirmed transfers only.`)}</p>
+    {actions ? <div className="goal-card-actions">{actions}</div> : null}
+  </Card>;
+}
+
+function SavingsGoalEditor({ goal, wallets, busy, error, onCancel, onSubmit }: {
+  goal: SavingsGoal | null; wallets: Wallet[]; busy: boolean; error: string | null;
+  onCancel: () => void; onSubmit: (payload: ReturnType<typeof savingsGoalCreateSchema.parse>) => void;
+}) {
+  const { t } = usePreferences();
+  const [name, setName] = useState(goal?.name ?? "");
+  const [target, setTarget] = useState(goal?.targetMinor ?? "");
+  const [targetDate, setTargetDate] = useState(goal?.targetDate ?? "");
+  const [walletId, setWalletId] = useState(goal?.savingsWalletId ?? "");
+  const [formError, setFormError] = useState<string | null>(null);
+  return <Card className="private-form-card savings-goal-editor">
+    <div className="private-form-heading"><div><span className="section-kicker">{t("Rencana tabungan", "Savings plan")}</span><h2>{goal ? t("Edit target", "Edit goal") : t("Target baru", "New goal")}</h2></div><Button variant="ghost" size="icon" aria-label={t("Tutup", "Close")} onClick={onCancel}><X size={20} /></Button></div>
+    <form className="finance-form" onSubmit={(event) => {
+      event.preventDefault(); setFormError(null);
+      try {
+        onSubmit(savingsGoalCreateSchema.parse({ name: name.trim(), targetMinor: parseIdrInput(target), targetDate: targetDate || null, savingsWalletId: walletId || null }));
+      } catch (cause) { setFormError(cause instanceof Error ? cause.message : t("Periksa isian target.", "Check the goal details.")); }
+    }}>
+      <TextField label={t("Nama target", "Goal name")} value={name} onChange={(event) => setName(event.target.value)} maxLength={100} placeholder={t("Contoh: Dana darurat", "Example: Emergency fund")} required />
+      <TextField label={t("Nominal target (rupiah)", "Target amount (rupiah)")} inputMode="numeric" value={target} onChange={(event) => setTarget(event.target.value)} placeholder="5.000.000" required />
+      <TextField label={t("Tanggal target (opsional)", "Target date (optional)")} type="date" value={targetDate} onChange={(event) => setTargetDate(event.target.value)} />
+      <label className="private-select-field"><span>{t("Dompet tabungan khusus (opsional)", "Dedicated savings wallet (optional)")}</span><select value={walletId} onChange={(event) => setWalletId(event.target.value)}><option value="">{t("Pilih saat mencatat setoran", "Choose when recording a contribution")}</option>{wallets.map((wallet) => <option value={wallet.id} key={wallet.id}>{wallet.name}</option>)}</select></label>
+      <p className="muted">{t("Target tidak memindahkan atau mengunci uang. Setoran akan tercatat sebagai transfer ledger menuju dompet bertipe tabungan.", "A goal does not move or lock money. Contributions are ledger transfers to a savings-type wallet.")}</p>
+      {wallets.length === 0 ? <p className="goal-wallet-hint">{t("Belum ada dompet tabungan. Buat lebih dulu dari menu Dompet untuk mencatat progres setoran.", "No savings wallet yet. Create one in Wallets to record goal contributions.")}</p> : null}
+      {formError ? <p className="form-error" role="alert">{formError}</p> : null}{error ? <p className="form-error" role="alert">{error}</p> : null}
+      <div className="private-form-actions"><Button type="submit" loading={busy}>{t("Simpan target", "Save goal")}</Button><Button type="button" variant="secondary" onClick={onCancel}>{t("Batal", "Cancel")}</Button></div>
+    </form>
+  </Card>;
+}
+
+function SavingsContributionEditor({ goal, wallets, timezone, busy, error, onCancel, onSubmit }: {
+  goal: SavingsGoal; wallets: Wallet[]; timezone: string; busy: boolean; error: string | null;
+  onCancel: () => void; onSubmit: (payload: ReturnType<typeof savingsContributionCreateSchema.parse>) => void;
+}) {
+  const { t } = usePreferences();
+  const destinations = wallets.filter((wallet) => wallet.type === "savings" && (!goal.savingsWalletId || wallet.id === goal.savingsWalletId));
+  const sources = wallets.filter((wallet) => wallet.id !== goal.savingsWalletId);
+  const [sourceWalletId, setSourceWalletId] = useState(sources[0]?.id ?? "");
+  const [destinationWalletId, setDestinationWalletId] = useState(goal.savingsWalletId ?? destinations[0]?.id ?? "");
+  const [amount, setAmount] = useState("");
+  const [note, setNote] = useState("");
+  const [formError, setFormError] = useState<string | null>(null);
+  return <Card className="private-form-card savings-contribution-editor">
+    <div className="private-form-heading"><div><span className="section-kicker">{t("Transfer terkonfirmasi", "Confirmed transfer")}</span><h2>{t("Catat setoran", "Record contribution")}</h2></div><Button variant="ghost" size="icon" aria-label={t("Tutup", "Close")} onClick={onCancel}><X size={20} /></Button></div>
+    {destinations.length && sources.length ? <form className="finance-form" onSubmit={(event) => {
+      event.preventDefault(); setFormError(null);
+      try {
+        onSubmit(savingsContributionCreateSchema.parse({
+          sourceWalletId, destinationWalletId, amountMinor: parseIdrInput(amount),
+          effectiveAt: new Date().toISOString(), timezone,
+          ...(note.trim() ? { note: note.trim() } : {}),
+        }));
+      } catch (cause) { setFormError(cause instanceof Error ? cause.message : t("Periksa nominal dan dompet.", "Check the amount and wallets.")); }
+    }}>
+      <label className="private-select-field"><span>{t("Dari sumber uang", "From wallet")}</span><select value={sourceWalletId} onChange={(event) => setSourceWalletId(event.target.value)} required>{sources.map((wallet) => <option value={wallet.id} key={wallet.id}>{wallet.name}</option>)}</select></label>
+      <label className="private-select-field"><span>{t("Ke dompet tabungan", "To savings wallet")}</span><select value={destinationWalletId} onChange={(event) => setDestinationWalletId(event.target.value)} required>{destinations.map((wallet) => <option value={wallet.id} key={wallet.id}>{wallet.name}</option>)}</select></label>
+      <TextField label={t("Nominal setoran (rupiah)", "Contribution amount (rupiah)")} inputMode="numeric" value={amount} onChange={(event) => setAmount(event.target.value)} placeholder="200.000" required />
+      <TextField label={t("Catatan (opsional)", "Note (optional)")} value={note} onChange={(event) => setNote(event.target.value)} maxLength={500} />
+      <p className="muted">{t("Transfer hanya disimpan setelah saldo dan dompet diverifikasi server. Transfer ini bukan pengeluaran konsumsi.", "The transfer is saved only after the server verifies the wallets and balance. It is not a consumption expense.")}</p>
+      {formError ? <p className="form-error" role="alert">{formError}</p> : null}{error ? <p className="form-error" role="alert">{error}</p> : null}
+      <div className="private-form-actions"><Button type="submit" loading={busy}>{t("Konfirmasi setoran", "Confirm contribution")}</Button><Button type="button" variant="secondary" onClick={onCancel}>{t("Batal", "Cancel")}</Button></div>
+    </form> : <EmptyState icon={<WalletCards />} title={t("Dompet belum siap", "Wallets are not ready")} action={<Button asChild variant="secondary"><Link to="/app/wallets">{t("Kelola dompet", "Manage wallets")}</Link></Button>}>{t("Setoran memerlukan satu sumber uang aktif dan satu dompet bertipe tabungan. Saldo sumber yang tidak cukup akan ditolak.", "A contribution needs an active source wallet and a savings-type destination. Insufficient source balance is rejected.")}</EmptyState>}
+  </Card>;
 }
 
 function BudgetEditor({ profile, month, categories, busy, error, onCancel, onSubmit }: {

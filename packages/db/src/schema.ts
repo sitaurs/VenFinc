@@ -216,6 +216,35 @@ export const budgetPeriods = pgTable(
   ],
 );
 
+export const savingsGoals = pgTable(
+  "savings_goals",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: text("user_id").notNull().references(() => userProfiles.userId, { onDelete: "cascade" }),
+    name: varchar("name", { length: 100 }).notNull(),
+    targetMinor: bigint("target_minor", { mode: "bigint" }).notNull(),
+    targetDate: date("target_date", { mode: "string" }),
+    savingsWalletId: uuid("savings_wallet_id"),
+    clientMutationId: uuid("client_mutation_id").notNull(),
+    requestPayload: jsonb("request_payload").notNull(),
+    archivedAt: timestamp("archived_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    unique("savings_goals_user_id_id_uq").on(table.userId, table.id),
+    unique("savings_goals_client_mutation_uq").on(table.userId, table.clientMutationId),
+    foreignKey({
+      name: "savings_goals_wallet_same_user_fk",
+      columns: [table.userId, table.savingsWalletId],
+      foreignColumns: [wallets.userId, wallets.id],
+    }),
+    check("savings_goals_name_nonempty", sql`length(btrim(${table.name})) BETWEEN 1 AND 100`),
+    check("savings_goals_target_positive", sql`${table.targetMinor} > 0`),
+    index("savings_goals_user_active_idx").on(table.userId, table.createdAt).where(sql`${table.archivedAt} IS NULL`),
+  ],
+);
+
 export const ledgerAccounts = pgTable(
   "ledger_accounts",
   {
@@ -329,6 +358,37 @@ export const financeEvents = pgTable(
       "finance_events_wallet_shape",
       sql`(${table.kind} IN ('income', 'expense', 'opening', 'adjustment', 'refund', 'debt_payment', 'loan_disbursement', 'loan_receipt') AND ${table.walletId} IS NOT NULL) OR (${table.kind} IN ('transfer', 'savings_transfer') AND ${table.walletId} IS NOT NULL AND ${table.destinationWalletId} IS NOT NULL AND ${table.walletId} <> ${table.destinationWalletId}) OR (${table.kind} IN ('debt_opening') AND ${table.walletId} IS NULL)`,
     ),
+  ],
+);
+
+export const savingsGoalContributions = pgTable(
+  "savings_goal_contributions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: text("user_id").notNull(),
+    goalId: uuid("goal_id").notNull(),
+    financeEventId: uuid("finance_event_id").notNull(),
+    clientMutationId: uuid("client_mutation_id").notNull(),
+    requestPayload: jsonb("request_payload").notNull(),
+    amountMinor: bigint("amount_minor", { mode: "bigint" }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    unique("savings_goal_contributions_user_id_id_uq").on(table.userId, table.id),
+    unique("savings_goal_contributions_event_uq").on(table.userId, table.financeEventId),
+    unique("savings_goal_contributions_client_mutation_uq").on(table.userId, table.clientMutationId),
+    foreignKey({
+      name: "savings_goal_contributions_goal_same_user_fk",
+      columns: [table.userId, table.goalId],
+      foreignColumns: [savingsGoals.userId, savingsGoals.id],
+    }),
+    foreignKey({
+      name: "savings_goal_contributions_event_same_user_fk",
+      columns: [table.userId, table.financeEventId],
+      foreignColumns: [financeEvents.userId, financeEvents.id],
+    }),
+    check("savings_goal_contributions_amount_positive", sql`${table.amountMinor} > 0`),
+    index("savings_goal_contributions_goal_date_idx").on(table.userId, table.goalId, table.createdAt),
   ],
 );
 
@@ -451,5 +511,7 @@ export type NewWallet = typeof wallets.$inferInsert;
 export type Wallet = typeof wallets.$inferSelect;
 export type Budget = typeof budgets.$inferSelect;
 export type BudgetPeriod = typeof budgetPeriods.$inferSelect;
+export type SavingsGoal = typeof savingsGoals.$inferSelect;
+export type SavingsGoalContribution = typeof savingsGoalContributions.$inferSelect;
 export type FinanceEvent = typeof financeEvents.$inferSelect;
 export type LedgerPosting = typeof ledgerPostings.$inferSelect;

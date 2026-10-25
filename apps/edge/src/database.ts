@@ -2,7 +2,7 @@ export type DataApiBindings = {
   NEON_DATA_API_URL?: string;
 };
 
-export type PublicTable = "user_profiles" | "wallets" | "categories" | "budgets" | "budget_periods";
+export type PublicTable = "user_profiles" | "wallets" | "categories" | "budgets" | "budget_periods" | "savings_goals" | "savings_goal_contributions";
 export type PublicRpc =
   | "current_platform_role"
   | "list_wallets"
@@ -10,7 +10,12 @@ export type PublicRpc =
   | "post_finance_event"
   | "create_budget"
   | "list_budgets"
-  | "ensure_default_categories";
+  | "ensure_default_categories"
+  | "create_savings_goal"
+  | "list_savings_goals"
+  | "update_savings_goal"
+  | "contribute_to_savings_goal"
+  | "list_savings_goal_contributions";
 
 export type DataApiOperation =
   | {
