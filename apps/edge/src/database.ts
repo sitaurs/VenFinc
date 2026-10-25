@@ -2,7 +2,7 @@ export type DataApiBindings = {
   NEON_DATA_API_URL?: string;
 };
 
-export type PublicTable = "user_profiles" | "wallets" | "categories" | "budgets" | "budget_periods" | "savings_goals" | "savings_goal_contributions" | "debts" | "debt_payments";
+export type PublicTable = "user_profiles" | "wallets" | "categories" | "budgets" | "budget_periods" | "savings_goals" | "savings_goal_contributions" | "debts" | "debt_payments" | "proofs";
 export type PublicRpc =
   | "current_platform_role"
   | "list_wallets"
@@ -21,7 +21,11 @@ export type PublicRpc =
   | "create_debt"
   | "list_debts"
   | "record_debt_payment"
-  | "list_debt_payments";
+  | "list_debt_payments"
+  | "create_proof_upload"
+  | "get_proof_upload"
+  | "mark_proof_stored"
+  | "mark_proof_deleted";
 
 export type DataApiOperation =
   | {

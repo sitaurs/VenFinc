@@ -9,6 +9,10 @@ import {
   debtPaymentCreateSchema,
   debtPaymentListSchema,
   debtPaymentSchema,
+  proofMetadataSchema,
+  proofUploadCompletionSchema,
+  proofUploadCreateSchema,
+  proofUploadCreatedSchema,
   financeReportQuerySchema,
   financeReportSchema,
   budgetCreateSchema,
@@ -44,9 +48,28 @@ import {
   type DataApiBindings,
 } from "./database";
 import type { VerifiedNeonSession } from "./auth";
+import {
+  completeOwnedProofUpload,
+  createProofObjectKey,
+  createProofUploadCapability,
+  deleteOwnedProof,
+  proofRetentionDays,
+  proofStorageAvailable,
+  readOwnedProof,
+  uploadOwnedProofContent,
+  type ProofRecord,
+  type ProofRepository,
+  type ProofStoragePolicy,
+  type R2ProofBucket,
+} from "./proof-storage";
 
 type FinanceEnv = {
-  Bindings: DataApiBindings;
+  Bindings: DataApiBindings & {
+    PROOFS?: R2ProofBucket;
+    PROOF_STORAGE_ENABLED?: string;
+    PROOF_RETENTION_CLEANUP_READY?: string;
+    PROOF_RETENTION_DAYS?: string;
+  };
   Variables: {
     requestId: string;
     identity: VerifiedNeonSession;
@@ -144,6 +167,104 @@ async function requestJson(c: FinanceContext, maxBytes = 16 * 1024) {
 function rows(value: unknown): DbRow[] {
   if (!Array.isArray(value)) throw new Error("Invalid database response");
   return value.filter((item): item is DbRow => Boolean(item) && typeof item === "object" && !Array.isArray(item));
+}
+
+const PROOF_MAX_FILE_BYTES = 5 * 1024 * 1024;
+const PROOF_UPLOAD_TTL_MS = 10 * 60 * 1000;
+const PROOF_STORAGE_CONSENT_VERSION = "proof-storage-v1";
+
+function requiredText(row: DbRow, key: string): string {
+  const value = row[key];
+  if (typeof value !== "string") throw new Error("Invalid proof record");
+  return value;
+}
+
+function mapProofRecord(row: DbRow): ProofRecord {
+  const sizeBytes = Number(row.size_bytes);
+  const uploadState = row.upload_state;
+  const storedAt = row.stored_at;
+  if (
+    !Number.isSafeInteger(sizeBytes) ||
+    !["pending", "stored", "expired", "deleted"].includes(String(uploadState)) ||
+    (storedAt !== null && typeof storedAt !== "string")
+  ) {
+    throw new Error("Invalid proof record");
+  }
+  return {
+    id: requiredText(row, "id"),
+    ownerId: requiredText(row, "user_id"),
+    objectKey: requiredText(row, "object_key"),
+    contentType: requiredText(row, "content_type"),
+    sizeBytes,
+    sha256: requiredText(row, "sha256"),
+    uploadTokenHash: requiredText(row, "upload_token_hash"),
+    uploadExpiresAt: requiredText(row, "upload_expires_at"),
+    expiresAt: requiredText(row, "expires_at"),
+    uploadState: uploadState as ProofRecord["uploadState"],
+    createdAt: requiredText(row, "created_at"),
+    storedAt: typeof storedAt === "string" ? storedAt : null,
+  };
+}
+
+function proofRepository(c: FinanceContext): ProofRepository {
+  const providerJwt = c.get("identity").providerJwt;
+  return {
+    async findOwned(proofId, ownerId) {
+      const result = await callDataApi<unknown>(c.env, providerJwt, {
+        kind: "rpc",
+        name: "get_proof_upload",
+        body: { p_proof_id: proofId },
+      });
+      const row = rows(result)[0];
+      if (!row) return null;
+      const proof = mapProofRecord(row);
+      return proof.id === proofId && proof.ownerId === ownerId ? proof : null;
+    },
+    async markStored(proofId, ownerId) {
+      const result = await callDataApi<unknown>(c.env, providerJwt, {
+        kind: "rpc",
+        name: "mark_proof_stored",
+        body: { p_proof_id: proofId },
+      });
+      const row = rows(result)[0];
+      return Boolean(row && row.ok === true && ownerId === c.get("identity").subject);
+    },
+    async markDeleted(proofId, ownerId) {
+      const result = await callDataApi<unknown>(c.env, providerJwt, {
+        kind: "rpc",
+        name: "mark_proof_deleted",
+        body: { p_proof_id: proofId },
+      });
+      const row = rows(result)[0];
+      return Boolean(row && row.ok === true && ownerId === c.get("identity").subject);
+    },
+  };
+}
+
+function proofPolicy(c: FinanceContext): ProofStoragePolicy | null {
+  if (!proofStorageAvailable({
+    enabled: c.env.PROOF_STORAGE_ENABLED,
+    cleanupReady: c.env.PROOF_RETENTION_CLEANUP_READY,
+    retentionDays: c.env.PROOF_RETENTION_DAYS,
+    bucket: c.env.PROOFS,
+  })) return null;
+  return { maxFileBytes: PROOF_MAX_FILE_BYTES };
+}
+
+function proofExpiresAt(c: FinanceContext, now: Date): string | null {
+  const days = proofRetentionDays(c.env.PROOF_RETENTION_DAYS);
+  if (days === null) return null;
+  const expiry = new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
+  return Number.isFinite(expiry.getTime()) ? expiry.toISOString() : null;
+}
+
+function proofFailure(c: FinanceContext, reason: string) {
+  if (reason === "not_found") return fail(c, "NOT_FOUND", "Bukti tidak ditemukan.", 404);
+  if (reason === "forbidden") return fail(c, "FORBIDDEN", "Izin upload tidak berlaku.", 403);
+  if (reason === "conflict") return fail(c, "VERSION_CONFLICT", "Bukti sudah tersimpan dengan isi berbeda.", 409);
+  if (reason === "expired") return fail(c, "INVALID_INPUT", "Waktu upload bukti sudah habis.", 422);
+  if (reason === "invalid") return fail(c, "INVALID_INPUT", "File bukti tidak sesuai validasi.", 422);
+  return fail(c, "DEPENDENCY_UNAVAILABLE", "Penyimpanan bukti sementara tidak dapat dijangkau.", 503);
 }
 
 function mapWallet(row: DbRow) {
@@ -1088,6 +1209,175 @@ api.post("/transactions", async (c) => {
   } catch (error) {
     return dataFailure(c, error, true);
   }
+});
+
+api.post("/proofs/uploads", async (c) => {
+  const policy = proofPolicy(c);
+  const now = new Date();
+  const expiresAt = proofExpiresAt(c, now);
+  if (!policy || !expiresAt) {
+    return fail(c, "DEPENDENCY_UNAVAILABLE", "Unggah bukti belum diaktifkan karena kebijakan penyimpanan belum tersedia.", 503);
+  }
+
+  const parsedBody = await requestJson(c, 2_048);
+  if (!parsedBody.ok) {
+    return fail(
+      c,
+      "INVALID_INPUT",
+      parsedBody.tooLarge ? "Data upload terlalu besar." : "Permintaan upload tidak valid.",
+      parsedBody.tooLarge ? 413 : 400,
+    );
+  }
+  const parsed = proofUploadCreateSchema.safeParse(parsedBody.value);
+  if (!parsed.success) return fail(c, "INVALID_INPUT", "Tipe, ukuran, atau checksum bukti tidak valid.", 400);
+
+  const id = crypto.randomUUID();
+  const objectKey = createProofObjectKey();
+  const capability = await createProofUploadCapability();
+  const uploadExpiresAt = new Date(now.getTime() + PROOF_UPLOAD_TTL_MS).toISOString();
+  try {
+    const result = await callDataApi<unknown>(c.env, c.get("identity").providerJwt, {
+      kind: "rpc",
+      name: "create_proof_upload",
+      body: {
+        p_proof_id: id,
+        p_object_key: objectKey,
+        p_content_type: parsed.data.contentType,
+        p_size_bytes: parsed.data.sizeBytes,
+        p_sha256: parsed.data.sha256,
+        p_upload_token_hash: capability.tokenHash,
+        p_upload_expires_at: uploadExpiresAt,
+        p_expires_at: expiresAt,
+        p_consent_version: PROOF_STORAGE_CONSENT_VERSION,
+      },
+    });
+    const row = rows(result)[0];
+    if (!row) return fail(c, "DEPENDENCY_UNAVAILABLE", "Izin upload belum dapat dibuat.", 503);
+    const proof = mapProofRecord(row);
+    if (proof.id !== id || proof.ownerId !== c.get("identity").subject || proof.objectKey !== objectKey) {
+      return fail(c, "DEPENDENCY_UNAVAILABLE", "Izin upload belum dapat dibuat.", 503);
+    }
+    const response = proofUploadCreatedSchema.parse({
+      id,
+      uploadToken: capability.token,
+      uploadPath: `/api/v1/proofs/uploads/${id}/content`,
+      uploadExpiresAt: proof.uploadExpiresAt,
+    });
+    return c.json(successEnvelope(response, c.get("requestId")), 201);
+  } catch (error) {
+    return dataFailure(c, error);
+  }
+});
+
+api.put("/proofs/uploads/:id/content", async (c) => {
+  const policy = proofPolicy(c);
+  if (!policy) return fail(c, "DEPENDENCY_UNAVAILABLE", "Unggah bukti belum diaktifkan.", 503);
+  const proofId = c.req.param("id");
+  if (!idempotencyKeySchema.safeParse(proofId).success) return fail(c, "NOT_FOUND", "Bukti tidak ditemukan.", 404);
+  const contentLength = c.req.header("Content-Length");
+  if (contentLength !== undefined && (!/^\d+$/.test(contentLength) || Number(contentLength) > policy.maxFileBytes)) {
+    return fail(c, "INVALID_INPUT", "File bukti melampaui batas ukuran.", 413);
+  }
+  const contentEncoding = c.req.header("Content-Encoding");
+  const contentType = c.req.header("Content-Type")?.split(";", 1)[0]?.trim().toLowerCase() ?? "";
+  const uploadToken = c.req.header("X-Proof-Upload-Token") ?? "";
+  if (contentEncoding && contentEncoding.toLowerCase() !== "identity") {
+    return fail(c, "INVALID_INPUT", "File terkompresi tidak didukung.", 422);
+  }
+  const result = await uploadOwnedProofContent({
+    actorId: c.get("identity").subject,
+    proofId,
+    uploadToken,
+    declaredContentType: contentType,
+    body: c.req.raw.body,
+    policy,
+    repository: proofRepository(c),
+    bucket: c.env.PROOFS ?? null,
+  });
+  if (!result.ok) return proofFailure(c, result.reason);
+  return c.json(successEnvelope({ id: proofId, status: result.state }, c.get("requestId")), result.state === "uploaded" ? 201 : 200);
+});
+
+api.post("/proofs/uploads/:id/complete", async (c) => {
+  const policy = proofPolicy(c);
+  if (!policy) return fail(c, "DEPENDENCY_UNAVAILABLE", "Penyimpanan bukti belum diaktifkan.", 503);
+  const proofId = c.req.param("id");
+  if (!idempotencyKeySchema.safeParse(proofId).success) return fail(c, "NOT_FOUND", "Bukti tidak ditemukan.", 404);
+  const result = await completeOwnedProofUpload({
+    actorId: c.get("identity").subject,
+    proofId,
+    policy,
+    repository: proofRepository(c),
+    bucket: c.env.PROOFS ?? null,
+  });
+  if (!result.ok) return proofFailure(c, result.reason);
+  const data = proofUploadCompletionSchema.parse({ id: proofId, status: result.state });
+  return c.json(successEnvelope(data, c.get("requestId")));
+});
+
+api.get("/proofs/:id/content", async (c) => {
+  const proofId = c.req.param("id");
+  if (!idempotencyKeySchema.safeParse(proofId).success) return fail(c, "NOT_FOUND", "Bukti tidak ditemukan.", 404);
+  const result = await readOwnedProof({
+    actorId: c.get("identity").subject,
+    proofId,
+    repository: proofRepository(c),
+    bucket: c.env.PROOFS ?? null,
+  });
+  if (!result.ok) {
+    return result.reason === "not_found" || result.reason === "expired"
+      ? fail(c, "NOT_FOUND", "Bukti tidak ditemukan.", 404)
+      : proofFailure(c, result.reason);
+  }
+  return new Response(result.body, {
+    headers: {
+      "Cache-Control": "private, no-store, max-age=0",
+      "Content-Disposition": "inline",
+      "Content-Length": String(result.sizeBytes),
+      "Content-Security-Policy": "default-src 'none'; sandbox",
+      "Content-Type": result.contentType,
+      "Cross-Origin-Resource-Policy": "same-origin",
+      "X-Content-Type-Options": "nosniff",
+    },
+  });
+});
+
+api.get("/proofs/:id", async (c) => {
+  const proofId = c.req.param("id");
+  if (!idempotencyKeySchema.safeParse(proofId).success) return fail(c, "NOT_FOUND", "Bukti tidak ditemukan.", 404);
+  try {
+    const proof = await proofRepository(c).findOwned(proofId, c.get("identity").subject);
+    if (!proof) return fail(c, "NOT_FOUND", "Bukti tidak ditemukan.", 404);
+    const now = Date.now();
+    const expired = Date.parse(proof.expiresAt) <= now ||
+      (proof.uploadState === "pending" && Date.parse(proof.uploadExpiresAt) <= now);
+    const status = proof.uploadState === "deleted" ? "deleted" : expired ? "expired" : proof.uploadState;
+    const data = proofMetadataSchema.parse({
+      id: proof.id,
+      contentType: proof.contentType,
+      sizeBytes: proof.sizeBytes,
+      status,
+      createdAt: proof.createdAt,
+      expiresAt: proof.expiresAt,
+      storedAt: proof.storedAt,
+    });
+    return c.json(successEnvelope(data, c.get("requestId")));
+  } catch (error) {
+    return dataFailure(c, error);
+  }
+});
+
+api.delete("/proofs/:id", async (c) => {
+  const proofId = c.req.param("id");
+  if (!idempotencyKeySchema.safeParse(proofId).success) return fail(c, "NOT_FOUND", "Bukti tidak ditemukan.", 404);
+  const result = await deleteOwnedProof({
+    actorId: c.get("identity").subject,
+    proofId,
+    repository: proofRepository(c),
+    bucket: c.env.PROOFS ?? null,
+  });
+  if (!result.ok) return proofFailure(c, result.reason);
+  return c.json(successEnvelope({ id: proofId, status: result.state }, c.get("requestId")));
 });
 
 export default api;

@@ -578,6 +578,42 @@ export const debtPayments = pgTable(
   ],
 );
 
+export const proofs = pgTable(
+  "proofs",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: text("user_id").notNull().references(() => userProfiles.userId, { onDelete: "cascade" }),
+    objectKey: text("object_key").notNull(),
+    contentType: varchar("content_type", { length: 32 }).notNull(),
+    sizeBytes: integer("size_bytes").notNull(),
+    sha256: char("sha256", { length: 64 }).notNull(),
+    uploadTokenHash: char("upload_token_hash", { length: 64 }).notNull(),
+    consentVersion: varchar("consent_version", { length: 40 }).notNull(),
+    consentedAt: timestamp("consented_at", { withTimezone: true }).notNull(),
+    uploadExpiresAt: timestamp("upload_expires_at", { withTimezone: true }).notNull(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    uploadState: text("upload_state").notNull().default("pending"),
+    storedAt: timestamp("stored_at", { withTimezone: true }),
+    deletedAt: timestamp("deleted_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    unique("proofs_user_id_id_uq").on(table.userId, table.id),
+    uniqueIndex("proofs_object_key_uq").on(table.objectKey),
+    index("proofs_user_created_idx").on(table.userId, table.createdAt.desc(), table.id),
+    index("proofs_expiry_state_idx").on(table.uploadState, table.expiresAt),
+    check("proofs_object_key_shape", sql`${table.objectKey} ~ '^proofs/[0-9a-f-]{36}/[0-9a-f-]{36}$'`),
+    check("proofs_content_type_valid", sql`${table.contentType} IN ('image/jpeg', 'image/png', 'image/webp')`),
+    check("proofs_size_bytes_valid", sql`${table.sizeBytes} BETWEEN 1 AND 5242880`),
+    check("proofs_sha256_valid", sql`${table.sha256} ~ '^[a-f0-9]{64}$'`),
+    check("proofs_upload_token_hash_valid", sql`${table.uploadTokenHash} ~ '^[a-f0-9]{64}$'`),
+    check("proofs_consent_version_valid", sql`${table.consentVersion} = 'proof-storage-v1'`),
+    check("proofs_upload_state_valid", sql`${table.uploadState} IN ('pending', 'stored', 'deleted')`),
+    check("proofs_state_timestamp_shape", sql`(${table.uploadState} <> 'stored' OR ${table.storedAt} IS NOT NULL) AND (${table.uploadState} <> 'deleted' OR ${table.deletedAt} IS NOT NULL)`),
+    check("proofs_expiry_after_upload_window", sql`${table.expiresAt} > ${table.uploadExpiresAt}`),
+  ],
+);
+
 export const securityEvents = audit.table(
   "security_events",
   {
@@ -610,5 +646,6 @@ export type SavingsGoal = typeof savingsGoals.$inferSelect;
 export type SavingsGoalContribution = typeof savingsGoalContributions.$inferSelect;
 export type Debt = typeof debts.$inferSelect;
 export type DebtPayment = typeof debtPayments.$inferSelect;
+export type Proof = typeof proofs.$inferSelect;
 export type FinanceEvent = typeof financeEvents.$inferSelect;
 export type LedgerPosting = typeof ledgerPostings.$inferSelect;

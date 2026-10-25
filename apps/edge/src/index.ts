@@ -19,11 +19,20 @@ import {
 import { manageNeonSessions } from "./session-management";
 import financeRoutes from "./finance";
 import { callDataApi, DataApiFailure, type DataApiBindings } from "./database";
+import type { R2ProofBucket } from "./proof-storage";
+import { proofStorageAvailable } from "./proof-storage";
 
 type PlatformRole = "user" | "admin" | "superuser";
 
 type Env = {
-  Bindings: NeonAuthBindings & DataApiBindings & { APP_ENV: string; DATABASE_URL?: string };
+  Bindings: NeonAuthBindings & DataApiBindings & {
+    APP_ENV: string;
+    DATABASE_URL?: string;
+    PROOFS?: R2ProofBucket;
+    PROOF_STORAGE_ENABLED?: string;
+    PROOF_RETENTION_CLEANUP_READY?: string;
+    PROOF_RETENTION_DAYS?: string;
+  };
   Variables: {
     requestId: string;
     identity: VerifiedNeonSession;
@@ -300,6 +309,12 @@ app.get("/api/v1/config/public", (c) =>
           c.env?.EMAIL_VERIFICATION_ENABLED === "1",
         personalWhatsAppAvailable: false,
         aiAvailable: false,
+        proofUploadsAvailable: proofStorageAvailable({
+          enabled: c.env?.PROOF_STORAGE_ENABLED,
+          cleanupReady: c.env?.PROOF_RETENTION_CLEANUP_READY,
+          retentionDays: c.env?.PROOF_RETENTION_DAYS,
+          bucket: c.env?.PROOFS,
+        }),
         defaultLocale: "id-ID",
         supportedLocales: ["id-ID", "en-US"],
       }),

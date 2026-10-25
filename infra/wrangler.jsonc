@@ -10,6 +10,10 @@
     "run_worker_first": ["/api/*"]
   },
   "r2_buckets": [{ "binding": "PROOFS", "bucket_name": "ven", "preview_bucket_name": "ven", "remote": false }],
-  "vars": { "APP_ENV": "local" },
+  "vars": {
+    "APP_ENV": "local",
+    "PROOF_STORAGE_ENABLED": "0",
+    "PROOF_RETENTION_CLEANUP_READY": "0"
+  },
   "observability": { "enabled": true }
 }

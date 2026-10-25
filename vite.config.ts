@@ -14,6 +14,7 @@ export default defineConfig({
       configPath: fileURLToPath(
         new URL("./infra/wrangler.jsonc", import.meta.url),
       ),
+      ...(process.env.CI ? { inspectorPort: false as const } : {}),
       viteEnvironment: { name: "worker" },
     }),
     VitePWA({

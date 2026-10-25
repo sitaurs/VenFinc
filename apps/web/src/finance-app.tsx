@@ -7,7 +7,7 @@ import {
   CloudOff, ChevronRight, KeyRound, LaptopMinimal, LogOut, Plus, RefreshCw,
   Settings, ShieldCheck, Smartphone, WalletCards, X, PiggyBank, CalendarDays, Target,
   Download, TrendingDown, TrendingUp, Receipt,
-  Tags,
+  Tags, FileUp,
 } from "lucide-react";
 import {
   authDeviceSessionListSchema, authSessionMutationSchema, budgetCreateResultSchema,
@@ -36,6 +36,7 @@ import {
   setOfflineOwner,
 } from "./offline-store";
 import { usePreferences } from "./preferences";
+import { ProofUploadPage } from "./proof-upload";
 
 const walletArraySchema = walletSchema.array();
 const categoryArraySchema = categorySchema.array();
@@ -87,10 +88,10 @@ export function PrivateFinanceApp() {
     }
     return offlineRecoveryPanel(() => void session.refetch(), t("Sesi belum dapat diverifikasi. Coba lagi saat koneksi tersedia.", "The session could not be verified. Try again when the connection is available."), t("Buka draf lokal", "Open local drafts"));
   }
-  return <ProfileGate key={session.data.userId} ownerId={session.data.userId} />;
+  return <ProfileGate key={session.data.userId} ownerId={session.data.userId} proofUploadsAvailable={config.data.proofUploadsAvailable} />;
 }
 
-function ProfileGate({ ownerId }: { ownerId: string }) {
+function ProfileGate({ ownerId, proofUploadsAvailable }: { ownerId: string; proofUploadsAvailable: boolean }) {
   const { t } = usePreferences();
   const queryClient = useQueryClient();
   useEffect(() => {
@@ -119,7 +120,7 @@ function ProfileGate({ ownerId }: { ownerId: string }) {
     return <ProfileSetup busy={createProfile.isPending} error={createProfile.error} onSubmit={(payload) => createProfile.mutate(payload)} />;
   }
   if (profile.data.profile.accountStatus !== "active") return <RestrictedProfile />;
-  return <FinanceShell profile={profile.data.profile} ownerId={ownerId} />;
+  return <FinanceShell profile={profile.data.profile} ownerId={ownerId} proofUploadsAvailable={proofUploadsAvailable} />;
 }
 
 function RestrictedProfile() {
@@ -170,7 +171,7 @@ function ProfileSetup({ busy, error, onSubmit }: {
   );
 }
 
-function FinanceShell({ profile, ownerId }: { profile: UserProfile; ownerId: string }) {
+function FinanceShell({ profile, ownerId, proofUploadsAvailable }: { profile: UserProfile; ownerId: string; proofUploadsAvailable: boolean }) {
   const { t, theme, setTheme, locale, setLocale } = usePreferences();
   const location = useLocation();
   const queryClient = useQueryClient();
@@ -183,7 +184,8 @@ function FinanceShell({ profile, ownerId }: { profile: UserProfile; ownerId: str
       : location.pathname.includes("/goals") ? "goals"
       : location.pathname.includes("/debts") ? "debts"
       : location.pathname.includes("/wallets") ? "wallets"
-      : location.pathname.includes("/offline") ? "offline"
+        : location.pathname.includes("/offline") ? "offline"
+        : location.pathname.includes("/review") ? "settings"
         : location.pathname.includes("/settings") ? "settings" : "home";
   async function signOut() {
     setSignOutError(false);
@@ -209,6 +211,7 @@ function FinanceShell({ profile, ownerId }: { profile: UserProfile; ownerId: str
           <NavLink to="/app/debts" className={({ isActive }) => isActive ? "active" : ""}><HandCoins size={19} />{t("Utang & piutang", "Debts & receivables")}</NavLink>
           <NavLink to="/app/insights" className={({ isActive }) => isActive ? "active" : ""}><ChartNoAxesCombined size={19} />{t("Laporan", "Reports")}</NavLink>
           <NavLink to="/app/wallets" className={({ isActive }) => isActive ? "active" : ""}><WalletCards size={19} />{t("Dompet", "Wallets")}</NavLink>
+          <NavLink to="/app/review/upload" className={({ isActive }) => isActive ? "active" : ""}><FileUp size={19} />{t("Perlu ditinjau", "Review")}</NavLink>
           <NavLink to="/app/offline" className={({ isActive }) => isActive ? "active" : ""}><CloudOff size={19} />{t("Draf offline", "Offline drafts")}</NavLink>
           <NavLink to="/app/settings" className={({ isActive }) => isActive ? "active" : ""}><Settings size={19} />{t("Pengaturan", "Settings")}</NavLink>
         </nav>
@@ -231,6 +234,7 @@ function FinanceShell({ profile, ownerId }: { profile: UserProfile; ownerId: str
             <Route index element={<Dashboard profile={profile} ownerId={ownerId} />} />
             <Route path="transactions" element={<TransactionsPage profile={profile} ownerId={ownerId} />} />
             <Route path="transactions/new" element={<TransactionsPage profile={profile} ownerId={ownerId} />} />
+            <Route path="review/upload" element={<ProofUploadPage available={proofUploadsAvailable} />} />
             <Route path="budgets" element={<BudgetsPage profile={profile} ownerId={ownerId} />} />
             <Route path="goals" element={<SavingsGoalsPage profile={profile} ownerId={ownerId} />} />
             <Route path="goals/:goalId" element={<SavingsGoalsPage profile={profile} ownerId={ownerId} />} />

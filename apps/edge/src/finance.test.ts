@@ -145,7 +145,7 @@ describe("private finance routes", () => {
       }),
     }, setup.bindings);
     const body = await response.text();
-    expect(response.status).toBe(201);
+    expect(response.status, body).toBe(201);
     expect(captured?.p_idempotency_key).toBe("1212c76b-8875-4bf3-ace5-1e584e0a8d0d");
     expect(captured?.p_planned_minor).toBe("2500000");
     expect(captured).not.toHaveProperty("user_id");
@@ -908,5 +908,102 @@ describe("role-gated operator routes", () => {
     const unavailableBody = await unavailableResponse.text();
     expect(unavailableResponse.status).toBe(503);
     expect(unavailableBody).not.toContain("private-db-canary");
+  });
+
+  it("keeps proof upload closed until an explicit retention policy is configured", async () => {
+    const upstream = vi.fn();
+    const setup = await testBindings(async () => {
+      upstream();
+      return Response.json([]);
+    });
+    const response = await app.request("https://finance.test/api/v1/proofs/uploads", {
+      method: "POST",
+      headers: {
+        Cookie: activeCookie(),
+        Origin: "https://finance.test",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ contentType: "image/png", sizeBytes: 12, sha256: "a".repeat(64) }),
+    }, Object.assign(setup.bindings, {
+      PROOFS: { put: vi.fn(), head: vi.fn(), get: vi.fn(), delete: vi.fn() },
+      PROOF_STORAGE_ENABLED: "1",
+    }));
+    expect(response.status).toBe(503);
+    expect(upstream).not.toHaveBeenCalled();
+  });
+
+  it("creates an owner-bound proof intent without returning its R2 key or stored token hash", async () => {
+    let capturedUrl: URL | undefined;
+    let capturedBody: Record<string, unknown> | undefined;
+    const setup = await testBindings(async (url, init) => {
+      capturedUrl = url;
+      capturedBody = JSON.parse(String(init.body)) as Record<string, unknown>;
+      return Response.json([{
+        id: capturedBody.p_proof_id,
+        user_id: "verified-user-1",
+        object_key: capturedBody.p_object_key,
+        content_type: capturedBody.p_content_type,
+        size_bytes: capturedBody.p_size_bytes,
+        sha256: capturedBody.p_sha256,
+        upload_token_hash: capturedBody.p_upload_token_hash,
+        upload_expires_at: capturedBody.p_upload_expires_at,
+        expires_at: capturedBody.p_expires_at,
+        upload_state: "pending",
+        created_at: "2026-10-25T00:00:00.000Z",
+        stored_at: null,
+      }]);
+    });
+    const response = await app.request("https://finance.test/api/v1/proofs/uploads", {
+      method: "POST",
+      headers: {
+        Cookie: activeCookie(),
+        Origin: "https://finance.test",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ contentType: "image/png", sizeBytes: 12, sha256: "a".repeat(64), consentAccepted: true }),
+    }, Object.assign(setup.bindings, {
+      PROOFS: { put: vi.fn(), head: vi.fn(), get: vi.fn(), delete: vi.fn() },
+      PROOF_STORAGE_ENABLED: "1",
+      PROOF_RETENTION_CLEANUP_READY: "1",
+      // Test-only retention fixture; production policy remains unset until owner approval.
+      PROOF_RETENTION_DAYS: "2",
+    }));
+    const bodyText = await response.text();
+    const payload = JSON.parse(bodyText) as { data: { id: string; uploadToken: string; uploadPath: string } };
+    expect(response.status).toBe(201);
+    expect(capturedUrl?.pathname).toBe("/neondb/rest/v1/rpc/create_proof_upload");
+    expect(capturedBody?.p_size_bytes).toBe(12);
+    expect(capturedBody?.p_user_id).toBeUndefined();
+    expect(capturedBody?.p_consent_version).toBe("proof-storage-v1");
+    expect(payload.data.id).toBe(capturedBody?.p_proof_id);
+    expect(payload.data.uploadToken).toMatch(/^[A-Za-z0-9_-]{43}$/);
+    expect(payload.data.uploadPath).toBe(`/api/v1/proofs/uploads/${payload.data.id}/content`);
+    expect(bodyText).not.toContain(String(capturedBody?.p_object_key));
+    expect(bodyText).not.toContain(String(capturedBody?.p_upload_token_hash));
+  });
+
+  it("does not create a proof intent without explicit privacy consent", async () => {
+    const upstream = vi.fn();
+    const setup = await testBindings(async () => {
+      upstream();
+      return Response.json([]);
+    });
+    const response = await app.request("https://finance.test/api/v1/proofs/uploads", {
+      method: "POST",
+      headers: {
+        Cookie: activeCookie(),
+        Origin: "https://finance.test",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ contentType: "image/png", sizeBytes: 12, sha256: "a".repeat(64) }),
+    }, Object.assign(setup.bindings, {
+      PROOFS: { put: vi.fn(), head: vi.fn(), get: vi.fn(), delete: vi.fn() },
+      PROOF_STORAGE_ENABLED: "1",
+      PROOF_RETENTION_CLEANUP_READY: "1",
+      // Test-only retention fixture; production policy remains unset until owner approval.
+      PROOF_RETENTION_DAYS: "2",
+    }));
+    expect(response.status).toBe(400);
+    expect(upstream).not.toHaveBeenCalled();
   });
 });

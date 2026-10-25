@@ -9,6 +9,7 @@ async function authReady(page: Page, registrationOpen = true) {
     registrationOpen,
     personalWhatsAppAvailable: false,
     aiAvailable: false,
+    proofUploadsAvailable: false,
     defaultLocale: "id-ID",
     supportedLocales: ["id-ID", "en-US"],
   }) }));

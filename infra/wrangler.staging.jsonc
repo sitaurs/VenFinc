@@ -22,6 +22,8 @@
     "AUTH_PROXY_ENABLED": "1",
     "PUBLIC_SIGNUP_ENABLED": "0",
     "EMAIL_VERIFICATION_ENABLED": "1",
+    "PROOF_STORAGE_ENABLED": "0",
+    "PROOF_RETENTION_CLEANUP_READY": "0",
     "NEON_AUTH_URL": "https://ep-rapid-flower-b46lkbp1.neonauth.c-6.us-east-2.aws.neon.tech/neondb/auth",
     "NEON_AUTH_ISSUER": "https://ep-rapid-flower-b46lkbp1.neonauth.c-6.us-east-2.aws.neon.tech",
     "NEON_AUTH_JWKS_URL": "https://ep-rapid-flower-b46lkbp1.neonauth.c-6.us-east-2.aws.neon.tech/neondb/auth/.well-known/jwks.json",

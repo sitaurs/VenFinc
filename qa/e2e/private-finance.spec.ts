@@ -63,6 +63,7 @@ async function mockPrivateApi(page: Page, options: { includeRefundableExpense?: 
         registrationOpen: false,
         personalWhatsAppAvailable: false,
         aiAvailable: false,
+        proofUploadsAvailable: false,
         defaultLocale: "id-ID",
         supportedLocales: ["id-ID", "en-US"],
       }) });
@@ -824,6 +825,7 @@ test("a provider sign-in without a verified application session cannot open priv
     registrationOpen: false,
     personalWhatsAppAvailable: false,
     aiAvailable: false,
+    proofUploadsAvailable: false,
     defaultLocale: "id-ID",
     supportedLocales: ["id-ID", "en-US"],
   }) }));

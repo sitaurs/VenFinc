@@ -30,6 +30,7 @@ async function readySecurityScreen(page: Page) {
         registrationOpen: false,
         personalWhatsAppAvailable: false,
         aiAvailable: false,
+        proofUploadsAvailable: false,
         defaultLocale: "id-ID",
         supportedLocales: ["id-ID", "en-US"],
       }) });

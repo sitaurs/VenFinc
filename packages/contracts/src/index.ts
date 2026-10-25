@@ -93,6 +93,36 @@ export const integrationStateSchema = z.enum([
   "degraded",
   "unavailable",
 ]);
+export const proofContentTypeSchema = z.enum(["image/jpeg", "image/png", "image/webp"]);
+export const proofUploadCreateSchema = z.strictObject({
+  contentType: proofContentTypeSchema,
+  sizeBytes: z.number().int().positive().max(5 * 1024 * 1024),
+  sha256: z.string().regex(/^[a-f0-9]{64}$/),
+  consentAccepted: z.literal(true),
+});
+export const proofUploadCreatedSchema = z.strictObject({
+  id: z.uuid(),
+  uploadToken: z.string().regex(/^[A-Za-z0-9_-]{43}$/),
+  uploadPath: z.string().regex(/^\/api\/v1\/proofs\/uploads\/[0-9a-f-]{36}\/content$/),
+  uploadExpiresAt: effectiveAtSchema,
+});
+export const proofUploadCompletionSchema = z.strictObject({
+  id: z.uuid(),
+  status: z.enum(["stored", "already_stored"]),
+});
+export const proofDeleteResultSchema = z.strictObject({
+  id: z.uuid(),
+  status: z.enum(["deleted", "already_deleted"]),
+});
+export const proofMetadataSchema = z.strictObject({
+  id: z.uuid(),
+  contentType: proofContentTypeSchema,
+  sizeBytes: z.number().int().positive().max(5 * 1024 * 1024),
+  status: z.enum(["pending", "stored", "expired", "deleted"]),
+  createdAt: effectiveAtSchema,
+  expiresAt: effectiveAtSchema,
+  storedAt: effectiveAtSchema.nullable(),
+});
 export const apiMetaSchema = z.strictObject({
   requestId: z.uuid(),
   version: z.literal(1),
@@ -119,6 +149,7 @@ export const publicConfigSchema = z.strictObject({
   registrationOpen: z.boolean(),
   personalWhatsAppAvailable: z.boolean(),
   aiAvailable: z.boolean(),
+  proofUploadsAvailable: z.boolean(),
   defaultLocale: z.literal("id-ID"),
   supportedLocales: z.array(z.enum(["id-ID", "en-US"])),
 });
