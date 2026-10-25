@@ -433,6 +433,19 @@ test("transaction date filters use the account timezone and request all matching
   await expect(page.getByLabel("Dari tanggal", { exact: true })).toHaveValue("2026-10-20");
 });
 
+test("transaction search combines with kind and timezone-aware date filters on the server", async ({ page }) => {
+  const api = await mockPrivateApi(page);
+  await page.goto("/app/transactions");
+  await page.getByLabel("Cari seluruh riwayat", { exact: true }).fill("Kantin");
+  await page.getByRole("combobox", { name: "Jenis transaksi", exact: true }).selectOption("expense");
+  await page.getByLabel("Dari tanggal", { exact: true }).fill("2026-10-20");
+  await page.getByLabel("Sampai tanggal", { exact: true }).fill("2026-10-24");
+  await expect.poll(() => api.transactionQueries().some((params) =>
+    params.get("q") === "Kantin" && params.get("kind") === "expense" &&
+    params.get("from") === "2026-10-19T17:00:00.000Z" && params.get("to") === "2026-10-24T17:00:00.000Z",
+  )).toBe(true);
+});
+
 test("refund starts from its posted expense and submits a linked exact partial amount", async ({ page }) => {
   const api = await mockPrivateApi(page, { includeRefundableExpense: true });
   await page.goto("/app/transactions");

@@ -1225,17 +1225,23 @@ function TransactionsPage({ profile, ownerId }: { profile: UserProfile; ownerId:
   const navigate = useNavigate();
   const [kind, setKind] = useState("all");
   const [search, setSearch] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [exportFormat, setExportFormat] = useState<"csv" | "json" | null>(null);
   const [exportCount, setExportCount] = useState<number | null>(null);
   const [exportError, setExportError] = useState<string | null>(null);
+  useEffect(() => {
+    const timeout = window.setTimeout(() => setSearchQuery(search.trim()), 250);
+    return () => window.clearTimeout(timeout);
+  }, [search]);
   const query = useInfiniteQuery({
-    queryKey: ["finance-events", ownerId, "list", kind, fromDate, toDate, profile.timezone],
+    queryKey: ["finance-events", ownerId, "list", kind, searchQuery, fromDate, toDate, profile.timezone],
     initialPageParam: null as string | null,
     queryFn: async ({ pageParam }): Promise<EventPage> => {
       const searchParams = new URLSearchParams({ limit: "20" });
       if (kind !== "all") searchParams.set("kind", kind);
+      if (searchQuery) searchParams.set("q", searchQuery);
       if (fromDate) searchParams.set("from", localDateTimeToIso(`${fromDate}T00:00`, profile.timezone));
       if (toDate) searchParams.set("to", localDateTimeToIso(`${nextLocalDate(toDate)}T00:00`, profile.timezone));
       if (pageParam) searchParams.set("cursor", pageParam);
@@ -1244,11 +1250,7 @@ function TransactionsPage({ profile, ownerId }: { profile: UserProfile; ownerId:
     getNextPageParam: (lastPage) => lastPage.page.hasMore ? lastPage.page.nextCursor : undefined,
   });
   const events = useMemo(() => query.data?.pages.flatMap((page) => page.items) ?? [], [query.data]);
-  const visible = useMemo(() => {
-    const term = search.trim().toLocaleLowerCase(locale);
-    if (!term) return events;
-    return events.filter((event) => `${eventTitle(event, t)} ${event.categoryName ?? ""} ${event.walletName ?? ""}`.toLocaleLowerCase(locale).includes(term));
-  }, [events, locale, search, t]);
+  const visible = events;
   const openForm = location.pathname.endsWith("/new") || params.get("new") === "1";
   if (query.isPending && !openForm) return loadingPanel(t("Memuat transaksi…", "Loading transactions…"));
   if (query.isError && !openForm) return unavailablePanel(() => void query.refetch(), t("Riwayat transaksi tidak dapat dimuat.", "Transaction history could not be loaded."));
@@ -1310,12 +1312,12 @@ function TransactionsPage({ profile, ownerId }: { profile: UserProfile; ownerId:
       <Card className="private-transactions-card">
         {query.isError ? <div className="offline-stale-notice" role="status">{t("Riwayat transaksi server sedang tidak tersedia. Draf lokal tetap tersimpan terpisah dan belum mengubah saldo.", "Server transaction history is unavailable. Local drafts remain separate and do not change balances.")}</div> : null}
         <div className="private-filter-row">
-          <TextField label={t("Cari catatan yang sudah dimuat", "Search loaded records")} value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t("Nama, kategori, atau dompet", "Name, category, or wallet")} />
+          <TextField label={t("Cari seluruh riwayat", "Search all history")} value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t("Catatan, merchant, kategori, dompet, nominal", "Note, merchant, category, wallet, amount")} maxLength={80} />
           <label className="private-select-field"><span>{t("Jenis transaksi", "Transaction type")}</span><select value={kind} onChange={(event) => setKind(event.target.value)}><option value="all">{t("Semua", "All")}</option><option value="expense">{t("Pengeluaran", "Expenses")}</option><option value="income">{t("Pemasukan", "Income")}</option><option value="transfer">{t("Transfer", "Transfers")}</option><option value="savings_transfer">{t("Setoran tabungan", "Savings transfers")}</option><option value="refund">{t("Refund", "Refunds")}</option><option value="opening">{t("Saldo awal", "Opening balance")}</option><option value="adjustment">{t("Penyesuaian", "Adjustments")}</option></select></label>
           <TextField label={t("Dari tanggal", "From date")} type="date" value={fromDate} onChange={(event) => { const value = event.target.value; setFromDate(value); if (value && toDate && value > toDate) setToDate(value); }} />
           <TextField label={t("Sampai tanggal", "Through date")} type="date" value={toDate} onChange={(event) => { const value = event.target.value; setToDate(value); if (value && fromDate && value < fromDate) setFromDate(value); }} />
         </div>
-        {visible.length ? <EventList events={visible} locale={locale} timezone={profile.timezone} hidden={hidden} onRefund={(source) => setParams({ new: "1", refund: source.id })} /> : <EmptyState icon={<List />} title={events.length ? t("Tidak ada catatan yang cocok", "No matching records") : t("Belum ada transaksi", "No transactions yet")} action={events.length ? <Button variant="secondary" onClick={() => { setSearch(""); setKind("all"); }}>{t("Hapus filter", "Clear filters")}</Button> : <Button onClick={() => setParams({ new: "1" })}><Plus size={17} />{t("Catat transaksi pertama", "Record your first transaction")}</Button>}>{events.length ? t("Coba filter lain. Pencarian mencakup transaksi yang sudah dimuat.", "Try another filter. Search covers the records loaded so far.") : t("Transaksi contoh hanya muncul di demo.", "Sample transactions appear in the demo only.")}</EmptyState>}
+        {visible.length ? <EventList events={visible} locale={locale} timezone={profile.timezone} hidden={hidden} onRefund={(source) => setParams({ new: "1", refund: source.id })} /> : <EmptyState icon={<List />} title={events.length ? t("Tidak ada catatan yang cocok", "No matching records") : t("Belum ada transaksi", "No transactions yet")} action={events.length || searchQuery ? <Button variant="secondary" onClick={() => { setSearch(""); setSearchQuery(""); setKind("all"); }}>{t("Hapus filter", "Clear filters")}</Button> : <Button onClick={() => setParams({ new: "1" })}><Plus size={17} />{t("Catat transaksi pertama", "Record your first transaction")}</Button>}>{events.length || searchQuery ? t("Coba istilah pencarian atau rentang tanggal lain. Hasil dicari di seluruh riwayat server.", "Try another search term or date range. Results search the full server history.") : t("Transaksi contoh hanya muncul di demo.", "Sample transactions appear in the demo only.")}</EmptyState>}
         {query.hasNextPage ? <div className="private-load-more"><Button variant="secondary" loading={query.isFetchingNextPage} onClick={() => void query.fetchNextPage()}>{t("Muat transaksi berikutnya", "Load more transactions")}</Button></div> : null}
       </Card>
     </>

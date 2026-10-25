@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-25",
+  "scope": "Owner-scoped server search across transaction history, combinable with event kind and timezone-aware date filters",
+  "searchFields": [
+    "Transaction note and merchant",
+    "Event kind and exact decimal-string IDR amount",
+    "Source and destination wallet names",
+    "Primary and split category names"
+  ],
+  "safetyAndLimits": [
+    "The authenticated Neon subject is the only tenant selector; the browser cannot provide an owner ID.",
+    "Search terms are trimmed and limited to 1-80 characters; SQL uses literal substring matching, not wildcard interpolation.",
+    "Search, kind, date range, and cursor are applied in one database read model before pagination.",
+    "All amounts remain decimal text; transaction search never converts money to JavaScript numbers."
+  ],
+  "verification": {
+    "lint": { "command": "./tools/pnpm.sh lint", "result": "PASS" },
+    "typecheck": { "command": "./tools/pnpm.sh typecheck", "result": "PASS" },
+    "unitAndEdgeContract": { "command": "./tools/pnpm.sh test", "result": "PASS", "tests": 134, "checks": ["authenticated provider JWT reaches fixed search RPC", "combined q/kind/date parameters", "empty and oversized terms rejected before Data API access"] },
+    "build": { "command": "XDG_CONFIG_HOME=/tmp/venfinance-wrangler-config WRANGLER_SEND_METRICS=false ./tools/pnpm.sh build", "result": "PASS", "worker": true, "pwaClient": true },
+    "security": { "command": "./tools/pnpm.sh test:security", "result": "PASS", "tests": 9, "clientFilesScanned": 13, "limitation": "Heuristic artifact scan; not a staging auth/RLS audit." },
+    "docs": { "command": "./tools/pnpm.sh docs:check", "result": "PASS", "taskCount": 373, "productionReady": false },
+    "searchE2e": { "command": "XDG_CONFIG_HOME=/tmp/venfinance-wrangler-dev WRANGLER_SEND_METRICS=false ./tools/pnpm.sh test:e2e --grep 'transaction search combines'", "result": "PASS", "tests": 1 },
+    "fullE2e": { "command": "XDG_CONFIG_HOME=/tmp/venfinance-wrangler-dev WRANGLER_SEND_METRICS=false ./tools/pnpm.sh test:e2e", "result": "PASS", "tests": 36, "failed": 0, "skipped": 0 },
+    "localPostgres": { "command": "./tools/pnpm.sh db:test:local", "result": "NOT RUN", "exitCode": 2, "reason": "PostgreSQL server binaries (pg_config/initdb/psql) are not available in this session. Search SQL contract cases were added to qa/database/ledger-contract.sql but could not be executed." }
+  },
+  "releaseState": "Code and mocked/local QA only. Migration 0008 has not been applied to Neon or production; live Worker/RLS verification and production readiness remain false."
+}

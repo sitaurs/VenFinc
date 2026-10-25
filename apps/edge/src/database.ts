@@ -7,6 +7,7 @@ export type PublicRpc =
   | "current_platform_role"
   | "list_wallets"
   | "list_finance_events"
+  | "search_finance_events"
   | "post_finance_event"
   | "create_budget"
   | "list_budgets"

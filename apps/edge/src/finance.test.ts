@@ -299,6 +299,62 @@ describe("private finance routes", () => {
     expect(body).not.toContain(setup.token);
   });
 
+  it("searches full transaction history through the tenant-scoped search RPC", async () => {
+    let captured: Record<string, unknown> | undefined;
+    const setup = await testBindings(async (url, init) => {
+      expect(url.pathname).toBe("/neondb/rest/v1/rpc/search_finance_events");
+      captured = JSON.parse(String(init.body)) as Record<string, unknown>;
+      return Response.json([{
+        event_id: "12d474d1-0470-4c65-a9c2-15f80b73f72e",
+        kind: "expense",
+        status: "posted",
+        amount_minor: "45000",
+        currency: "IDR",
+        wallet_id: "7b9be51e-0607-4c60-8315-e57ae8f61aba",
+        wallet_name: "Rekening Utama",
+        destination_wallet_id: null,
+        destination_wallet_name: null,
+        category_id: null,
+        category_name: null,
+        effective_at: "2026-10-24T07:30:00Z",
+        timezone: "Asia/Jakarta",
+        note: "Makan di Kantin",
+        merchant: "Kantin",
+        source_channel: "manual",
+        refund_of: null,
+        allocations: [],
+        negative_balance_confirmed: false,
+        created_at: "2026-10-24T07:30:00Z",
+      }]);
+    });
+    const response = await app.request("https://finance.test/api/v1/transactions?q=Kantin&kind=expense&from=2026-10-19T17:00:00.000Z&to=2026-10-24T17:00:00.000Z&limit=20", {
+      headers: { Cookie: activeCookie() },
+    }, setup.bindings);
+    expect(response.status).toBe(200);
+    expect(captured).toMatchObject({
+      p_search: "Kantin",
+      p_kind: "expense",
+      p_from: "2026-10-19T17:00:00.000Z",
+      p_to: "2026-10-24T17:00:00.000Z",
+      p_limit: 21,
+    });
+    expect(captured).not.toHaveProperty("user_id");
+    expect(await response.json()).toMatchObject({ data: { items: [{ merchant: "Kantin", amountMinor: "45000" }] } });
+  });
+
+  it.each(["", "x".repeat(81)])("rejects malformed transaction search terms before Data API access (%s)", async (query) => {
+    const upstream = vi.fn();
+    const setup = await testBindings(async () => {
+      upstream();
+      return Response.json([]);
+    });
+    const response = await app.request(`https://finance.test/api/v1/transactions?q=${encodeURIComponent(query)}`, {
+      headers: { Cookie: activeCookie() },
+    }, setup.bindings);
+    expect(response.status).toBe(400);
+    expect(upstream).not.toHaveBeenCalled();
+  });
+
   it("rejects unknown owner fields and missing idempotency before Data API access", async () => {
     const upstream = vi.fn();
     const setup = await testBindings(async () => {

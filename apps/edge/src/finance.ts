@@ -809,7 +809,7 @@ api.patch("/categories/:categoryId", async (c) => {
 
 api.get("/transactions", async (c) => {
   const params = new URL(c.req.url).searchParams;
-  const allowed = new Set(["cursor", "limit", "kind", "from", "to"]);
+  const allowed = new Set(["cursor", "limit", "kind", "from", "to", "q"]);
   if ([...params.keys()].some((key) => !allowed.has(key))) {
     return fail(c, "INVALID_INPUT", "Filter transaksi tidak valid.", 400);
   }
@@ -819,6 +819,7 @@ api.get("/transactions", async (c) => {
   });
   if (!pageParsed.success) return fail(c, "INVALID_INPUT", "Halaman transaksi tidak valid.", 400);
   const kind = params.get("kind");
+  const searchTerm = params.has("q") ? (params.get("q") ?? "").trim() : null;
   const from = params.get("from");
   const to = params.get("to");
   const cursorValue = (() => {
@@ -828,7 +829,7 @@ api.get("/transactions", async (c) => {
       return undefined;
     }
   })();
-  if (cursorValue === undefined || (kind && !["income", "expense", "transfer", "refund", "adjustment", "debt_payment", "debt_opening", "loan_disbursement", "loan_receipt", "savings_transfer", "opening"].includes(kind))) {
+  if (cursorValue === undefined || (searchTerm !== null && (searchTerm.length < 1 || searchTerm.length > 80)) || (kind && !["income", "expense", "transfer", "refund", "adjustment", "debt_payment", "debt_opening", "loan_disbursement", "loan_receipt", "savings_transfer", "opening"].includes(kind))) {
     return fail(c, "INVALID_INPUT", "Filter transaksi tidak valid.", 400);
   }
   const parsedFrom = from ? effectiveAtSchema.safeParse(from) : null;
@@ -845,8 +846,9 @@ api.get("/transactions", async (c) => {
     const requestedLimit = pageParsed.data.limit;
     const raw = rows(await callDataApi(c.env, identity.providerJwt, {
       kind: "rpc",
-      name: "list_finance_events",
+      name: searchTerm ? "search_finance_events" : "list_finance_events",
       body: {
+        ...(searchTerm ? { p_search: searchTerm } : {}),
         p_limit: Math.min(requestedLimit + 1, 100),
         p_before_effective_at: cursorValue?.effectiveAt ?? null,
         p_before_id: cursorValue?.id ?? null,

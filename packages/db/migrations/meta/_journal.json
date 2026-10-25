@@ -57,6 +57,13 @@
       "when": 1792896386005,
       "tag": "0007_finance_reports",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1792899990000,
+      "tag": "0008_search_finance_events",
+      "breakpoints": true
     }
   ]
 }

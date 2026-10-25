@@ -58,6 +58,18 @@ BEGIN
   IF (SELECT coalesce(sum(e.amount_minor), 0) FROM public.finance_events e
       WHERE e.user_id = 'qa-user-a' AND e.kind = 'expense') <> 20000
   THEN RAISE EXCEPTION 'transfer was counted as an expense'; END IF;
+  SELECT count(*) INTO event_count FROM public.search_finance_events(
+    'lunch', 100, NULL, NULL, NULL, NULL, NULL
+  );
+  IF event_count <> 1 THEN RAISE EXCEPTION 'case-insensitive owner history search expected 1 row, found %', event_count; END IF;
+  SELECT count(*) INTO event_count FROM public.search_finance_events(
+    'Cash', 100, NULL, NULL, 'expense', NULL, NULL
+  );
+  IF event_count <> 3 THEN RAISE EXCEPTION 'combined wallet/kind search expected 3 rows, found %', event_count; END IF;
+  SELECT count(*) INTO event_count FROM public.search_finance_events(
+    'Warung', 100, NULL, NULL, 'income', NULL, NULL
+  );
+  IF event_count <> 0 THEN RAISE EXCEPTION 'search ignored the combined kind filter'; END IF;
 
   SELECT * INTO STRICT posted FROM public.post_finance_event(
     'expense', cash_wallet_id, NULL, '5000', 'IDR',
@@ -139,6 +151,8 @@ BEGIN
   IF (SELECT count(*) FROM public.list_wallets()) <> 0 THEN RAISE EXCEPTION 'wallet read model crossed tenant'; END IF;
   IF (SELECT count(*) FROM public.list_finance_events(100, NULL, NULL, NULL, NULL, NULL)) <> 0
   THEN RAISE EXCEPTION 'transaction read model crossed tenant'; END IF;
+  IF (SELECT count(*) FROM public.search_finance_events('Lunch', 100, NULL, NULL, NULL, NULL, NULL)) <> 0
+  THEN RAISE EXCEPTION 'transaction search crossed tenant'; END IF;
   BEGIN
     INSERT INTO public.wallets (user_id, name, type) VALUES ('qa-user-a', 'Injected', 'cash');
     RAISE EXCEPTION 'cross-tenant wallet insert accepted';
