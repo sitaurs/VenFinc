@@ -338,8 +338,13 @@ async function mockPrivateApi(page: Page, options: { includeRefundableExpense?: 
         merchant: "Kantin",
         createdAt: "2026-10-24T08:30:00Z",
       });
+      const searchTerm = url.searchParams.get("q")?.toLocaleLowerCase("id-ID");
+      const searchRows = searchTerm ? rows.filter((row) => [
+        row.note, row.merchant, row.kind, row.amountMinor, row.walletName,
+        row.destinationWalletName, row.categoryName,
+      ].some((value) => String(value ?? "").toLocaleLowerCase("id-ID").includes(searchTerm))) : rows;
       await route.fulfill({ json: success({
-        items: paginated && !cursor ? rows : paginated ? rows.slice(1) : rows,
+        items: paginated && cursor ? searchRows.slice(1) : searchRows,
         page: { hasMore: paginated && !cursor, nextCursor: paginated && !cursor ? "next-page" : null },
       }) });
       return;
@@ -444,6 +449,23 @@ test("transaction search combines with kind and timezone-aware date filters on t
     params.get("q") === "Kantin" && params.get("kind") === "expense" &&
     params.get("from") === "2026-10-19T17:00:00.000Z" && params.get("to") === "2026-10-24T17:00:00.000Z",
   )).toBe(true);
+});
+
+test("clearing an empty transaction search resets the search, kind, and date range", async ({ page }) => {
+  const api = await mockPrivateApi(page);
+  await page.goto("/app/transactions");
+  await page.getByLabel("Cari seluruh riwayat", { exact: true }).fill("not in this history");
+  await page.getByRole("combobox", { name: "Jenis transaksi", exact: true }).selectOption("expense");
+  await page.getByLabel("Dari tanggal", { exact: true }).fill("2026-10-20");
+  await page.getByLabel("Sampai tanggal", { exact: true }).fill("2026-10-24");
+  await expect(page.getByRole("heading", { name: "Tidak ada catatan yang cocok", exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Hapus filter", exact: true }).click();
+  await expect(page.getByLabel("Cari seluruh riwayat", { exact: true })).toHaveValue("");
+  await expect(page.getByRole("combobox", { name: "Jenis transaksi", exact: true })).toHaveValue("all");
+  await expect(page.getByLabel("Dari tanggal", { exact: true })).toHaveValue("");
+  await expect(page.getByLabel("Sampai tanggal", { exact: true })).toHaveValue("");
+  await expect(page.getByText("Penerimaan Uji", { exact: true })).toBeVisible();
+  expect(api.transactionQueries().some((params) => params.get("q") === "not in this history")).toBe(true);
 });
 
 test("refund starts from its posted expense and submits a linked exact partial amount", async ({ page }) => {
