@@ -1,0 +1,164 @@
+{
+  "schemaVersion": 1,
+  "checkedAtUtc": "2026-10-25T04:45:25Z",
+  "task": "P0-008",
+  "status": "in_progress",
+  "scope": {
+    "cloudflareAccountId": "2fc0560ffb9a6f811898ebaeb2d63edd",
+    "neonProjectId": "hidden-unit-95812377",
+    "includedR2Buckets": ["ven", "ven-staging"],
+    "excludedR2Buckets": ["sap"],
+    "productionBranchId": "br-rapid-band-b4jw3tlq",
+    "stagingBranchId": "br-aged-mode-b4rcy9i0",
+    "objectContentsListed": false,
+    "objectReadsOrWrites": false,
+    "remoteConfigurationMutations": false
+  },
+  "cloudflareR2": {
+    "ven": {
+      "exists": true,
+      "location": "APAC",
+      "storageClass": "Standard",
+      "managedPublicR2DevEnabled": false,
+      "customDomains": [],
+      "cors": "not_configured; expected for same-origin Worker binding uploads",
+      "lifecycle": [{
+        "id": "Default Multipart Abort Rule",
+        "enabled": true,
+        "abortIncompleteMultipartAfterSeconds": 604800
+      }],
+      "objectLockRules": 0
+    },
+    "ven-staging": {
+      "exists": true,
+      "createdAt": "2026-10-25T01:47:39.931Z",
+      "location": "APAC",
+      "storageClass": "Standard",
+      "managedPublicR2DevEnabled": false,
+      "customDomains": [],
+      "cors": "not_configured; expected for same-origin Worker binding uploads",
+      "lifecycle": [{
+        "id": "Default Multipart Abort Rule",
+        "enabled": true,
+        "abortIncompleteMultipartAfterSeconds": 604800
+      }],
+      "objectLockRules": 0
+    },
+    "workerBindings": {
+      "productionConfig": "infra/wrangler.jsonc binds PROOFS to ven; not deployed",
+      "stagingConfig": "infra/wrangler.staging.jsonc binds PROOFS to ven-staging; wrangler dry-run passed; not deployed",
+      "previewUrlsOrPublicR2": false
+    },
+    "r2Usage": {
+      "bucketScopedUsageAvailable": false,
+      "accountLevelEndpointQueried": false,
+      "reason": "The documented account metrics endpoint aggregates all buckets; it was not called because VenFinance scope excludes other project buckets.",
+      "perBucketObjectCountOrBytesVerified": false
+    }
+  },
+  "neon": {
+    "project": {
+      "id": "hidden-unit-95812377",
+      "plan": "free_v3",
+      "region": "aws-us-east-2",
+      "postgresVersion": 18,
+      "branchLimit": 10,
+      "branchLogicalSizeLimitBytes": 1073741824,
+      "historyRetentionSeconds": 21600,
+      "monthlyConsumptionPeriod": {
+        "start": "2026-10-24T03:08:45Z",
+        "end": "2026-11-01T00:00:00Z"
+      },
+      "apiReportedApproximateUsage": {
+        "computeTimeSeconds": 3025,
+        "activeTimeSeconds": 11960,
+        "writtenDataBytes": 0,
+        "dataTransferBytes": 0,
+        "dataStorageBytesHour": 0,
+        "billingAccuracy": "not suitable as billing or metering evidence; Neon documents these project metrics as approximate"
+      }
+    },
+    "branches": [
+      {
+        "id": "br-rapid-band-b4jw3tlq",
+        "name": "production",
+        "default": true,
+        "protected": false,
+        "logicalSizeBytes": 31686656,
+        "endpointState": "idle",
+        "autoscalingMinCu": 0.25,
+        "autoscalingMaxCu": 2,
+        "suspendTimeoutSecondsApiValue": 0,
+        "authEnabled": false,
+        "applicationMigrationApplied": false
+      },
+      {
+        "id": "br-aged-mode-b4rcy9i0",
+        "name": "venfinance-p0-auth-20261024",
+        "default": false,
+        "protected": false,
+        "logicalSizeBytes": 33398784,
+        "endpointState": "idle",
+        "autoscalingMinCu": 0.25,
+        "autoscalingMaxCu": 0.25,
+        "suspendTimeoutSecondsApiValue": 0,
+        "authEnabled": true,
+        "applicationMigrationTags": [
+          "0000_core",
+          "0001_ledger-controls",
+          "0002_rls-ledger-functions",
+          "0003_read-models",
+          "0004_platform-role-default-deny"
+        ]
+      }
+    ],
+    "customerConsumptionQuotas": "not configured or verified; changing them can permanently suspend all project computes until reset",
+    "usageAlerts": "not configured or verified; Neon Free plan does not include paid-plan spending notifications"
+  },
+  "publishedPlanLimits": {
+    "neonFree": {
+      "computeCuHoursPerProjectPerMonth": 100,
+      "postgresStorageGbPerProject": 1,
+      "branchesPerProject": 10,
+      "maximumComputeCu": 2,
+      "publicNetworkTransferGbPerProjectPerMonth": 5,
+      "scaleToZeroIdleMinutes": 5,
+      "overLimitBehavior": "compute or network transfer exhaustion suspends compute; storage/branch caps block growth; no automatic data deletion"
+    },
+    "cloudflareR2Standard": {
+      "includedStorageGbMonth": 10,
+      "includedClassARequestsPerMonth": 1000000,
+      "includedClassBRequestsPerMonth": 10000000,
+      "egressPrice": "free",
+      "overage": "may be billed",
+      "standardStorageUsdPerGbMonth": 0.015,
+      "classAUsdPerMillion": 4.5,
+      "classBUsdPerMillion": 0.36
+    },
+    "sources": [
+      "https://neon.com/faqs/free-plan-limits-and-quotas",
+      "https://neon.com/docs/guides/consumption-limits",
+      "https://developers.cloudflare.com/r2/pricing/"
+    ]
+  },
+  "checks": {
+    "stagingWranglerDryRun": {
+      "command": "./tools/pnpm.sh exec wrangler deploy --dry-run --config infra/wrangler.staging.jsonc --outdir /tmp/venfinance-wrangler-staging-dryrun/out",
+      "status": "PASS",
+      "evidence": "Wrangler reports env.PROOFS bound to ven-staging; no deployment occurred."
+    },
+    "localOwnerCheckedProofAdapterTests": {
+      "status": "PASS_WITH_FAKE_R2_ADAPTER",
+      "liveR2TenantIsolationTest": "NOT_RUN"
+    }
+  },
+  "remainingBlockers": [
+    "Live owner-isolation upload/read test through the staged Worker and ven-staging is not run.",
+    "The app Worker does not yet wire the proof-storage adapter to authenticated proof routes or Neon metadata functions.",
+    "Bucket-scoped R2 usage was not available from the checked control-plane endpoint; account-level metrics were intentionally not read because they aggregate resources outside the VenFinance scope.",
+    "Neon customer-set consumption quotas and usage alerts remain unconfigured/unverified.",
+    "No object retention rule has been added; retention policy must follow the approved product/privacy decision."
+  ],
+  "productionMigrationOrDeployment": false,
+  "productionReady": false
+}

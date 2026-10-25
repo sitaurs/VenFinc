@@ -13,6 +13,9 @@
     "run_worker_first": ["/api/*"],
     "directory": "../apps/web/dist/client"
   },
+  "r2_buckets": [
+    { "binding": "PROOFS", "bucket_name": "ven-staging", "preview_bucket_name": "ven-staging", "remote": false }
+  ],
   "vars": {
     "APP_ENV": "staging",
     "APP_ORIGIN": "https://staging-finance.venlab.tech",

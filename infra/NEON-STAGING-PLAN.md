@@ -1,37 +1,34 @@
-# Neon — scope terverifikasi dan langkah PoC
+# Neon — scope and staging status
 
-Sumber: metadata API dan URL proyek yang dikirim pemilik pada 24 Oktober 2026. [Readiness teredaksi](../qa/neon-readiness-2026-10-24.json) dan [scope](neon-scope.json) tidak menyimpan email, avatar, connection string atau token.
+This file records the current VenFinance Neon setup and the safe path for further work. The latest read-only project, branch, and endpoint check is in [`qa/neon-readiness-2026-10-24.json`](../qa/neon-readiness-2026-10-24.json); the live P0-005 result and blockers are also recorded there. The refreshed resource and quota evidence is [`qa/p0-008-resource-readiness-2026-10-25.json`](../qa/p0-008-resource-readiness-2026-10-25.json).
 
-| Resource | Nilai terverifikasi |
+| Resource | Current verified state |
 | --- | --- |
-| Organisasi | VenFinance / `org-snowy-scene-55200104` |
-| Proyek | `hidden-unit-95812377`, AWS `aws-us-east-2`, PostgreSQL 18 |
-| Branch induk | `production` / `br-rapid-band-b4jw3tlq`, default, tidak protected |
-| Branch uji baru | `venfinance-p0-auth-20261024` / `br-aged-mode-b4rcy9i0`, child, bukan default |
-| Compute branch uji | Tidak dibuat (`no_compute: true`) |
-| Auth / migrasi aplikasi | Belum diprovisikan / belum diterapkan |
-| R2 | Hanya `ven`; metadata GET 200, r2.dev disabled; `sap` tidak diakses |
+| Organization / project | VenFinance / `org-snowy-scene-55200104`; project `hidden-unit-95812377`, AWS `aws-us-east-2`, PostgreSQL 18 |
+| Production branch | `production` / `br-rapid-band-b4jw3tlq`, default, not protected; Neon Auth and application migrations are not enabled there |
+| P0-005 staging branch | `venfinance-p0-auth-20261024` / `br-aged-mode-b4rcy9i0`, child branch; 0.25-CU endpoint exists and was idle at the latest read |
+| Staging Auth/schema | Neon Managed Auth and Data API are enabled on staging; migrations `0000`–`0004` and synthetic A/B identity probes exist there |
+| Staging identity result | Tenant A/B isolation, anonymous denial, tampered JWT denial, and forged-owner denial passed; post-sign-out replay remains accepted until the 900-second JWT expires, so session revocation is not proven |
+| Neon plan and caps | API reports `free_v3`, 10 branches/project, 1 GiB branch logical-size limit, 6-hour history; endpoint limits are 0.25–2 CU on production and 0.25 CU on staging |
+| R2 | `ven` is production; `ven-staging` exists for QA. Both are Standard/APAC with `r2.dev` disabled. Bucket `sap` was not accessed. |
 
-Metadata proyek melaporkan subscription `free_v3`, branch limit 10, logical size limit 1.073.741.824 byte dan history retention 21.600 detik. Ini snapshot API, bukan jaminan biaya atau bukti backup produksi. Default compute settings proyek bukan hasil inspeksi endpoint efektif. Tidak mengubah paket, billing, proteksi branch, DNS, domain atau konfigurasi produksi.
+The Neon Free plan currently includes 100 CU-hours, 1 GB PostgreSQL storage and 5 GB public network transfer per project per month. It scales idle computes to zero after five minutes and suspends compute when compute/network limits are exhausted; storage and branch caps block growth. These are service limits, not a per-feature guarantee of uninterrupted free use. Neon documents project usage fields as approximate rather than billing/metering evidence. See [Neon Free limits](https://neon.com/faqs/free-plan-limits-and-quotas) and [consumption limits](https://neon.com/docs/guides/consumption-limits).
 
-Branch uji dibuat melalui `create_branch` dengan project/parent eksplisit dan `no_compute: true`, lalu dikonfirmasi kembali melalui `describe_branch`. Auto-expiry belum dikonfigurasi karena parameter itu tidak tersedia pada alat tersebut. Branch ini bukan deployment dan belum menjalankan SQL. Tidak membaca row pengguna; struktur induk belum menunjukkan tabel aplikasi atau `neon_auth`. Probe SQL lokal di `qa/database/` tidak diterapkan ke Neon.
+Cloudflare R2 Standard includes 10 GB-month storage, 1 million Class A requests and 10 million Class B requests per month; egress is free and overage can be billed. The approved production bucket and the QA bucket each have managed public access disabled, no custom domains, no object-lock rules, and only the default seven-day incomplete-multipart abort rule. CORS is absent, which is expected for same-origin Worker binding uploads. Account-level R2 metrics aggregate all buckets, so they were not queried because this project scope excludes other project buckets. See [Cloudflare R2 pricing](https://developers.cloudflare.com/r2/pricing/).
 
-## Jalur akses berikutnya
+## Staging and migration path
 
-MCP saat pemeriksaan hanya mengekspos alat Neon sampai `describe_project`. Alat koneksi, eksekusi SQL dan konfigurasi Auth belum tersedia. Jangan menggantinya dengan kredensial produksi, memasukkan Branch ID sebagai Project ID, membuat proyek kedua atau memanggil tool yang tidak tersedia.
+The Cloudflare binding `PROOFS` now targets `ven-staging` in `infra/wrangler.staging.jsonc`. A local Wrangler dry-run passed and confirmed that binding; it did not deploy a Worker. The production config continues to bind `PROOFS` to `ven` and has not been deployed.
 
-Jalur aktif tetap **MCP**, sesuai preferensi pemilik. CLI resmi `neon@8.11.1` sempat diperiksa sebagai alternatif; hanya versi dan keberadaan profil diperiksa, tanpa login atau provisioning melalui CLI. Pemilik tidak perlu login CLI. Wrapper percobaan sudah dihapus dan tidak menjadi dependensi proyek.
+The local proof adapter validates owner identity, MIME signature, SHA-256, size, short-lived upload capability, and object metadata with a fake R2 adapter. It is not yet wired to authenticated Worker routes or Neon proof metadata functions. A live A/B upload/read check against `ven-staging` remains required before P0-008 can pass.
 
-Pengambilan koneksi, eksekusi SQL dan pengaturan Auth memerlukan alat MCP yang sesuai. Pemeriksaan `describe_project` dan `describe_branch` sudah sukses; koneksi ulang tidak diperlukan untuk memperbaiki scope proyek yang kini terverifikasi. Jangan mengirim password, API key, kode OAuth atau connection string ke chat. Tidak ada permintaan login CLI yang masih diperlukan.
+The staging branch contains migrations `0000`–`0004`; repository migrations `0005` onward, including the current debt migration, have not been applied to Neon. Before applying them, verify the actual staging schema and migration history, run the SQL on an isolated test database/branch, exercise owner RLS and rollback, and confirm the result through the actual Hono Worker. Keep the production branch untouched during that work.
 
-## Urutan setelah kemampuan akses tersedia
+## Remaining release gates
 
-1. Verifikasi project dan branch uji terhadap scope di atas. Ambil metadata compute/Auth; jangan menggunakan branch default sebagai pengganti staging.
-2. Pastikan quota aktual/scale-to-zero sebelum membuat compute kecil untuk PoC. Tidak menaikkan plan atau menerima biaya.
-3. Aktifkan Managed Auth hanya pada branch uji. Verifikasi subject, JWKS, session revocation, email dan dukungan driver/RLS menggunakan dua akun sintetis yang diizinkan. Operator tetap memerlukan MFA/step-up sesuai ADR-0001.
-4. Rancang migration Drizzle/rollback terisolasi setelah dependensi P0-008/P0-005 terbukti. Jangan menerapkan SQL probe dengan identitas `session_user` fixture sebagai adapter Neon.
-5. Uji request lewat workerd/Hono dengan driver HTTP aktual: dua tenant, JWT salah/expired/revoked, FK owner, concurrency/idempotency dan error tanpa secret. Jangan membuka API privat sebelum bukti lulus.
-6. Tarik secret hanya ke store terlindungi bila diperlukan, tidak ke frontend/log/markdown. File `.neon` diabaikan Git; env yang ada tidak boleh ditimpa tanpa persetujuan sesuai skill branching. Jangan membagikan connection string di chat.
-7. Catat hasil sebenarnya. P0-005/P0-008/P1-007 tetap blocked sampai minimum verifikasi masing-masing lulus. Penghapusan branch memerlukan persetujuan sesuai notice destructive tool; tidak dijalankan otomatis.
+- P0-005 remains blocked until session revocation works through the production-shaped Worker boundary, direct signup/email verification is proven, and operator MFA/step-up is enforced. The Managed Better Auth roadmap still does not supply the required operator MFA; follow [`research/adr/ADR-0001-OPERATOR-MFA.md`](../research/adr/ADR-0001-OPERATOR-MFA.md).
+- P0-008 remains in progress until staged Worker R2 owner-isolation tests, usable quota/alert controls and the cost/retention policy are evidenced. Do not mark it done from metadata or mocked adapters alone.
+- P1-007 and dependent schema/auth tasks remain gated on the P0 evidence. The production branch currently has no application migration or Auth change.
+- Production still requires the complete acceptance matrix, backup/restore rehearsal, external provider and legal gates, and explicit go-live approval.
 
-Produksi tetap memerlukan backup/restore aktual, seluruh acceptance matrix dan persetujuan go-live. Belum ada migrasi atau deployment produksi yang disetujui.
+The Neon MCP connection is available and is the preferred management path; CLI login is not required for the current MCP-based work. Do not place a connection string, API key, session token, or other secret in chat, repository files, test output, or screenshots. Do not delete a branch or apply a production migration without explicit approval for that exact operation.

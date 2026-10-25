@@ -170,12 +170,13 @@
       "evidence": [
         "research/adr/ADR-0003-STAGING-R2-ISOLATION.md",
         "qa/cloudflare-reconnection-evidence.json",
-        "qa/neon-readiness-2026-10-24.json"
+        "qa/neon-readiness-2026-10-24.json",
+        "qa/p0-008-resource-readiness-2026-10-25.json"
       ],
       "blockers": [
         {
           "gate": "G-COST",
-          "reason": "Owner approved a separate private ven-staging bucket for synthetic QA. Local owner-check adapter tests, staging binding validation, live R2 owner isolation, effective Neon endpoint quota/caps and usage alerts remain to be verified."
+          "reason": "The approved private ven-staging bucket now exists and the staging Wrangler binding dry-run passes. Live R2 owner isolation through the Worker, per-bucket R2 usage, Neon customer quota/alert configuration and production cost thresholds remain unverified."
         }
       ],
       "minimum_verification": "Bukti API tenant scoped, limit, matriks biaya aktual."
