@@ -2,12 +2,15 @@ export type DataApiBindings = {
   NEON_DATA_API_URL?: string;
 };
 
-export type PublicTable = "user_profiles" | "wallets" | "categories";
+export type PublicTable = "user_profiles" | "wallets" | "categories" | "budgets" | "budget_periods";
 export type PublicRpc =
   | "current_platform_role"
   | "list_wallets"
   | "list_finance_events"
-  | "post_finance_event";
+  | "post_finance_event"
+  | "create_budget"
+  | "list_budgets"
+  | "ensure_default_categories";
 
 export type DataApiOperation =
   | {

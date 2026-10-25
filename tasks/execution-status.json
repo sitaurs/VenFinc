@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-25 01:16:44 UTC",
+  "updated_at": "2026-10-25 02:00:56 UTC",
   "source_of_truth": "Execution status only; task source markdown keeps the original baseline wording. A blocked external gate is not done.",
   "status_values": [
     "todo",
@@ -166,15 +166,16 @@
       "dependencies": [
         "P0-001"
       ],
-      "status": "blocked",
+      "status": "in_progress",
       "evidence": [
+        "research/adr/ADR-0003-STAGING-R2-ISOLATION.md",
         "qa/cloudflare-reconnection-evidence.json",
         "qa/neon-readiness-2026-10-24.json"
       ],
       "blockers": [
         {
           "gate": "G-COST",
-          "reason": "R2 ven metadata and disabled r2.dev reverified; Neon free_v3 project limits observed. Actual Worker owner-checked storage access, effective endpoint quota/caps and usage alerts remain unverified."
+          "reason": "Owner approved a separate private ven-staging bucket for synthetic QA. Local owner-check adapter tests, staging binding validation, live R2 owner isolation, effective Neon endpoint quota/caps and usage alerts remain to be verified."
         }
       ],
       "minimum_verification": "Bukti API tenant scoped, limit, matriks biaya aktual."

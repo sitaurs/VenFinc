@@ -223,6 +223,52 @@ export const categorySchema = z.strictObject({
   colorToken: z.string().nullable(),
   archivedAt: effectiveAtSchema.nullable(),
 });
+export const budgetKindSchema = z.enum(["category", "global"]);
+export const budgetFrequencySchema = z.enum(["daily", "weekly", "monthly", "custom"]);
+export const budgetCreateSchema = z.strictObject({
+  name: z.string().trim().min(1).max(100),
+  kind: budgetKindSchema,
+  categoryId: z.uuid().nullable(),
+  frequency: z.literal("monthly").default("monthly"),
+  timezone: timezoneSchema,
+  startsOn: localDateSchema,
+  endsOn: localDateSchema,
+  plannedMinor: positiveMinorAmountSchema,
+  rolloverPolicy: z.literal(false).default(false),
+  warningThresholds: z.array(z.number().int().min(1).max(100)).min(1).max(8).default([50, 75, 90, 100])
+    .refine((values) => new Set(values).size === values.length, "Threshold tidak boleh duplikat."),
+}).refine((value) => (value.kind === "category") === (value.categoryId !== null), {
+  message: "Pilih kategori hanya untuk anggaran kategori.",
+  path: ["categoryId"],
+});
+export const budgetSchema = z.strictObject({
+  id: z.uuid(),
+  name: z.string().max(100),
+  kind: budgetKindSchema,
+  categoryId: z.uuid().nullable(),
+  categoryName: z.string().max(100).nullable(),
+  frequency: budgetFrequencySchema,
+  timezone: timezoneSchema,
+  rolloverPolicy: z.boolean(),
+  warningThresholds: z.array(z.number().int().min(1).max(100)).min(1).max(8),
+  startsOn: localDateSchema,
+  endsOn: localDateSchema,
+  plannedMinor: positiveMinorAmountSchema,
+  usedMinor: signedMinorAmountSchema,
+  remainingMinor: signedMinorAmountSchema,
+});
+export const budgetListSchema = z.array(budgetSchema).max(100);
+export const budgetCreateResultSchema = z.strictObject({
+  id: z.uuid(),
+  periodId: z.uuid(),
+  name: z.string().max(100),
+  kind: budgetKindSchema,
+  categoryId: z.uuid().nullable(),
+  frequency: budgetFrequencySchema,
+  startsOn: localDateSchema,
+  endsOn: localDateSchema,
+  plannedMinor: positiveMinorAmountSchema,
+});
 export const financeAllocationSchema = z.strictObject({
   categoryId: z.uuid(),
   amountMinor: positiveMinorAmountSchema,
@@ -330,6 +376,8 @@ export type FinanceState = z.infer<typeof financeStateSchema>;
 export type TransactionKind = z.infer<typeof transactionKindSchema>;
 export type PublicConfig = z.infer<typeof publicConfigSchema>;
 export type Wallet = z.infer<typeof walletSchema>;
+export type Budget = z.infer<typeof budgetSchema>;
+export type BudgetCreate = z.infer<typeof budgetCreateSchema>;
 export type FinancePost = z.infer<typeof financePostSchema>;
 export type FinanceEvent = z.infer<typeof financeEventSchema>;
 export type FinanceEventPage = z.infer<typeof financeEventPageSchema>;

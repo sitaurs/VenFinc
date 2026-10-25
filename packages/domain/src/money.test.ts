@@ -2,10 +2,12 @@ import { describe, expect, it } from "vitest";
 import {
   daysInMonth,
   formatIdr,
+  monthBounds,
   parseIdrInput,
   progressPercent,
   subtractMinor,
   sumMinor,
+  shiftMonth,
 } from "./index";
 
 describe("exact-money foundation", () => {
@@ -18,6 +20,7 @@ describe("exact-money foundation", () => {
     expect(subtractMinor("7000", "8000")).toBe("-1000");
     expect(formatIdr("-1000")).toBe("−Rp1.000");
     expect(progressPercent("31000", "30000")).toBe(100);
+    expect(progressPercent("-5000", "30000")).toBe(0);
   });
   it("parses explicit whole rupiah and rejects ambiguous formats", () => {
     expect(parseIdrInput("Rp 10.000")).toBe("10000");
@@ -36,5 +39,18 @@ describe("exact-money foundation", () => {
     expect(sumMinor(Array.from({ length: days }, () => "10000"))).toBe(
       (BigInt(days) * 10000n).toString(),
     );
+  });
+  it.each([
+    ["2024-02", "2024-02-01", "2024-02-29"],
+    ["2025-02", "2025-02-01", "2025-02-28"],
+    ["2026-04", "2026-04-01", "2026-04-30"],
+    ["2026-10", "2026-10-01", "2026-10-31"],
+  ])("builds exact month period for %s", (month, startsOn, endsOn) => {
+    expect(monthBounds(month)).toEqual({ startsOn, endsOn });
+  });
+  it("moves calendar months without day overflow", () => {
+    expect(shiftMonth("2026-01", -1)).toBe("2025-12");
+    expect(shiftMonth("2026-12", 1)).toBe("2027-01");
+    expect(() => monthBounds("2026-13")).toThrow();
   });
 });

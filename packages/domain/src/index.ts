@@ -53,8 +53,34 @@ export function parseIdrInput(raw: string): string {
 export function progressPercent(used: string, planned: string): number {
   const total = BigInt(minorAmountSchema.parse(planned));
   if (total === 0n) return 0;
-  const ratio = (BigInt(minorAmountSchema.parse(used)) * 100n) / total;
+  const spent = BigInt(signedMinorAmountSchema.parse(used));
+  if (spent <= 0n) return 0;
+  const ratio = (spent * 100n) / total;
   return Number(ratio > 100n ? 100n : ratio);
+}
+
+export function monthBounds(month: string): { startsOn: string; endsOn: string } {
+  const match = /^(\d{4})-(0[1-9]|1[0-2])$/.exec(month);
+  if (!match) throw new Error("Periode bulan tidak valid.");
+  const year = Number(match[1]);
+  const monthNumber = Number(match[2]);
+  return {
+    startsOn: `${match[1]}-${match[2]}-01`,
+    endsOn: `${match[1]}-${match[2]}-${String(daysInMonth(year, monthNumber)).padStart(2, "0")}`,
+  };
+}
+
+export function shiftMonth(month: string, delta: number): string {
+  if (!Number.isSafeInteger(delta) || delta < -1200 || delta > 1200) {
+    throw new Error("Perubahan bulan tidak valid.");
+  }
+  const match = /^(\d{4})-(0[1-9]|1[0-2])$/.exec(month);
+  if (!match) throw new Error("Periode bulan tidak valid.");
+  const shifted = Number(match[1]) * 12 + Number(match[2]) - 1 + delta;
+  const year = Math.floor(shifted / 12);
+  const monthNumber = shifted - year * 12 + 1;
+  if (year < 1 || year > 9999) throw new Error("Periode bulan di luar batas.");
+  return `${String(year).padStart(4, "0")}-${String(monthNumber).padStart(2, "0")}`;
 }
 
 export function daysInMonth(year: number, month: number): number {

@@ -3,6 +3,7 @@ import {
   boolean,
   char,
   check,
+  date,
   foreignKey,
   index,
   integer,
@@ -10,6 +11,7 @@ import {
   pgEnum,
   pgSchema,
   pgTable,
+  smallint,
   text,
   timestamp,
   unique,
@@ -147,6 +149,73 @@ export const categories = pgTable(
   ],
 );
 
+export const budgets = pgTable(
+  "budgets",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: text("user_id").notNull().references(() => userProfiles.userId, { onDelete: "cascade" }),
+    name: varchar("name", { length: 100 }).notNull(),
+    kind: text("kind").notNull(),
+    categoryId: uuid("category_id"),
+    frequency: text("frequency").notNull().default("monthly"),
+    timezone: varchar("timezone", { length: 100 }).notNull(),
+    rolloverPolicy: boolean("rollover_policy").notNull().default(false),
+    warningThresholds: smallint("warning_thresholds").array().notNull().default(sql`ARRAY[50, 75, 90, 100]::smallint[]`),
+    archivedAt: timestamp("archived_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    unique("budgets_user_id_id_uq").on(table.userId, table.id),
+    foreignKey({
+      name: "budgets_category_same_user_fk",
+      columns: [table.userId, table.categoryId],
+      foreignColumns: [categories.userId, categories.id],
+    }),
+    check("budgets_kind_valid", sql`${table.kind} IN ('category', 'global')`),
+    check("budgets_category_shape", sql`(${table.kind} = 'category' AND ${table.categoryId} IS NOT NULL) OR (${table.kind} = 'global' AND ${table.categoryId} IS NULL)`),
+    check("budgets_frequency_valid", sql`${table.frequency} IN ('daily', 'weekly', 'monthly', 'custom')`),
+    check("budgets_name_nonempty", sql`length(btrim(${table.name})) BETWEEN 1 AND 100`),
+    check("budgets_thresholds_valid", sql`cardinality(${table.warningThresholds}) BETWEEN 1 AND 8 AND array_position(${table.warningThresholds}, NULL) IS NULL`),
+    uniqueIndex("budgets_active_category_uq").on(table.userId, table.categoryId).where(sql`${table.archivedAt} IS NULL AND ${table.kind} = 'category'`),
+    uniqueIndex("budgets_active_global_uq").on(table.userId).where(sql`${table.archivedAt} IS NULL AND ${table.kind} = 'global'`),
+  ],
+);
+
+export const budgetPeriods = pgTable(
+  "budget_periods",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: text("user_id").notNull(),
+    budgetId: uuid("budget_id").notNull(),
+    clientMutationId: uuid("client_mutation_id").notNull(),
+    requestPayload: jsonb("request_payload").notNull(),
+    startsOn: date("starts_on", { mode: "string" }).notNull(),
+    endsOn: date("ends_on", { mode: "string" }).notNull(),
+    plannedMinor: bigint("planned_minor", { mode: "bigint" }).notNull(),
+    rolloverFromPeriodId: uuid("rollover_from_period_id"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    unique("budget_periods_user_id_id_uq").on(table.userId, table.id),
+    unique("budget_periods_client_mutation_uq").on(table.userId, table.clientMutationId),
+    unique("budget_periods_budget_range_uq").on(table.userId, table.budgetId, table.startsOn, table.endsOn),
+    foreignKey({
+      name: "budget_periods_budget_same_user_fk",
+      columns: [table.userId, table.budgetId],
+      foreignColumns: [budgets.userId, budgets.id],
+    }).onDelete("cascade"),
+    foreignKey({
+      name: "budget_periods_rollover_same_user_fk",
+      columns: [table.userId, table.rolloverFromPeriodId],
+      foreignColumns: [table.userId, table.id],
+    }),
+    check("budget_periods_dates_valid", sql`${table.endsOn} >= ${table.startsOn}`),
+    check("budget_periods_planned_positive", sql`${table.plannedMinor} > 0`),
+    index("budget_periods_user_dates_idx").on(table.userId, table.startsOn, table.endsOn),
+  ],
+);
+
 export const ledgerAccounts = pgTable(
   "ledger_accounts",
   {
@@ -279,12 +348,12 @@ export const ledgerPostings = pgTable(
       name: "ledger_postings_event_same_user_fk",
       columns: [table.userId, table.financeEventId],
       foreignColumns: [financeEvents.userId, financeEvents.id],
-    }).onDelete("restrict"),
+    }),
     foreignKey({
       name: "ledger_postings_account_same_user_fk",
       columns: [table.userId, table.ledgerAccountId],
       foreignColumns: [ledgerAccounts.userId, ledgerAccounts.id],
-    }).onDelete("restrict"),
+    }),
     index("ledger_postings_user_event_idx").on(table.userId, table.financeEventId),
     index("ledger_postings_user_account_posted_idx").on(
       table.userId,
@@ -317,12 +386,12 @@ export const categoryAllocations = pgTable(
       name: "category_allocations_event_same_user_fk",
       columns: [table.userId, table.financeEventId],
       foreignColumns: [financeEvents.userId, financeEvents.id],
-    }).onDelete("restrict"),
+    }),
     foreignKey({
       name: "category_allocations_category_same_user_fk",
       columns: [table.userId, table.categoryId],
       foreignColumns: [categories.userId, categories.id],
-    }).onDelete("restrict"),
+    }),
     check("category_allocations_positive_amount", sql`${table.amountMinor} > 0`),
   ],
 );
@@ -350,7 +419,7 @@ export const commandIdempotency = pgTable(
       name: "command_idempotency_result_same_user_fk",
       columns: [table.userId, table.resultEventId],
       foreignColumns: [financeEvents.userId, financeEvents.id],
-    }).onDelete("restrict"),
+    }),
   ],
 );
 
@@ -380,5 +449,7 @@ export type NewUserProfile = typeof userProfiles.$inferInsert;
 export type UserProfile = typeof userProfiles.$inferSelect;
 export type NewWallet = typeof wallets.$inferInsert;
 export type Wallet = typeof wallets.$inferSelect;
+export type Budget = typeof budgets.$inferSelect;
+export type BudgetPeriod = typeof budgetPeriods.$inferSelect;
 export type FinanceEvent = typeof financeEvents.$inferSelect;
 export type LedgerPosting = typeof ledgerPostings.$inferSelect;

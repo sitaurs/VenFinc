@@ -36,6 +36,13 @@
       "when": 1792837546782,
       "tag": "0004_platform-role-default-deny",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1792894354018,
+      "tag": "0005_budgeting",
+      "breakpoints": true
     }
   ]
 }

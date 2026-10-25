@@ -2,6 +2,10 @@ import { Hono, type Context } from "hono";
 import {
   categoryCreateSchema,
   categorySchema,
+  budgetCreateSchema,
+  budgetCreateResultSchema,
+  budgetListSchema,
+  localDateSchema,
   effectiveAtSchema,
   errorEnvelope,
   financeEventSchema,
@@ -145,6 +149,38 @@ function mapCategory(row: DbRow) {
     colorToken: row.color_token ?? null,
     archivedAt: row.archived_at ?? null,
   });
+}
+
+function mapBudget(row: DbRow) {
+  const thresholds = Array.isArray(row.warning_thresholds)
+    ? row.warning_thresholds.map(Number)
+    : [50, 75, 90, 100];
+  return {
+    id: row.budget_id ?? row.id,
+    name: row.name,
+    kind: row.kind,
+    categoryId: row.category_id ?? null,
+    categoryName: row.category_name ?? null,
+    frequency: row.frequency,
+    timezone: row.timezone,
+    rolloverPolicy: row.rollover_policy,
+    warningThresholds: thresholds,
+    startsOn: row.period_starts_on ?? row.starts_on,
+    endsOn: row.period_ends_on ?? row.ends_on,
+    plannedMinor: row.planned_minor,
+    ...(row.used_minor !== undefined ? { usedMinor: row.used_minor } : {}),
+    ...(row.remaining_minor !== undefined ? { remainingMinor: row.remaining_minor } : {}),
+  };
+}
+
+function isValidDateRange(startsOn: string, endsOn: string): boolean {
+  const match = /^(\d{4})-(0[1-9]|1[0-2])-01$/.exec(startsOn);
+  if (!match) return false;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const leap = year % 400 === 0 || (year % 4 === 0 && year % 100 !== 0);
+  const days = month === 2 ? (leap ? 29 : 28) : [4, 6, 9, 11].includes(month) ? 30 : 31;
+  return endsOn === `${match[1]}-${match[2]}-${String(days).padStart(2, "0")}`;
 }
 
 function mapFinanceEvent(row: DbRow) {
@@ -324,6 +360,10 @@ api.post("/wallets", async (c) => {
 api.get("/categories", async (c) => {
   try {
     const identity = c.get("identity");
+    await callDataApi(c.env, identity.providerJwt, {
+      kind: "rpc",
+      name: "ensure_default_categories",
+    });
     const result = rows(await callDataApi(c.env, identity.providerJwt, {
       kind: "select",
       table: "categories",
@@ -337,6 +377,76 @@ api.get("/categories", async (c) => {
     return c.json(successEnvelope(result, c.get("requestId")));
   } catch (error) {
     return dataFailure(c, error);
+  }
+});
+
+api.get("/budgets", async (c) => {
+  const params = new URL(c.req.url).searchParams;
+  if ([...params.keys()].some((key) => !["startsOn", "endsOn"].includes(key))) {
+    return fail(c, "INVALID_INPUT", "Rentang anggaran tidak valid.", 400);
+  }
+  const startsOn = localDateSchema.safeParse(params.get("startsOn"));
+  const endsOn = localDateSchema.safeParse(params.get("endsOn"));
+  if (!startsOn.success || !endsOn.success || !isValidDateRange(startsOn.data, endsOn.data)) {
+    return fail(c, "INVALID_INPUT", "Rentang anggaran tidak valid.", 400);
+  }
+  try {
+    const identity = c.get("identity");
+    const result = rows(await callDataApi(c.env, identity.providerJwt, {
+      kind: "rpc",
+      name: "list_budgets",
+      body: { p_starts_on: startsOn.data, p_ends_on: endsOn.data },
+    })).map(mapBudget);
+    return c.json(successEnvelope(budgetListSchema.parse(result), c.get("requestId")));
+  } catch (error) {
+    return dataFailure(c, error);
+  }
+});
+
+api.post("/budgets", async (c) => {
+  const idempotencyKey = idempotencyKeySchema.safeParse(c.req.header("Idempotency-Key"));
+  if (!idempotencyKey.success) return fail(c, "INVALID_INPUT", "Kunci pengiriman anggaran wajib berupa UUID.", 400);
+  const body = await requestJson(c, 8 * 1024);
+  if (!body.ok) return fail(c, "INVALID_INPUT", "Data anggaran tidak valid.", body.tooLarge ? 413 : 400);
+  const parsed = budgetCreateSchema.safeParse(body.value);
+  if (!parsed.success || !isValidDateRange(parsed.data.startsOn, parsed.data.endsOn)) {
+    return fail(c, "INVALID_INPUT", "Data anggaran tidak valid.", 400);
+  }
+  try {
+    const identity = c.get("identity");
+    const result = rows(await callDataApi(c.env, identity.providerJwt, {
+      kind: "rpc",
+      name: "create_budget",
+      body: {
+        p_idempotency_key: idempotencyKey.data,
+        p_name: parsed.data.name,
+        p_kind: parsed.data.kind,
+        p_category_id: parsed.data.categoryId,
+        p_frequency: parsed.data.frequency,
+        p_timezone: parsed.data.timezone,
+        p_starts_on: parsed.data.startsOn,
+        p_ends_on: parsed.data.endsOn,
+        p_planned_minor: parsed.data.plannedMinor,
+        p_rollover_policy: parsed.data.rolloverPolicy,
+        p_warning_thresholds: parsed.data.warningThresholds,
+      },
+    }));
+    if (result.length !== 1) return fail(c, "DEPENDENCY_UNAVAILABLE", "Anggaran belum dapat disimpan.", 503);
+    const row = result[0]!;
+    const data = budgetCreateResultSchema.parse({
+      id: row.budget_id,
+      periodId: row.period_id,
+      name: row.name,
+      kind: row.kind,
+      categoryId: row.category_id ?? null,
+      frequency: row.frequency,
+      startsOn: row.starts_on,
+      endsOn: row.ends_on,
+      plannedMinor: row.planned_minor,
+    });
+    return c.json(successEnvelope(data, c.get("requestId")), 201);
+  } catch (error) {
+    return dataFailure(c, error, true);
   }
 });
 

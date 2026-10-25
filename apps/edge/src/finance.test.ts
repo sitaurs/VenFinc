@@ -62,6 +62,96 @@ function activeCookie() {
 }
 
 describe("private finance routes", () => {
+  it("returns monthly budgets using the exact requested calendar month", async () => {
+    let captured: unknown;
+    const setup = await testBindings(async (url, init) => {
+      expect(url.pathname).toBe("/neondb/rest/v1/rpc/list_budgets");
+      captured = JSON.parse(String(init.body));
+      return Response.json([{
+        budget_id: "c36df782-e943-4ab5-80d5-07b8f6eef620",
+        name: "Kebutuhan",
+        kind: "category",
+        category_id: "7b9be51e-0607-4c60-8315-e57ae8f61aba",
+        category_name: "Makan",
+        frequency: "monthly",
+        timezone: "Asia/Jakarta",
+        rollover_policy: false,
+        warning_thresholds: [50, 75, 90, 100],
+        period_starts_on: "2026-02-01",
+        period_ends_on: "2026-02-28",
+        planned_minor: "1500000",
+        used_minor: "425000",
+        remaining_minor: "1075000",
+      }]);
+    });
+    const response = await app.request("https://finance.test/api/v1/budgets?startsOn=2026-02-01&endsOn=2026-02-28", {
+      headers: { Cookie: activeCookie() },
+    }, setup.bindings);
+    const body = await response.text();
+    expect(response.status).toBe(200);
+    expect(captured).toEqual({ p_starts_on: "2026-02-01", p_ends_on: "2026-02-28" });
+    expect(body).toContain('"plannedMinor":"1500000"');
+    expect(body).toContain('"remainingMinor":"1075000"');
+  });
+
+  it("rejects partial budget months before contacting the database", async () => {
+    const upstream = vi.fn();
+    const setup = await testBindings(async () => {
+      upstream();
+      return Response.json([]);
+    });
+    const response = await app.request("https://finance.test/api/v1/budgets?startsOn=2026-04-01&endsOn=2026-04-29", {
+      headers: { Cookie: activeCookie() },
+    }, setup.bindings);
+    expect(response.status).toBe(400);
+    expect(upstream).not.toHaveBeenCalled();
+  });
+
+  it("creates an idempotent monthly budget through the owner's verified session", async () => {
+    let captured: Record<string, unknown> | undefined;
+    const setup = await testBindings(async (_url, init) => {
+      captured = JSON.parse(String(init.body)) as Record<string, unknown>;
+      return Response.json([{
+        budget_id: "c36df782-e943-4ab5-80d5-07b8f6eef620",
+        period_id: "f08fab98-b8ab-4db7-a53c-2215f5b9a76c",
+        name: "Kebutuhan",
+        kind: "global",
+        category_id: null,
+        frequency: "monthly",
+        starts_on: "2026-02-01",
+        ends_on: "2026-02-28",
+        planned_minor: "2500000",
+      }]);
+    });
+    const response = await app.request("https://finance.test/api/v1/budgets", {
+      method: "POST",
+      headers: {
+        Cookie: activeCookie(),
+        Origin: "https://finance.test",
+        "Content-Type": "application/json",
+        "Idempotency-Key": "1212c76b-8875-4bf3-ace5-1e584e0a8d0d",
+      },
+      body: JSON.stringify({
+        name: "Kebutuhan",
+        kind: "global",
+        categoryId: null,
+        frequency: "monthly",
+        timezone: "Asia/Jakarta",
+        startsOn: "2026-02-01",
+        endsOn: "2026-02-28",
+        plannedMinor: "2500000",
+        rolloverPolicy: false,
+        warningThresholds: [50, 75, 90, 100],
+      }),
+    }, setup.bindings);
+    const body = await response.text();
+    expect(response.status).toBe(201);
+    expect(captured?.p_idempotency_key).toBe("1212c76b-8875-4bf3-ace5-1e584e0a8d0d");
+    expect(captured?.p_planned_minor).toBe("2500000");
+    expect(captured).not.toHaveProperty("user_id");
+    expect(body).toContain('"periodId":"f08fab98-b8ab-4db7-a53c-2215f5b9a76c"');
+  });
+
   it("returns exact wallet balances through a fixed server-side RLS RPC", async () => {
     let providerJwt = "";
     const setup = await testBindings(async (url, init) => {

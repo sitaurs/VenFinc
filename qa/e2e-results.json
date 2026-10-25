@@ -4,7 +4,8 @@
       "/home/zamn/.cache/venfinance-toolchain/node-v24.22.1-linux-x64/bin/node",
       "/home/zamn/VenFinance/node_modules/@playwright/test/cli.js",
       "test",
-      "--grep",
+      "--project=chromium",
+      "--grep-invert",
       "@visual"
     ],
     "configFile": "/home/zamn/VenFinance/playwright.config.ts",
@@ -123,11 +124,9 @@
       "line": 0,
       "specs": [
         {
-          "title": "@visual layout capture 320px; source comparison remains separate",
+          "title": "manual sample entry updates exact balance; draft and reload are isolated",
           "ok": true,
-          "tags": [
-            "visual"
-          ],
+          "tags": [],
           "tests": [
             {
               "timeout": 60000,
@@ -140,12 +139,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 11094,
+                  "duration": 5859,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-24T13:18:37.247Z",
+                  "startTime": "2026-10-25T02:09:03.217Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -153,17 +152,15 @@
               "status": "expected"
             }
           ],
-          "id": "c31ff144dc4fee3acd0a-d88d6e10caf2c33535df",
+          "id": "c31ff144dc4fee3acd0a-8efa45b88ec9008ce6a6",
           "file": "app.spec.ts",
-          "line": 191,
-          "column": 3
+          "line": 8,
+          "column": 1
         },
         {
-          "title": "@visual layout capture 360px; source comparison remains separate",
+          "title": "large exact amounts remain readable, and aggregate overflow preserves the form",
           "ok": true,
-          "tags": [
-            "visual"
-          ],
+          "tags": [],
           "tests": [
             {
               "timeout": 60000,
@@ -176,12 +173,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 11518,
+                  "duration": 6141,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-24T13:18:48.744Z",
+                  "startTime": "2026-10-25T02:09:09.317Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -189,17 +186,15 @@
               "status": "expected"
             }
           ],
-          "id": "c31ff144dc4fee3acd0a-5a1d98661553cb83c9b9",
+          "id": "c31ff144dc4fee3acd0a-76f88dc065b56b3fced1",
           "file": "app.spec.ts",
-          "line": 191,
-          "column": 3
+          "line": 41,
+          "column": 1
         },
         {
-          "title": "@visual layout capture 361px; source comparison remains separate",
+          "title": "invalid amounts retain input; dialog supports keyboard close and focus return",
           "ok": true,
-          "tags": [
-            "visual"
-          ],
+          "tags": [],
           "tests": [
             {
               "timeout": 60000,
@@ -212,12 +207,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 23961,
+                  "duration": 10057,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-24T13:19:00.300Z",
+                  "startTime": "2026-10-25T02:09:15.513Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -225,17 +220,15 @@
               "status": "expected"
             }
           ],
-          "id": "c31ff144dc4fee3acd0a-0f3aa2a91ea4aa94ec12",
+          "id": "c31ff144dc4fee3acd0a-eadd2bef7b3488b8db5f",
           "file": "app.spec.ts",
-          "line": 191,
-          "column": 3
+          "line": 56,
+          "column": 1
         },
         {
-          "title": "@visual layout capture 390px; source comparison remains separate",
+          "title": "search and combined filters show a real empty state and can reset",
           "ok": true,
-          "tags": [
-            "visual"
-          ],
+          "tags": [],
           "tests": [
             {
               "timeout": 60000,
@@ -248,12 +241,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 14906,
+                  "duration": 7286,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-24T13:19:24.309Z",
+                  "startTime": "2026-10-25T02:09:25.674Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -261,17 +254,15 @@
               "status": "expected"
             }
           ],
-          "id": "c31ff144dc4fee3acd0a-a257e25c6e34561e4ce8",
+          "id": "c31ff144dc4fee3acd0a-7a488aa929e2d3c5d184",
           "file": "app.spec.ts",
-          "line": 191,
-          "column": 3
+          "line": 75,
+          "column": 1
         },
         {
-          "title": "@visual layout capture 768px; source comparison remains separate",
+          "title": "private routes stay closed and public service status does not fabricate health",
           "ok": true,
-          "tags": [
-            "visual"
-          ],
+          "tags": [],
           "tests": [
             {
               "timeout": 60000,
@@ -284,12 +275,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 9502,
+                  "duration": 17558,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-24T13:19:39.277Z",
+                  "startTime": "2026-10-25T02:09:33.085Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -297,17 +288,15 @@
               "status": "expected"
             }
           ],
-          "id": "c31ff144dc4fee3acd0a-99e25e602b21fd9a75e0",
+          "id": "c31ff144dc4fee3acd0a-ac5e7081eb970cb32491",
           "file": "app.spec.ts",
-          "line": 191,
-          "column": 3
+          "line": 90,
+          "column": 1
         },
         {
-          "title": "@visual layout capture 1024px; source comparison remains separate",
+          "title": "theme and language persist without persisting financial example data",
           "ok": true,
-          "tags": [
-            "visual"
-          ],
+          "tags": [],
           "tests": [
             {
               "timeout": 60000,
@@ -320,12 +309,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 8616,
+                  "duration": 10186,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-24T13:19:48.827Z",
+                  "startTime": "2026-10-25T02:09:50.737Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -333,17 +322,15 @@
               "status": "expected"
             }
           ],
-          "id": "c31ff144dc4fee3acd0a-a4643ad19a69952e866d",
+          "id": "c31ff144dc4fee3acd0a-9b46eef980a9fa765eb1",
           "file": "app.spec.ts",
-          "line": 191,
-          "column": 3
+          "line": 121,
+          "column": 1
         },
         {
-          "title": "@visual layout capture 1211px; source comparison remains separate",
+          "title": "open demo remains usable offline without claiming sync or provider status",
           "ok": true,
-          "tags": [
-            "visual"
-          ],
+          "tags": [],
           "tests": [
             {
               "timeout": 60000,
@@ -356,12 +343,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 8933,
+                  "duration": 9287,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-24T13:19:57.487Z",
+                  "startTime": "2026-10-25T02:10:00.994Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -369,17 +356,15 @@
               "status": "expected"
             }
           ],
-          "id": "c31ff144dc4fee3acd0a-b1b8d64e539856fd0cf0",
+          "id": "c31ff144dc4fee3acd0a-d09d61f5d3b54bb8d661",
           "file": "app.spec.ts",
-          "line": 191,
-          "column": 3
+          "line": 140,
+          "column": 1
         },
         {
-          "title": "@visual layout capture 1440px; source comparison remains separate",
+          "title": "navigation has no browser errors across implemented demo routes",
           "ok": true,
-          "tags": [
-            "visual"
-          ],
+          "tags": [],
           "tests": [
             {
               "timeout": 60000,
@@ -392,12 +377,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 8722,
+                  "duration": 11253,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-24T13:20:06.457Z",
+                  "startTime": "2026-10-25T02:10:10.364Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -405,46 +390,10 @@
               "status": "expected"
             }
           ],
-          "id": "c31ff144dc4fee3acd0a-fb7bacb903b7eec6c09a",
+          "id": "c31ff144dc4fee3acd0a-e5412c8e1fa3edd4514c",
           "file": "app.spec.ts",
-          "line": 191,
-          "column": 3
-        },
-        {
-          "title": "@visual layout capture 1920px; source comparison remains separate",
-          "ok": true,
-          "tags": [
-            "visual"
-          ],
-          "tests": [
-            {
-              "timeout": 60000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "chromium",
-              "projectName": "chromium",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 8502,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-10-24T13:20:15.213Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "c31ff144dc4fee3acd0a-49fb311358b20362eb01",
-          "file": "app.spec.ts",
-          "line": 191,
-          "column": 3
+          "line": 160,
+          "column": 1
         }
       ]
     },
@@ -455,11 +404,9 @@
       "line": 0,
       "specs": [
         {
-          "title": "verification and recovery screens fit supported viewport widths @visual",
+          "title": "registration moves to email verification and only enters the private app after a verified session",
           "ok": true,
-          "tags": [
-            "visual"
-          ],
+          "tags": [],
           "tests": [
             {
               "timeout": 60000,
@@ -472,12 +419,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 21852,
+                  "duration": 6471,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-24T13:20:23.786Z",
+                  "startTime": "2026-10-25T02:10:21.742Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -485,9 +432,305 @@
               "status": "expected"
             }
           ],
-          "id": "0c6c160bbdde4ceadf0a-7c418135fec5dec5cbd0",
+          "id": "0c6c160bbdde4ceadf0a-30c3c1f8780547533942",
           "file": "auth-flows.spec.ts",
-          "line": 96,
+          "line": 17,
+          "column": 1
+        },
+        {
+          "title": "password recovery uses one-use OTP and matching confirmation without exposing account existence",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6436,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-25T02:10:28.262Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "0c6c160bbdde4ceadf0a-e0c1fba5667e50024dcd",
+          "file": "auth-flows.spec.ts",
+          "line": 57,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "design-tokens.spec.ts",
+      "file": "design-tokens.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "P4-001 computed semantic tokens follow the design guide and meet contrast",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6788,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-25T02:10:34.911Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "85bb288d183b1cd19a62-aad0bff73bb497c8ad0a",
+          "file": "design-tokens.spec.ts",
+          "line": 75,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "offline-private.spec.ts",
+      "file": "offline-private.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "encrypted offline draft requires explicit posting and retry reuses one idempotency key",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 19436,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-25T02:10:41.865Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "70634eef869140a22400-bf18ee70a052ccbad429",
+          "file": "offline-private.spec.ts",
+          "line": 120,
+          "column": 1
+        },
+        {
+          "title": "device unlock can recover local drafts after sign-out without exposing them to another owner",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 15197,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-25T02:11:01.355Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "70634eef869140a22400-6d190ec5e7a0f39e752c",
+          "file": "offline-private.spec.ts",
+          "line": 210,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "private-finance.spec.ts",
+      "file": "private-finance.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "private dashboard uses owner API values and records an exact idempotent transaction",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 8129,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-25T02:11:16.639Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4dd8c78929417285d361-95fd20014e939bd2efd0",
+          "file": "private-finance.spec.ts",
+          "line": 174,
+          "column": 1
+        },
+        {
+          "title": "private budget screen creates a monthly plan without posting or changing wallet balances",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5586,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-25T02:11:24.818Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4dd8c78929417285d361-fadba42191f03d91fd22",
+          "file": "private-finance.spec.ts",
+          "line": 200,
+          "column": 1
+        },
+        {
+          "title": "savings transfer selects a savings wallet and stays out of expense categories",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4131,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-25T02:11:30.464Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4dd8c78929417285d361-d8f3c0af8a6b59f39808",
+          "file": "private-finance.spec.ts",
+          "line": 221,
+          "column": 1
+        },
+        {
+          "title": "a provider sign-in without a verified application session cannot open private data",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2292,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-25T02:11:34.627Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4dd8c78929417285d361-5558867a2b1e3c8518b3",
+          "file": "private-finance.spec.ts",
+          "line": 238,
           "column": 1
         }
       ]
@@ -499,11 +742,9 @@
       "line": 0,
       "specs": [
         {
-          "title": "settings and security screens fit supported phone, tablet, and desktop widths @visual",
+          "title": "security settings revoke other sessions without ending the current session",
           "ok": true,
-          "tags": [
-            "visual"
-          ],
+          "tags": [],
           "tests": [
             {
               "timeout": 60000,
@@ -516,12 +757,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 17886,
+                  "duration": 2477,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-24T13:20:45.712Z",
+                  "startTime": "2026-10-25T02:11:36.968Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -529,9 +770,77 @@
               "status": "expected"
             }
           ],
-          "id": "6e375e9083bcc45cdb6c-fdb24e898659b469cbff",
+          "id": "6e375e9083bcc45cdb6c-752f35a47466e3f47574",
           "file": "session-management.spec.ts",
-          "line": 124,
+          "line": 89,
+          "column": 1
+        },
+        {
+          "title": "one device can be revoked by its safe session ID and needs an explicit confirmation",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3111,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-25T02:11:39.466Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "6e375e9083bcc45cdb6c-c93dbb9fbd0bccbe6259",
+          "file": "session-management.spec.ts",
+          "line": 103,
+          "column": 1
+        },
+        {
+          "title": "signing out all devices explains that the current device will also be signed out",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2929,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-25T02:11:42.607Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "6e375e9083bcc45cdb6c-6805661ca4307ed3a5b5",
+          "file": "session-management.spec.ts",
+          "line": 114,
           "column": 1
         }
       ]
@@ -543,11 +852,9 @@
       "line": 0,
       "specs": [
         {
-          "title": "@visual P4-002 component gallery fits 320px",
+          "title": "P4-002 buttons expose disabled/loading, hover, and keyboard focus states",
           "ok": true,
-          "tags": [
-            "visual"
-          ],
+          "tags": [],
           "tests": [
             {
               "timeout": 60000,
@@ -560,12 +867,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 1957,
+                  "duration": 2211,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-24T13:21:03.652Z",
+                  "startTime": "2026-10-25T02:11:45.595Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -573,17 +880,15 @@
               "status": "expected"
             }
           ],
-          "id": "ff675a35eb2076990d40-448e465f9ea3cf1716ad",
+          "id": "ff675a35eb2076990d40-7d2897aa948bc9fb0753",
           "file": "ui-components.spec.ts",
-          "line": 186,
-          "column": 3
+          "line": 8,
+          "column": 1
         },
         {
-          "title": "@visual P4-002 component gallery fits 390px",
+          "title": "P4-002 navigation names its landmark and marks the current page",
           "ok": true,
-          "tags": [
-            "visual"
-          ],
+          "tags": [],
           "tests": [
             {
               "timeout": 60000,
@@ -596,12 +901,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 1929,
+                  "duration": 2031,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-24T13:21:05.634Z",
+                  "startTime": "2026-10-25T02:11:47.833Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -609,17 +914,15 @@
               "status": "expected"
             }
           ],
-          "id": "ff675a35eb2076990d40-dd4ae2f4507422eccbd0",
+          "id": "ff675a35eb2076990d40-a3ac9e85347378160b00",
           "file": "ui-components.spec.ts",
-          "line": 186,
-          "column": 3
+          "line": 51,
+          "column": 1
         },
         {
-          "title": "@visual P4-002 component gallery fits 1440px",
+          "title": "P4-002 text fields connect labels, help, and validation errors",
           "ok": true,
-          "tags": [
-            "visual"
-          ],
+          "tags": [],
           "tests": [
             {
               "timeout": 60000,
@@ -632,12 +935,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 1920,
+                  "duration": 2079,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-24T13:21:07.586Z",
+                  "startTime": "2026-10-25T02:11:49.888Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -645,19 +948,155 @@
               "status": "expected"
             }
           ],
-          "id": "ff675a35eb2076990d40-d96332728bcf581ea49f",
+          "id": "ff675a35eb2076990d40-d553180ce787fb773f46",
           "file": "ui-components.spec.ts",
-          "line": 186,
-          "column": 3
+          "line": 68,
+          "column": 1
+        },
+        {
+          "title": "P4-002 tabs support arrow keys and keep the selected panel associated",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2078,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-25T02:11:51.996Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ff675a35eb2076990d40-86a0994927f4349bd5a9",
+          "file": "ui-components.spec.ts",
+          "line": 83,
+          "column": 1
+        },
+        {
+          "title": "P4-002 dialog opens from keyboard and returns focus after Escape",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2761,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-25T02:11:54.103Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ff675a35eb2076990d40-b887ac877bac1d8a4161",
+          "file": "ui-components.spec.ts",
+          "line": 99,
+          "column": 1
+        },
+        {
+          "title": "P4-002 exact money, masked privacy, status, toast, and skeleton semantics",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2106,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-25T02:11:56.889Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ff675a35eb2076990d40-18f635498b1aa04c6287",
+          "file": "ui-components.spec.ts",
+          "line": 115,
+          "column": 1
+        },
+        {
+          "title": "P4-006 charts expose exact values in a semantic table",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2104,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-25T02:11:59.018Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ff675a35eb2076990d40-9f899b3de6606c5fe741",
+          "file": "ui-components.spec.ts",
+          "line": 142,
+          "column": 1
         }
       ]
     }
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-10-24T13:18:27.855Z",
-    "duration": 161945.99699999997,
-    "expected": 14,
+    "startTime": "2026-10-25T02:08:52.518Z",
+    "duration": 188862.393,
+    "expected": 27,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0
