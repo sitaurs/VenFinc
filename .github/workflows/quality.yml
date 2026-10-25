@@ -22,9 +22,73 @@ jobs:
       - name: Report docs-check Python version
         run: python3 --version
       - name: Validate handoff documents
-        run: python3 tools/validate_handoff.py
+        run: |
+          set +e
+          python3 --version > "$RUNNER_TEMP/docs-check-python.txt"
+          python3 tools/validate_handoff.py > "$RUNNER_TEMP/validate-handoff.json" 2>&1
+          status=$?
+          if [ "$status" -ne 0 ]; then
+            python3 - "$RUNNER_TEMP/validate-handoff.json" <<'PY'
+          import json, sys
+          try:
+              result = json.load(open(sys.argv[1], encoding="utf-8"))
+          except Exception:
+              print("::error title=handoff-validator::Validator failed before producing JSON output")
+              raise SystemExit(0)
+          issues = result.get("issues", [])
+          if not issues:
+              print("::error title=handoff-validator::Validator returned a failing result without issue details")
+          for issue in issues:
+              tag = str(issue.get("tag", "unknown")).replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+              detail = str(issue.get("detail", "")).replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+              print(f"::error title=handoff:{tag}::{detail}")
+          PY
+          fi
+          {
+            echo '### Handoff document validator'
+            echo '```text'
+            cat "$RUNNER_TEMP/docs-check-python.txt"
+            echo '```'
+            echo '```json'
+            cat "$RUNNER_TEMP/validate-handoff.json"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          cat "$RUNNER_TEMP/validate-handoff.json"
+          exit "$status"
       - name: Validate execution tracker
-        run: python3 tools/check_execution.py
+        run: |
+          set +e
+          python3 --version > "$RUNNER_TEMP/docs-check-python.txt"
+          python3 tools/check_execution.py > "$RUNNER_TEMP/check-execution.json" 2>&1
+          status=$?
+          if [ "$status" -ne 0 ]; then
+            python3 - "$RUNNER_TEMP/check-execution.json" <<'PY'
+          import json, sys
+          try:
+              result = json.load(open(sys.argv[1], encoding="utf-8"))
+          except Exception:
+              print("::error title=execution-validator::Validator failed before producing JSON output")
+              raise SystemExit(0)
+          issues = result.get("issues", [])
+          if not issues:
+              print("::error title=execution-validator::Validator returned a failing result without issue details")
+          for issue in issues:
+              tag = str(issue.get("tag", "unknown")).replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+              detail = str(issue.get("detail", "")).replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+              print(f"::error title=execution:{tag}::{detail}")
+          PY
+          fi
+          {
+            echo '### Execution tracker validator'
+            echo '```text'
+            cat "$RUNNER_TEMP/docs-check-python.txt"
+            echo '```'
+            echo '```json'
+            cat "$RUNNER_TEMP/check-execution.json"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          cat "$RUNNER_TEMP/check-execution.json"
+          exit "$status"
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm test:e2e
       - run: pnpm test:visual
