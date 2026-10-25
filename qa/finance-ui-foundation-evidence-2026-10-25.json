@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-25",
+  "scope": "Code foundation: finance reports, category management, and wallet management",
+  "changes": [
+    {
+      "area": "Finance reports",
+      "implementation": "Tenant-scoped read-only report RPC and Hono endpoint; responsive income, expense, refund, comparison, category, merchant, daily chart, and summary CSV UI. Amounts remain exact decimal strings."
+    },
+    {
+      "area": "Categories",
+      "implementation": "Create, edit, archive, and restore categories; server-side checks reject self-parenting, nested parents, and archiving a category with active children. Existing transaction references remain intact."
+    },
+    {
+      "area": "Wallets",
+      "implementation": "Create, rename, archive, and restore wallets; archive confirmation explains the effect on active totals while preserving ledger history."
+    }
+  ],
+  "verification": {
+    "unit": { "command": "./tools/pnpm.sh test", "result": "PASS", "files": 12, "tests": 131 },
+    "contracts": { "command": "./tools/pnpm.sh test:contracts", "result": "PASS", "tests": 22 },
+    "security": { "command": "./tools/pnpm.sh test:security", "result": "PASS", "tests": 9, "clientFilesScanned": 13, "limitation": "Heuristic client-bundle scan; not a live auth/RLS audit." },
+    "lint": { "command": "./tools/pnpm.sh lint", "result": "PASS" },
+    "typecheck": { "command": "./tools/pnpm.sh typecheck", "result": "PASS" },
+    "databaseMetadata": { "command": "./tools/pnpm.sh --filter @venfinance/db check", "result": "PASS" },
+    "build": { "command": "XDG_CONFIG_HOME=/tmp/venfinance-wrangler-config WRANGLER_SEND_METRICS=false ./tools/pnpm.sh build", "result": "PASS", "artifact": "Cloudflare Worker and PWA client built; 21 precache entries." },
+    "e2e": { "command": "XDG_CONFIG_HOME=/tmp/venfinance-wrangler-dev WRANGLER_SEND_METRICS=false ./tools/pnpm.sh test:e2e", "result": "PASS", "project": "Chromium", "tests": 32, "failed": 0, "skipped": 0 },
+    "builtPreviewSmoke": { "command": "./tools/pnpm.sh infra:smoke", "result": "PASS", "unauthenticatedPrivateApiStatus": 503, "externalProvidersTested": false }
+  },
+  "notVerified": [
+    "Migration 0007_finance_reports.sql has not been applied to Neon staging or production and has not been executed against PostgreSQL in this run.",
+    "New report, category, and wallet paths were exercised with mocked Data API responses in browser tests; live tenant RLS and mutation behavior remain unverified.",
+    "No Cloudflare or production deployment was performed.",
+    "Operator MFA, live session revocation against the app Worker, email deliverability, GOWA, 9router Vision, R2 isolation, and Armbian readiness remain release gates.",
+    "This evidence covers the listed code foundation only; it does not mark the full 373-task production specification complete."
+  ],
+  "taskTracker": "No task status was advanced to done based on this evidence alone."
+}

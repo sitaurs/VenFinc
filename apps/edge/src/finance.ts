@@ -2,6 +2,9 @@ import { Hono, type Context } from "hono";
 import {
   categoryCreateSchema,
   categorySchema,
+  categoryUpdateSchema,
+  financeReportQuerySchema,
+  financeReportSchema,
   budgetCreateSchema,
   budgetCreateResultSchema,
   budgetListSchema,
@@ -25,6 +28,8 @@ import {
   successEnvelope,
   userProfileCreateSchema,
   walletCreateSchema,
+  walletUpdateResultSchema,
+  walletUpdateSchema,
   walletSchema,
 } from "@venfinance/contracts";
 import {
@@ -396,7 +401,47 @@ api.post("/wallets", async (c) => {
   }
 });
 
+api.patch("/wallets/:walletId", async (c) => {
+  const walletId = c.req.param("walletId");
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(walletId)) {
+    return fail(c, "INVALID_INPUT", "Dompet tidak valid.", 400);
+  }
+  const body = await requestJson(c, 8 * 1024);
+  if (!body.ok) return fail(c, "INVALID_INPUT", "Perubahan dompet tidak valid.", body.tooLarge ? 413 : 400);
+  const parsed = walletUpdateSchema.safeParse(body.value);
+  if (!parsed.success) return fail(c, "INVALID_INPUT", "Perubahan dompet tidak valid.", 400);
+  try {
+    const identity = c.get("identity");
+    const updated = rows(await callDataApi(c.env, identity.providerJwt, {
+      kind: "update",
+      table: "wallets",
+      query: { id: `eq.${walletId}`, select: "id,archived_at" },
+      body: {
+        name: parsed.data.name,
+        type: parsed.data.type,
+        archived_at: parsed.data.archived ? new Date().toISOString() : null,
+        updated_at: new Date().toISOString(),
+      },
+    }));
+    if (updated.length !== 1) return fail(c, "NOT_FOUND", "Dompet tidak ditemukan.", 404);
+    return c.json(successEnvelope(walletUpdateResultSchema.parse({
+      id: updated[0]!.id,
+      archivedAt: updated[0]!.archived_at ?? null,
+    }), c.get("requestId")));
+  } catch (error) {
+    return dataFailure(c, error);
+  }
+});
+
 api.get("/categories", async (c) => {
+  const params = new URL(c.req.url).searchParams;
+  if ([...params.keys()].some((key) => key !== "includeArchived")) {
+    return fail(c, "INVALID_INPUT", "Filter kategori tidak valid.", 400);
+  }
+  const includeArchived = params.get("includeArchived");
+  if (includeArchived !== null && includeArchived !== "true" && includeArchived !== "false") {
+    return fail(c, "INVALID_INPUT", "Filter kategori tidak valid.", 400);
+  }
   try {
     const identity = c.get("identity");
     await callDataApi(c.env, identity.providerJwt, {
@@ -408,7 +453,7 @@ api.get("/categories", async (c) => {
       table: "categories",
       query: {
         select: "id,name,parent_id,icon_key,color_token,archived_at",
-        archived_at: "is.null",
+        ...(includeArchived === "true" ? {} : { archived_at: "is.null" }),
         order: "name.asc,id.asc",
         limit: "100",
       },
@@ -626,6 +671,51 @@ api.post("/savings-goals/:goalId/contributions", async (c) => {
   }
 });
 
+api.get("/reports/summary", async (c) => {
+  const params = new URL(c.req.url).searchParams;
+  if ([...params.keys()].some((key) => key !== "from" && key !== "to")) {
+    return fail(c, "INVALID_INPUT", "Rentang laporan tidak valid.", 400);
+  }
+  const parsed = financeReportQuerySchema.safeParse({
+    from: params.get("from"),
+    to: params.get("to"),
+  });
+  if (!parsed.success) return fail(c, "INVALID_INPUT", "Rentang laporan harus antara 1 dan 366 hari.", 400);
+  try {
+    const identity = c.get("identity");
+    const result = rows(await callDataApi(c.env, identity.providerJwt, {
+      kind: "rpc",
+      name: "get_finance_report",
+      body: { p_from: parsed.data.from, p_to: parsed.data.to },
+    }));
+    if (result.length !== 1) return fail(c, "DEPENDENCY_UNAVAILABLE", "Laporan belum dapat dimuat.", 503);
+    const row = result[0]!;
+    const report = financeReportSchema.parse({
+      timezone: row.timezone,
+      from: row.period_from,
+      to: row.period_to,
+      current: {
+        incomeMinor: row.income_minor,
+        grossExpenseMinor: row.gross_expense_minor,
+        refundMinor: row.refund_minor,
+        eventCount: row.event_count,
+      },
+      previous: {
+        incomeMinor: row.previous_income_minor,
+        grossExpenseMinor: row.previous_gross_expense_minor,
+        refundMinor: row.previous_refund_minor,
+      },
+      daily: row.daily,
+      categories: row.categories,
+      merchants: row.merchants,
+    });
+    return c.json(successEnvelope(report, c.get("requestId")));
+  } catch (error) {
+    if (error instanceof DataApiFailure) return dataFailure(c, error);
+    return fail(c, "DEPENDENCY_UNAVAILABLE", "Laporan belum dapat dimuat.", 503);
+  }
+});
+
 api.post("/categories", async (c) => {
   const body = await requestJson(c, 8 * 1024);
   if (!body.ok) return fail(c, "INVALID_INPUT", "Data kategori tidak valid.", body.tooLarge ? 413 : 400);
@@ -647,6 +737,71 @@ api.post("/categories", async (c) => {
     }));
     if (inserted.length !== 1) return fail(c, "DEPENDENCY_UNAVAILABLE", "Kategori belum dapat dibuat.", 503);
     return c.json(successEnvelope(mapCategory(inserted[0]!), c.get("requestId")), 201);
+  } catch (error) {
+    return dataFailure(c, error);
+  }
+});
+
+api.patch("/categories/:categoryId", async (c) => {
+  const categoryId = c.req.param("categoryId");
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(categoryId)) {
+    return fail(c, "INVALID_INPUT", "Kategori tidak valid.", 400);
+  }
+  const body = await requestJson(c, 8 * 1024);
+  if (!body.ok) return fail(c, "INVALID_INPUT", "Perubahan kategori tidak valid.", body.tooLarge ? 413 : 400);
+  const parsed = categoryUpdateSchema.safeParse(body.value);
+  if (!parsed.success) return fail(c, "INVALID_INPUT", "Perubahan kategori tidak valid.", 400);
+  try {
+    const identity = c.get("identity");
+    if (parsed.data.parentId === categoryId) {
+      return fail(c, "INVALID_INPUT", "Kategori tidak dapat menjadi induknya sendiri.", 400);
+    }
+    if (parsed.data.parentId) {
+      const parent = rows(await callDataApi(c.env, identity.providerJwt, {
+        kind: "select",
+        table: "categories",
+        query: {
+          id: `eq.${parsed.data.parentId}`,
+          archived_at: "is.null",
+          select: "id,parent_id",
+          limit: "1",
+        },
+      }))[0];
+      if (!parent || parent.parent_id !== null) {
+        return fail(c, "INVALID_INPUT", "Pilih kategori induk aktif tanpa induk lain.", 400);
+      }
+    }
+    if (parsed.data.archived) {
+      const activeChild = rows(await callDataApi(c.env, identity.providerJwt, {
+        kind: "select",
+        table: "categories",
+        query: {
+          parent_id: `eq.${categoryId}`,
+          archived_at: "is.null",
+          select: "id",
+          limit: "1",
+        },
+      }))[0];
+      if (activeChild) return fail(c, "VERSION_CONFLICT", "Arsipkan subkategori aktif terlebih dahulu.", 409);
+    }
+    const updated = rows(await callDataApi(c.env, identity.providerJwt, {
+      kind: "update",
+      table: "categories",
+      query: {
+        id: `eq.${categoryId}`,
+        select: "id,name,parent_id,icon_key,color_token,archived_at",
+      },
+      body: {
+        name: parsed.data.name,
+        parent_id: parsed.data.parentId ?? null,
+        icon_key: parsed.data.iconKey ?? null,
+        color_token: parsed.data.colorToken ?? null,
+        archived_at: parsed.data.archived ? new Date().toISOString() : null,
+        updated_at: new Date().toISOString(),
+      },
+    }));
+    if (updated.length !== 1) return fail(c, "NOT_FOUND", "Kategori tidak ditemukan.", 404);
+    return c.json(successEnvelope(mapCategory(updated[0]!), c.get("requestId")));
   } catch (error) {
     return dataFailure(c, error);
   }

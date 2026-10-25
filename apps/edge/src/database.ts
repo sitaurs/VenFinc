@@ -15,7 +15,8 @@ export type PublicRpc =
   | "list_savings_goals"
   | "update_savings_goal"
   | "contribute_to_savings_goal"
-  | "list_savings_goal_contributions";
+  | "list_savings_goal_contributions"
+  | "get_finance_report";
 
 export type DataApiOperation =
   | {
@@ -29,6 +30,12 @@ export type DataApiOperation =
       query?: Record<string, string>;
       body: Record<string, unknown>;
       mergeDuplicates?: boolean;
+    }
+  | {
+      kind: "update";
+      table: PublicTable;
+      query: Record<string, string>;
+      body: Record<string, unknown>;
     }
   | {
       kind: "rpc";
@@ -152,7 +159,7 @@ export async function callDataApi<T>(
   }
 
   const target = new URL(base);
-  let method: "GET" | "POST" = "GET";
+  let method: "GET" | "POST" | "PATCH" = "GET";
   let body: string | undefined;
   let query: Record<string, string> | undefined;
   let prefer = "";
@@ -169,6 +176,10 @@ export async function callDataApi<T>(
       prefer = operation.mergeDuplicates
         ? "resolution=merge-duplicates,return=representation"
         : "return=representation";
+    } else if (operation.kind === "update") {
+      method = "PATCH";
+      body = JSON.stringify(operation.body);
+      prefer = "return=representation";
     }
   }
   if (query) {

@@ -6,16 +6,19 @@ import {
   ChartNoAxesCombined, CircleHelp, Eye, EyeOff, Home, List, LoaderCircle,
   CloudOff, ChevronRight, KeyRound, LaptopMinimal, LogOut, Plus, RefreshCw,
   Settings, ShieldCheck, Smartphone, WalletCards, X, PiggyBank, CalendarDays, Target,
+  Download, TrendingDown, TrendingUp, Receipt,
+  Tags,
 } from "lucide-react";
 import {
   authDeviceSessionListSchema, authSessionMutationSchema, budgetCreateResultSchema,
-  budgetCreateSchema, budgetListSchema, categorySchema,
+  budgetCreateSchema, budgetListSchema, categoryCreateSchema, categorySchema, categoryUpdateSchema,
+  financeReportSchema, type FinanceReport,
   savingsContributionCreateSchema, savingsContributionListSchema, savingsContributionSchema,
   savingsGoalCreateResultSchema, savingsGoalCreateSchema,
   savingsGoalListSchema, savingsGoalUpdateResultSchema, type SavingsGoal, type SavingsGoalUpdate,
   financeEventPageSchema, financePostResultSchema, financePostSchema,
   privateSessionSchema, publicConfigSchema, profileCreateResultSchema,
-  profileReadResultSchema, walletSchema, type Budget, type BudgetCreate,
+  profileReadResultSchema, walletSchema, walletUpdateResultSchema, walletUpdateSchema, type Budget, type BudgetCreate,
   type FinanceEvent, type FinanceEventPage, type UserProfile, type Wallet,
 } from "@venfinance/contracts";
 import { formatIdr, monthBounds, parseIdrInput, progressPercent, shiftMonth, subtractMinor, sumMinor } from "@venfinance/domain";
@@ -172,6 +175,8 @@ function FinanceShell({ profile, ownerId }: { profile: UserProfile; ownerId: str
   const active = location.pathname.endsWith("/transactions") || location.pathname.includes("/transactions/")
     ? "transactions"
     : location.pathname.includes("/budgets") ? "budgets"
+      : location.pathname.includes("/insights") ? "settings"
+        : location.pathname.includes("/categories") ? "settings"
       : location.pathname.includes("/goals") ? "goals"
       : location.pathname.includes("/wallets") ? "wallets"
       : location.pathname.includes("/offline") ? "offline"
@@ -197,6 +202,7 @@ function FinanceShell({ profile, ownerId }: { profile: UserProfile; ownerId: str
           <NavLink to="/app/transactions" className={({ isActive }) => isActive ? "active" : ""}><List size={19} />{t("Transaksi", "Transactions")}</NavLink>
           <NavLink to="/app/budgets" className={({ isActive }) => isActive ? "active" : ""}><PiggyBank size={19} />{t("Anggaran", "Budgets")}</NavLink>
           <NavLink to="/app/goals" className={({ isActive }) => isActive ? "active" : ""}><Target size={19} />{t("Target tabungan", "Savings goals")}</NavLink>
+          <NavLink to="/app/insights" className={({ isActive }) => isActive ? "active" : ""}><ChartNoAxesCombined size={19} />{t("Laporan", "Reports")}</NavLink>
           <NavLink to="/app/wallets" className={({ isActive }) => isActive ? "active" : ""}><WalletCards size={19} />{t("Dompet", "Wallets")}</NavLink>
           <NavLink to="/app/offline" className={({ isActive }) => isActive ? "active" : ""}><CloudOff size={19} />{t("Draf offline", "Offline drafts")}</NavLink>
           <NavLink to="/app/settings" className={({ isActive }) => isActive ? "active" : ""}><Settings size={19} />{t("Pengaturan", "Settings")}</NavLink>
@@ -223,6 +229,8 @@ function FinanceShell({ profile, ownerId }: { profile: UserProfile; ownerId: str
             <Route path="budgets" element={<BudgetsPage profile={profile} ownerId={ownerId} />} />
             <Route path="goals" element={<SavingsGoalsPage profile={profile} ownerId={ownerId} />} />
             <Route path="goals/:goalId" element={<SavingsGoalsPage profile={profile} ownerId={ownerId} />} />
+            <Route path="insights" element={<InsightsPage profile={profile} ownerId={ownerId} />} />
+            <Route path="categories" element={<CategoriesPage ownerId={ownerId} />} />
             <Route path="wallets" element={<WalletsPage ownerId={ownerId} />} />
             <Route path="offline" element={<OfflineVaultPage ownerId={ownerId} allowSetup />} />
             <Route path="settings" element={<MoreSettingsPage profile={profile} />} />
@@ -261,6 +269,16 @@ function MoreSettingsPage({ profile }: { profile: UserProfile }) {
         <Link className="settings-directory-card" to="/app/goals">
           <span className="settings-directory-icon"><Target size={22} /></span>
           <span><strong>{t("Target tabungan", "Savings goals")}</strong><small>{t("Pantau target dan setoran dari transfer nyata.", "Track a goal and contributions from actual transfers.")}</small></span>
+          <ChevronRight size={20} />
+        </Link>
+        <Link className="settings-directory-card" to="/app/insights">
+          <span className="settings-directory-icon"><ChartNoAxesCombined size={22} /></span>
+          <span><strong>{t("Laporan & insight", "Reports & insights")}</strong><small>{t("Tinjau arus kas dan kebiasaan dari catatan terkonfirmasi.", "Review cash flow and habits from confirmed records.")}</small></span>
+          <ChevronRight size={20} />
+        </Link>
+        <Link className="settings-directory-card" to="/app/categories">
+          <span className="settings-directory-icon"><Tags size={22} /></span>
+          <span><strong>{t("Kategori transaksi", "Transaction categories")}</strong><small>{t("Atur kategori dan subkategori tanpa mengubah histori transaksi.", "Manage categories and subcategories without changing transaction history.")}</small></span>
           <ChevronRight size={20} />
         </Link>
         <Link className="settings-directory-card" to="/app/settings/security">
@@ -417,6 +435,129 @@ function useCategories(ownerId: string) {
   return useQuery({ queryKey: ["finance-categories", ownerId], queryFn: () => fetchCategories(ownerId), retry: false });
 }
 
+function CategoriesPage({ ownerId }: { ownerId: string }) {
+  const { t } = usePreferences();
+  const queryClient = useQueryClient();
+  const [editing, setEditing] = useState<Category | "new" | null>(null);
+  const [pendingArchive, setPendingArchive] = useState<Category | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const categories = useQuery({
+    queryKey: ["finance-categories", ownerId, "manage"],
+    queryFn: () => apiData("/api/v1/categories?includeArchived=true", categoryArraySchema),
+    retry: false,
+  });
+  const refresh = async () => {
+    await queryClient.invalidateQueries({ queryKey: ["finance-categories", ownerId] });
+  };
+  const create = useMutation({
+    mutationFn: (payload: ReturnType<typeof categoryCreateSchema.parse>) => apiData("/api/v1/categories", categorySchema, { method: "POST", body: JSON.stringify(payload) }),
+    onSuccess: async () => { setEditing(null); setError(null); await refresh(); },
+    onError: (cause) => setError(cause instanceof ApiClientError ? cause.publicMessage ?? t("Kategori belum dapat disimpan.", "The category could not be saved.") : t("Periksa nama kategori dan kategori induk.", "Check the category name and parent.")),
+  });
+  const update = useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: ReturnType<typeof categoryUpdateSchema.parse> }) => apiData(`/api/v1/categories/${id}`, categorySchema, { method: "PATCH", body: JSON.stringify(payload) }),
+    onSuccess: async () => { setEditing(null); setPendingArchive(null); setError(null); await refresh(); },
+    onError: (cause) => setError(cause instanceof ApiClientError ? cause.publicMessage ?? t("Kategori belum dapat diperbarui.", "The category could not be updated.") : t("Perubahan kategori belum dapat disimpan.", "The category changes could not be saved.")),
+  });
+  const active = categories.data?.filter((category) => !category.archivedAt) ?? [];
+  const archived = categories.data?.filter((category) => category.archivedAt) ?? [];
+  function saveCategory(payload: ReturnType<typeof categoryCreateSchema.parse>) {
+    setError(null);
+    if (editing === "new") create.mutate(payload);
+    else if (editing) update.mutate({ id: editing.id, payload: categoryUpdateSchema.parse({ ...payload, archived: false }) });
+  }
+  function setArchived(category: Category, archivedValue: boolean) {
+    setError(null);
+    update.mutate({
+      id: category.id,
+      payload: categoryUpdateSchema.parse({
+        name: category.name,
+        parentId: category.parentId,
+        iconKey: category.iconKey,
+        colorToken: category.colorToken,
+        archived: archivedValue,
+      }),
+    });
+  }
+  return (
+    <section className="category-manager-page" aria-label={t("Pengelolaan kategori", "Category management")}>
+      <FinanceHeading title={t("Kategori transaksi", "Transaction categories")} description={t("Sesuaikan kategori untuk catatan baru. Mengarsipkan kategori menjaga transaksi lama tetap utuh.", "Set up categories for new records. Archiving preserves existing transaction history.")} action={<Button onClick={() => { setEditing("new"); setError(null); }}><Plus size={18} />{t("Tambah kategori", "Add category")}</Button>} />
+      {error ? <Card className="private-form-card"><p className="form-error" role="alert">{error}</p></Card> : null}
+      {editing !== null ? <CategoryEditor
+        key={editing === "new" ? "new-category" : editing.id}
+        category={editing === "new" ? null : editing}
+        parentOptions={active.filter((category) => !category.parentId && category.id !== (editing === "new" ? null : editing.id))}
+        busy={create.isPending || update.isPending}
+        error={null}
+        onCancel={() => { setEditing(null); setError(null); }}
+        onSubmit={saveCategory}
+      /> : null}
+      {categories.isPending ? loadingPanel(t("Memuat kategori…", "Loading categories…")) : categories.isError ? unavailablePanel(() => void categories.refetch(), t("Kategori belum dapat dimuat.", "Categories could not be loaded.")) : <>
+        <div className="category-manager-summary"><Tags size={19} /><span>{t(`${active.length} kategori aktif`, `${active.length} active categories`)}</span><small>{t("Perubahan hanya berlaku untuk catatan berikutnya.", "Changes apply to future records only.")}</small></div>
+        {active.length ? <div className="category-manager-grid">{active.map((category) => <CategoryManagerCard
+          key={category.id}
+          category={category}
+          parentName={active.find((candidate) => candidate.id === category.parentId)?.name ?? null}
+          t={t}
+          onEdit={() => { setEditing(category); setError(null); }}
+          onArchive={() => setPendingArchive(category)}
+          confirmArchive={pendingArchive?.id === category.id}
+          busy={update.isPending}
+          onConfirmArchive={() => setArchived(category, true)}
+          onCancelArchive={() => setPendingArchive(null)}
+        />)}</div> : <Card><EmptyState icon={<Tags />} title={t("Belum ada kategori aktif", "No active categories yet")} action={<Button onClick={() => setEditing("new")}><Plus size={17} />{t("Buat kategori", "Create a category")}</Button>}>{t("Kategori membantu mengelompokkan pengeluaran tanpa mencampur saldo dompet.", "Categories help group spending without changing wallet balances.")}</EmptyState></Card>}
+        {archived.length ? <details className="category-archive-section"><summary>{t("Kategori arsip", "Archived categories")} · {archived.length}</summary><div className="category-manager-grid">{archived.map((category) => <CategoryManagerCard key={category.id} category={category} parentName={null} t={t} busy={update.isPending} onRestore={() => setArchived(category, false)} />)}</div></details> : null}
+      </>}
+    </section>
+  );
+}
+
+function CategoryManagerCard({ category, parentName, t, onEdit, onArchive, confirmArchive, busy, onConfirmArchive, onCancelArchive, onRestore }: {
+  category: Category;
+  parentName: string | null;
+  t: (id: string, en: string) => string;
+  onEdit?: () => void;
+  onArchive?: () => void;
+  confirmArchive?: boolean;
+  busy: boolean;
+  onConfirmArchive?: () => void;
+  onCancelArchive?: () => void;
+  onRestore?: () => void;
+}) {
+  return <Card className={`category-manager-card${category.archivedAt ? " is-archived" : ""}`}>
+    <span className={`category-manager-icon ${category.colorToken ?? "lavender"}`}><Tags size={20} /></span>
+    <div className="category-manager-copy"><strong>{category.name}</strong><small>{parentName ? t(`Subkategori · ${parentName}`, `Subcategory · ${parentName}`) : t("Kategori utama", "Top-level category")}</small></div>
+    <div className="category-manager-actions">{onEdit ? <Button variant="secondary" size="small" onClick={onEdit}>{t("Edit", "Edit")}</Button> : null}{onArchive ? confirmArchive ? <><Button size="small" loading={busy} onClick={onConfirmArchive}>{t("Konfirmasi arsip", "Confirm archive")}</Button><Button variant="ghost" size="small" onClick={onCancelArchive}>{t("Batal", "Cancel")}</Button></> : <Button variant="ghost" size="small" onClick={onArchive}>{t("Arsipkan", "Archive")}</Button> : null}{onRestore ? <Button variant="secondary" size="small" loading={busy} onClick={onRestore}>{t("Pulihkan", "Restore")}</Button> : null}</div>
+  </Card>;
+}
+
+function CategoryEditor({ category, parentOptions, busy, error, onCancel, onSubmit }: {
+  category: Category | null;
+  parentOptions: Category[];
+  busy: boolean;
+  error: string | null;
+  onCancel: () => void;
+  onSubmit: (payload: ReturnType<typeof categoryCreateSchema.parse>) => void;
+}) {
+  const { t } = usePreferences();
+  const [name, setName] = useState(category?.name ?? "");
+  const [parentId, setParentId] = useState(category?.parentId ?? "");
+  const [iconKey, setIconKey] = useState(category?.iconKey ?? "receipt");
+  const [colorToken, setColorToken] = useState(category?.colorToken ?? "lavender");
+  return <Card className="private-form-card category-editor">
+    <div className="private-form-heading"><div><span className="section-kicker">{t("Kategori dan subkategori", "Categories and subcategories")}</span><h2>{category ? t("Edit kategori", "Edit category") : t("Kategori baru", "New category")}</h2></div><Button variant="ghost" size="icon" aria-label={t("Tutup", "Close")} onClick={onCancel}><X size={19} /></Button></div>
+    <form className="finance-form" onSubmit={(event) => { event.preventDefault(); onSubmit(categoryCreateSchema.parse({ name, parentId: parentId || null, iconKey: iconKey || null, colorToken })); }}>
+      <TextField label={t("Nama kategori", "Category name")} value={name} onChange={(event) => setName(event.target.value)} maxLength={100} required />
+      <label className="private-select-field"><span>{t("Kategori induk (opsional)", "Parent category (optional)")}</span><select value={parentId} onChange={(event) => setParentId(event.target.value)}><option value="">{t("Kategori utama", "Top-level category")}</option>{parentOptions.map((item) => <option value={item.id} key={item.id}>{item.name}</option>)}</select></label>
+      <label className="private-select-field"><span>{t("Warna kategori", "Category color")}</span><select value={colorToken} onChange={(event) => setColorToken(event.target.value)}><option value="peach">{t("Persik", "Peach")}</option><option value="mint">{t("Mint", "Mint")}</option><option value="blue">{t("Biru", "Blue")}</option><option value="lavender">{t("Lavender", "Lavender")}</option><option value="pink">{t("Merah muda", "Pink")}</option></select></label>
+      <TextField label={t("Kunci ikon (opsional)", "Icon key (optional)")} value={iconKey} onChange={(event) => setIconKey(event.target.value)} maxLength={80} />
+      {error ? <p className="form-error" role="alert">{error}</p> : null}
+      <div className="private-form-actions"><Button type="submit" loading={busy}>{t("Simpan kategori", "Save category")}</Button><Button type="button" variant="secondary" onClick={onCancel}>{t("Batal", "Cancel")}</Button></div>
+      <p className="muted">{t("Kategori yang diarsipkan tetap terlihat pada histori lama dan tidak dipakai untuk catatan baru.", "Archived categories remain in old history and are unavailable for new records.")}</p>
+    </form>
+  </Card>;
+}
+
 function useRecentEvents(ownerId: string, limit: number) {
   const query = new URLSearchParams({ limit: String(limit) });
   return useQuery({ queryKey: ["finance-events", ownerId, "recent", limit], queryFn: () => apiData(`/api/v1/transactions?${query}`, financeEventPageSchema), retry: false });
@@ -445,6 +586,185 @@ function useSavingsGoals(ownerId: string) {
     queryFn: () => apiData("/api/v1/savings-goals", savingsGoalListSchema),
     retry: false,
   });
+}
+
+function localDateInTimezone(timezone: string, date = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: timezone, year: "numeric", month: "2-digit", day: "2-digit",
+  }).formatToParts(date);
+  const part = (type: "year" | "month" | "day") => parts.find((item) => item.type === type)?.value ?? "01";
+  return `${part("year")}-${part("month")}-${part("day")}`;
+}
+
+function shiftLocalDate(value: string, days: number) {
+  const date = new Date(`${value}T12:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + days);
+  return date.toISOString().slice(0, 10);
+}
+
+function reportMoney(amount: string, locale: "id-ID" | "en-US") {
+  return new Intl.NumberFormat(locale, {
+    style: "currency", currency: "IDR", maximumFractionDigits: 0, minimumFractionDigits: 0,
+  }).format(BigInt(amount)).replace(/\u00a0/g, "").replace(/^-/, "−");
+}
+
+function ratioPercent(numerator: string, denominator: string) {
+  const top = BigInt(numerator);
+  const bottom = BigInt(denominator);
+  if (bottom <= 0n) return 0;
+  const value = (top < 0n ? -top : top) * 100n / bottom;
+  return Number(value > 100n ? 100n : value);
+}
+
+function downloadFinanceReport(report: FinanceReport) {
+  const escape = (value: string) => `"${value.replaceAll('"', '""')}"`;
+  const safeLabel = (value: string) => /^[\s]*[=+@-]/.test(value) ? `'${value}` : value;
+  const rows = [
+    ["VenFinance · Ringkasan laporan"],
+    ["Periode", report.from, report.to],
+    ["Zona waktu", report.timezone],
+    [],
+    ["Ringkasan", "Nominal (IDR)"],
+    ["Pemasukan", report.current.incomeMinor],
+    ["Pengeluaran kotor", report.current.grossExpenseMinor],
+    ["Refund", report.current.refundMinor],
+    ["Pengeluaran bersih", (BigInt(report.current.grossExpenseMinor) - BigInt(report.current.refundMinor)).toString()],
+    ["Transaksi terkonfirmasi", String(report.current.eventCount)],
+    [],
+    ["Kategori", "Pengeluaran bersih (IDR)", "Jumlah transaksi"],
+    ...report.categories.map((item) => [safeLabel(item.categoryName), item.amountMinor, String(item.eventCount)]),
+    [],
+    ["Merchant", "Pengeluaran bersih (IDR)", "Jumlah transaksi"],
+    ...report.merchants.map((item) => [safeLabel(item.merchant), item.amountMinor, String(item.eventCount)]),
+  ];
+  const blob = new Blob([`\uFEFF${rows.map((row) => row.map((value) => escape(value ?? "")).join(",")).join("\r\n")}`], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `venfinance-laporan-${report.from}-${report.to}.csv`;
+  link.click();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function InsightsPage({ profile, ownerId }: { profile: UserProfile; ownerId: string }) {
+  const { t, locale, hidden } = usePreferences();
+  const today = localDateInTimezone(profile.timezone);
+  const [from, setFrom] = useState(() => `${monthInTimezone(profile.timezone)}-01`);
+  const [to, setTo] = useState(today);
+  const query = useQuery({
+    queryKey: ["finance-report", ownerId, from, to],
+    queryFn: () => apiData(`/api/v1/reports/summary?${new URLSearchParams({ from, to })}`, financeReportSchema),
+    enabled: financeReportRangeValid(from, to),
+    retry: false,
+  });
+  const activeRange = financeReportRangeValid(from, to);
+  const displayMoney = (amount: string) => hidden ? "Rp••••••" : reportMoney(amount, locale);
+  const periodLabel = (start: string, end: string) => {
+    const format = new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeZone: "UTC" });
+    const asDate = (value: string) => new Date(`${value}T12:00:00Z`);
+    return `${format.format(asDate(start))} – ${format.format(asDate(end))}`;
+  };
+  function chooseRange(kind: "month" | "previous" | "seven" | "thirty") {
+    const currentMonth = monthInTimezone(profile.timezone);
+    if (kind === "month") {
+      setFrom(`${currentMonth}-01`);
+      setTo(today);
+    } else if (kind === "previous") {
+      const previous = shiftMonth(currentMonth, -1);
+      setFrom(`${previous}-01`);
+      setTo(monthBounds(previous).endsOn);
+    } else {
+      const count = kind === "seven" ? 7 : 30;
+      setFrom(shiftLocalDate(today, -(count - 1)));
+      setTo(today);
+    }
+  }
+  const report = query.data;
+  const netExpense = report
+    ? (BigInt(report.current.grossExpenseMinor) - BigInt(report.current.refundMinor)).toString()
+    : "0";
+  const previousNetExpense = report
+    ? (BigInt(report.previous.grossExpenseMinor) - BigInt(report.previous.refundMinor)).toString()
+    : "0";
+  const netCashflow = report
+    ? (BigInt(report.current.incomeMinor) - BigInt(netExpense)).toString()
+    : "0";
+  const maxDaily = report?.daily.reduce((max, item) => {
+    const income = BigInt(item.incomeMinor); const expense = BigInt(item.expenseMinor);
+    const largest = [income < 0n ? -income : income, expense < 0n ? -expense : expense].reduce((a, b) => a > b ? a : b, 0n);
+    return largest > max ? largest : max;
+  }, 0n) ?? 0n;
+  const categoryMagnitude = report?.categories.reduce((sum, item) => {
+    const value = BigInt(item.amountMinor);
+    return sum + (value < 0n ? -value : value);
+  }, 0n).toString() ?? "0";
+  const netChange = report ? BigInt(netExpense) - BigInt(previousNetExpense) : 0n;
+  const incomeChange = report ? BigInt(report.current.incomeMinor) - BigInt(report.previous.incomeMinor) : 0n;
+  return (
+    <section className="insights-page" aria-label={t("Laporan dan insight keuangan", "Finance reports and insights")}>
+      <FinanceHeading
+        title={t("Laporan & insight", "Reports & insights")}
+        description={t("Angka bersumber dari transaksi terkonfirmasi di periode dan zona waktu profilmu.", "Figures come from confirmed transactions in your selected period and profile time zone.")}
+        action={report ? <Button variant="secondary" onClick={() => downloadFinanceReport(report)}><Download size={17} />{t("Unduh ringkasan CSV", "Download summary CSV")}</Button> : undefined}
+      />
+      <Card className="report-range-card">
+        <div className="report-range-presets" aria-label={t("Pilih periode laporan", "Choose report period")}>
+          <Button variant="ghost" size="small" onClick={() => chooseRange("month")}>{t("Bulan ini", "This month")}</Button>
+          <Button variant="ghost" size="small" onClick={() => chooseRange("previous")}>{t("Bulan lalu", "Last month")}</Button>
+          <Button variant="ghost" size="small" onClick={() => chooseRange("seven")}>{t("7 hari", "7 days")}</Button>
+          <Button variant="ghost" size="small" onClick={() => chooseRange("thirty")}>{t("30 hari", "30 days")}</Button>
+        </div>
+        <div className="report-range-inputs">
+          <label><span>{t("Dari tanggal", "From date")}</span><input aria-label={t("Dari tanggal", "From date")} type="date" value={from} max={to || today} onChange={(event) => setFrom(event.target.value)} /></label>
+          <span className="report-range-separator" aria-hidden="true">–</span>
+          <label><span>{t("Sampai tanggal", "To date")}</span><input aria-label={t("Sampai tanggal", "To date")} type="date" value={to} min={from} max={today} onChange={(event) => setTo(event.target.value)} /></label>
+          <span className="report-timezone"><CalendarDays size={17} />{profile.timezone}</span>
+        </div>
+        {!activeRange ? <p className="form-error" role="alert">{t("Pilih rentang tanggal 1–366 hari yang berurutan.", "Choose a continuous date range of 1–366 days.")}</p> : null}
+      </Card>
+      {query.isPending && activeRange ? loadingPanel(t("Menghitung laporan terkonfirmasi…", "Calculating confirmed report…")) : null}
+      {query.isError ? unavailablePanel(() => void query.refetch(), t("Data laporan belum dapat diverifikasi. Coba lagi saat koneksi pulih.", "Report data could not be verified. Try again when the connection is restored.")) : null}
+      {report ? <>
+        <p className="report-period-caption">{periodLabel(report.from, report.to)} · {report.timezone} · {t("data server", "server data")}</p>
+        <div className="report-metric-grid">
+          <Card className="report-metric report-metric-income"><span><TrendingUp size={19} />{t("Pemasukan", "Income")}</span><strong>{displayMoney(report.current.incomeMinor)}</strong><small>{hidden ? t("Nominal disembunyikan", "Amount hidden") : incomeChange === 0n ? t("Sama dengan periode sebelumnya", "Same as previous period") : incomeChange > 0n ? t("Lebih tinggi dari periode sebelumnya", "Higher than previous period") : t("Lebih rendah dari periode sebelumnya", "Lower than previous period")}</small></Card>
+          <Card className="report-metric report-metric-expense"><span><TrendingDown size={19} />{t("Pengeluaran bersih", "Net spending")}</span><strong>{displayMoney(netExpense)}</strong><small>{hidden ? t("Nominal disembunyikan", "Amount hidden") : netChange === 0n ? t("Sama dengan periode sebelumnya", "Same as previous period") : netChange > 0n ? t("Lebih tinggi dari periode sebelumnya", "Higher than previous period") : t("Lebih rendah dari periode sebelumnya", "Lower than previous period")}</small></Card>
+          <Card className="report-metric report-metric-refund"><span><Receipt size={19} />{t("Refund tercatat", "Refunds recorded")}</span><strong>{displayMoney(report.current.refundMinor)}</strong><small>{t("Mengurangi pengeluaran bersih", "Reduce net spending")}</small></Card>
+          <Card className="report-metric report-metric-cashflow"><span><ChartNoAxesCombined size={19} />{t("Arus kas bersih", "Net cash flow")}</span><strong>{displayMoney(netCashflow)}</strong><small>{t(`${report.current.eventCount} transaksi terkonfirmasi`, `${report.current.eventCount} confirmed transactions`)}</small></Card>
+        </div>
+        <div className="report-content-grid">
+          <Card className="report-chart-card">
+            <div className="report-section-heading"><div><h2>{t("Pemasukan & pengeluaran", "Income & spending")}</h2><p>{t("Per hari · transfer dan setoran tabungan tidak dihitung sebagai pemasukan/pengeluaran.", "By day · transfers and savings contributions are excluded from income and spending.")}</p></div><span className="report-chart-legend"><i className="income-key" />{t("Masuk", "Income")}<i className="expense-key" />{t("Keluar", "Spending")}</span></div>
+            {maxDaily === 0n ? <div className="report-chart-empty">{t("Belum ada pemasukan atau pengeluaran terkonfirmasi pada periode ini.", "No confirmed income or spending in this period yet.")}</div> : <div className="report-daily-chart" role="list" aria-label={t("Grafik arus kas harian", "Daily cash flow chart")}>
+              {report.daily.map((item) => {
+                const incomeMagnitude = BigInt(item.incomeMinor) < 0n ? -BigInt(item.incomeMinor) : BigInt(item.incomeMinor);
+                const expenseMagnitude = BigInt(item.expenseMinor) < 0n ? -BigInt(item.expenseMinor) : BigInt(item.expenseMinor);
+                const incomeHeight = Number(incomeMagnitude * 100n / maxDaily);
+                const expenseHeight = Number(expenseMagnitude * 100n / maxDaily);
+                const day = item.localDate.slice(-2);
+                return <div className="report-day-column" role="listitem" aria-label={`${item.localDate}: ${t("pemasukan", "income")} ${displayMoney(item.incomeMinor)}, ${t("pengeluaran bersih", "net spending")} ${displayMoney(item.expenseMinor)}`} key={item.localDate}><div className="report-day-bars"><span className="report-day-income" style={{ height: `${incomeHeight}%` }} /><span className="report-day-expense" style={{ height: `${expenseHeight}%` }} /></div><small>{Number(day) === 1 || Number(day) % 5 === 0 ? day : ""}</small></div>;
+              })}
+            </div>}
+          </Card>
+          <Card className="report-category-card">
+            <div className="report-section-heading"><div><h2>{t("Pengeluaran per kategori", "Spending by category")}</h2><p>{t("Refund mengurangi nilai kategori terkait.", "Refunds reduce the related category total.")}</p></div></div>
+            {report.categories.length ? <div className="report-breakdown-list">{report.categories.slice(0, 12).map((item) => <div className="report-breakdown-row" key={item.categoryId ?? "uncategorized"}><span className="report-breakdown-icon"><Receipt size={17} /></span><div className="report-breakdown-copy"><div><strong>{item.categoryName}</strong><small>{t(`${item.eventCount} catatan`, `${item.eventCount} records`)}</small></div><div className="report-breakdown-track"><span style={{ width: `${ratioPercent(item.amountMinor, categoryMagnitude)}%` }} /></div></div><strong>{displayMoney(item.amountMinor)}</strong></div>)}</div> : <EmptyState icon={<Receipt />} title={t("Belum ada rincian kategori", "No category breakdown yet")}>{t("Kategori akan muncul setelah transaksi pengeluaran terkonfirmasi dicatat.", "Categories appear after a confirmed expense is recorded.")}</EmptyState>}
+          </Card>
+        </div>
+        <div className="report-detail-grid">
+          <Card className="report-detail-card"><div className="report-section-heading"><div><h2>{t("Perbandingan periode", "Period comparison")}</h2><p>{t("Rentang sebelumnya memiliki jumlah hari yang sama.", "The previous period uses the same number of days.")}</p></div></div><div className="report-comparison-row"><span>{t("Pemasukan", "Income")}</span><strong>{displayMoney(report.previous.incomeMinor)}</strong><span>{t("sebelumnya", "previous")}</span><strong>{displayMoney(report.current.incomeMinor)}</strong><span>{incomeChange === 0n ? "=" : incomeChange > 0n ? "↑" : "↓"}</span></div><div className="report-comparison-row"><span>{t("Pengeluaran bersih", "Net spending")}</span><strong>{displayMoney(previousNetExpense)}</strong><span>{t("sebelumnya", "previous")}</span><strong>{displayMoney(netExpense)}</strong><span>{netChange === 0n ? "=" : netChange > 0n ? "↑" : "↓"}</span></div><div className="report-comparison-periods"><span>{periodLabel(shiftLocalDate(report.from, -(Date.parse(`${report.to}T00:00:00Z`) - Date.parse(`${report.from}T00:00:00Z`)) / 86_400_000 - 1), shiftLocalDate(report.from, -1))}</span><span>{periodLabel(report.from, report.to)}</span></div></Card>
+          <Card className="report-detail-card"><div className="report-section-heading"><div><h2>{t("Merchant teratas", "Top merchants")}</h2><p>{t("Berdasarkan nilai pengeluaran bersih yang tercatat.", "Based on recorded net spending.")}</p></div></div>{report.merchants.length ? <div className="report-merchant-list">{report.merchants.slice(0, 6).map((item) => <div key={item.merchant}><span><Receipt size={16} /><strong>{item.merchant}</strong><small>{item.eventCount} {t("catatan", "records")}</small></span><strong>{displayMoney(item.amountMinor)}</strong></div>)}</div> : <p className="report-chart-empty">{t("Belum ada merchant pada periode ini.", "No merchants recorded in this period yet.")}</p>}</Card>
+        </div>
+        <p className="report-footnote">{t("Laporan menggunakan transaksi yang sudah terkonfirmasi. Draf offline, hasil AI/OCR, transfer dompet, dan setoran tabungan tidak dihitung sebagai konsumsi.", "Reports use confirmed transactions only. Offline drafts, AI/OCR results, wallet transfers, and savings contributions are not counted as consumption.")}</p>
+      </> : null}
+    </section>
+  );
+}
+
+function financeReportRangeValid(from: string, to: string) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(from) || !/^\d{4}-\d{2}-\d{2}$/.test(to)) return false;
+  const duration = (Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / 86_400_000 + 1;
+  return Number.isInteger(duration) && duration >= 1 && duration <= 366;
 }
 
 function BudgetSummary({ budgets, month, locale }: { budgets: Budget[]; month: string; locale: "id-ID" | "en-US" }) {
@@ -1092,29 +1412,73 @@ function WalletsPage({ ownerId }: { ownerId: string }) {
   const queryClient = useQueryClient();
   const wallets = useWallets(ownerId);
   const [adding, setAdding] = useState(false);
-  const [name, setName] = useState("");
-  const [type, setType] = useState("cash");
+  const [editing, setEditing] = useState<Wallet | null>(null);
+  const [pendingArchive, setPendingArchive] = useState<Wallet | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const refresh = async () => queryClient.invalidateQueries({ queryKey: ["finance-wallets", ownerId] });
   const create = useMutation({
     mutationFn: (payload: { name: string; type: string }) => apiData("/api/v1/wallets", walletSchema, { method: "POST", body: JSON.stringify(payload) }),
-    onSuccess: async () => { setName(""); setAdding(false); await queryClient.invalidateQueries({ queryKey: ["finance-wallets", ownerId] }); },
+    onSuccess: async () => { setAdding(false); await refresh(); },
     onError: (cause) => setError(cause instanceof ApiClientError ? cause.publicMessage ?? t("Dompet belum dapat dibuat.", "The wallet could not be created.") : t("Periksa nama dan jenis dompet.", "Check the wallet name and type.")),
   });
+  const update = useMutation({
+    mutationFn: ({ wallet, archived }: { wallet: Wallet; archived: boolean }) => apiData(
+      `/api/v1/wallets/${wallet.id}`,
+      walletUpdateResultSchema,
+      { method: "PATCH", body: JSON.stringify(walletUpdateSchema.parse({ name: wallet.name, type: wallet.type, archived })) },
+    ),
+    onSuccess: async () => { setEditing(null); setPendingArchive(null); setError(null); await refresh(); },
+    onError: (cause) => setError(cause instanceof ApiClientError ? cause.publicMessage ?? t("Dompet belum dapat diperbarui.", "The wallet could not be updated.") : t("Perubahan dompet belum dapat disimpan.", "Wallet changes could not be saved.")),
+  });
   const total = wallets.data ? sumMinor(wallets.data.items.filter((wallet) => !wallet.archivedAt).map((wallet) => wallet.balanceMinor)) : "0";
+  const activeWallets = wallets.data?.items.filter((wallet) => !wallet.archivedAt) ?? [];
+  const archivedWallets = wallets.data?.items.filter((wallet) => wallet.archivedAt) ?? [];
   return (
     <>
       <FinanceHeading title={t("Daftar dompet", "Wallets")} description={t("Sumber uang virtual yang digunakan pada catatanmu.", "Virtual money sources used in your records.")} action={<Button onClick={() => { setAdding((current) => !current); setError(null); }}><Plus size={18} />{t("Tambah dompet", "Add wallet")}</Button>} />
-      {adding ? <Card className="private-form-card"><div className="private-form-heading"><h2>{t("Dompet baru", "New wallet")}</h2><Button variant="ghost" size="icon" aria-label={t("Tutup", "Close")} onClick={() => setAdding(false)}><X size={19} /></Button></div><form className="finance-form" onSubmit={(event) => { event.preventDefault(); setError(null); create.mutate({ name: name.trim(), type }); }}><TextField label={t("Nama dompet", "Wallet name")} value={name} onChange={(event) => setName(event.target.value)} maxLength={100} placeholder={t("Contoh: Tunai", "Example: Cash")} required /><label className="private-select-field"><span>{t("Jenis dompet", "Wallet type")}</span><select value={type} onChange={(event) => setType(event.target.value)}><option value="cash">{t("Tunai", "Cash")}</option><option value="bank">{t("Bank", "Bank")}</option><option value="e_wallet">E-wallet</option><option value="savings">{t("Tabungan", "Savings")}</option><option value="other">{t("Lainnya", "Other")}</option></select></label>{error ? <p className="form-error" role="alert">{error}</p> : null}<div className="private-form-actions"><Button type="submit" loading={create.isPending}>{t("Buat dompet", "Create wallet")}</Button><Button type="button" variant="secondary" onClick={() => setAdding(false)}>{t("Batal", "Cancel")}</Button></div><p className="muted">{t("Saldo awal dicatat sebagai transaksi pembuka setelah dompet dibuat.", "Record an opening balance as a separate opening transaction after creating the wallet.")}</p></form></Card> : null}
+      {adding ? <WalletEditor key="new-wallet" wallet={null} busy={create.isPending} error={error} onCancel={() => { setAdding(false); setError(null); }} onSubmit={(payload) => { setError(null); create.mutate(payload); }} /> : null}
+      {editing ? <WalletEditor key={editing.id} wallet={editing} busy={update.isPending} error={error} onCancel={() => { setEditing(null); setError(null); }} onSubmit={(payload) => { setError(null); update.mutate({ wallet: { ...editing, name: payload.name, type: payload.type }, archived: false }); }} /> : null}
       {wallets.isPending ? loadingPanel(t("Memuat dompet…", "Loading wallets…")) : wallets.isError ? unavailablePanel(() => void wallets.refetch(), t("Saldo dompet belum dapat dimuat.", "Wallet balances could not be loaded.")) : (
         <>
           {wallets.data.source === "device" ? <p className="offline-stale-notice" role="status">{t("Saldo ini terakhir dimuat sebelum koneksi terputus dan belum diverifikasi ulang.", "These balances were last loaded before the connection was lost and have not been reverified.")}</p> : null}
           <Card className="private-balance-card private-wallet-total"><div className="private-card-title">{t("Total saldo dompet aktif", "Total active wallet balance")}</div><strong>{hidden ? "Rp••••••" : formatIdr(total, locale)}</strong><span><WalletCards size={17} />{t(`${wallets.data.items.filter((wallet) => !wallet.archivedAt).length} sumber uang`, `${wallets.data.items.filter((wallet) => !wallet.archivedAt).length} wallets`)}</span></Card>
-          {wallets.data.items.filter((wallet) => !wallet.archivedAt).length ? <div className="private-wallet-list">{wallets.data.items.filter((wallet) => !wallet.archivedAt).map((wallet) => <Card className="private-wallet-row" key={wallet.id}><span className={`private-wallet-icon ${wallet.type}`}><WalletCards size={22} /></span><div className="private-event-description"><strong>{wallet.name}</strong><span>{walletTypeName(wallet.type, t)}</span></div><strong>{hidden ? "Rp••••••" : formatIdr(wallet.balanceMinor, locale)}</strong></Card>)}</div> : <Card><EmptyState icon={<WalletCards />} title={t("Belum ada dompet", "No wallets yet")} action={<Button onClick={() => setAdding(true)}><Plus size={17} />{t("Tambah dompet", "Add wallet")}</Button>}>{t("Tambahkan sumber uang virtual sebelum mencatat transaksi.", "Add a virtual money source before recording transactions.")}</EmptyState></Card>}
-          {wallets.data.items.some((wallet) => wallet.archivedAt) ? <Card className="private-archived-note"><strong>{t("Dompet arsip", "Archived wallets")}</strong><p>{t("Dompet arsip tidak dihitung pada total saldo aktif.", "Archived wallets are excluded from the active balance total.")}</p></Card> : null}
+          {activeWallets.length ? <div className="private-wallet-list">{activeWallets.map((wallet) => <Card className="private-wallet-row private-wallet-manage-row" key={wallet.id}>
+            <span className={`private-wallet-icon ${wallet.type}`}><WalletCards size={22} /></span>
+            <div className="private-event-description"><strong>{wallet.name}</strong><span>{walletTypeName(wallet.type, t)}</span></div>
+            <strong>{hidden ? "Rp••••••" : formatIdr(wallet.balanceMinor, locale)}</strong>
+            {wallets.data.source === "server" ? <div className="wallet-management-actions">
+              <Button variant="secondary" size="small" aria-label={t(`Edit ${wallet.name}`, `Edit ${wallet.name}`)} onClick={() => { setEditing(wallet); setError(null); }}>{t("Edit", "Edit")}</Button>
+              {pendingArchive?.id === wallet.id ? <div className="wallet-archive-confirmation"><p>{t(`Saldo ini akan dikeluarkan dari total aktif (${hidden ? "nominal disembunyikan" : formatIdr(wallet.balanceMinor, locale)}). Riwayat tetap tersedia.`, `This balance will be removed from the active total (${hidden ? "amount hidden" : formatIdr(wallet.balanceMinor, locale)}). History remains available.`)}</p><Button size="small" loading={update.isPending} onClick={() => update.mutate({ wallet, archived: true })}>{t("Konfirmasi arsip", "Confirm archive")}</Button><Button variant="ghost" size="small" onClick={() => setPendingArchive(null)}>{t("Batal", "Cancel")}</Button></div> : <Button variant="ghost" size="small" onClick={() => setPendingArchive(wallet)}>{t("Arsipkan", "Archive")}</Button>}
+            </div> : null}
+          </Card>)}</div> : <Card><EmptyState icon={<WalletCards />} title={t("Belum ada dompet aktif", "No active wallets")} action={<Button onClick={() => setAdding(true)}><Plus size={17} />{t("Tambah dompet", "Add wallet")}</Button>}>{t("Tambahkan sumber uang virtual sebelum mencatat transaksi.", "Add a virtual money source before recording transactions.")}</EmptyState></Card>}
+          {archivedWallets.length ? <details className="wallet-archive-section"><summary>{t("Dompet arsip", "Archived wallets")} · {archivedWallets.length}</summary><div className="private-wallet-list">{archivedWallets.map((wallet) => <Card className="private-wallet-row private-wallet-manage-row is-archived" key={wallet.id}><span className={`private-wallet-icon ${wallet.type}`}><WalletCards size={22} /></span><div className="private-event-description"><strong>{wallet.name}</strong><span>{walletTypeName(wallet.type, t)}</span></div><strong>{hidden ? "Rp••••••" : formatIdr(wallet.balanceMinor, locale)}</strong>{wallets.data.source === "server" ? <div className="wallet-management-actions"><Button variant="secondary" size="small" loading={update.isPending} onClick={() => update.mutate({ wallet, archived: false })}>{t("Pulihkan", "Restore")}</Button></div> : null}</Card>)}</div></details> : null}
+          {error ? <p className="form-error" role="alert">{error}</p> : null}
         </>
       )}
     </>
   );
+}
+
+function WalletEditor({ wallet, busy, error, onCancel, onSubmit }: {
+  wallet: Wallet | null;
+  busy: boolean;
+  error: string | null;
+  onCancel: () => void;
+  onSubmit: (payload: { name: string; type: Wallet["type"] }) => void;
+}) {
+  const { t } = usePreferences();
+  const [name, setName] = useState(wallet?.name ?? "");
+  const [type, setType] = useState<Wallet["type"]>(wallet?.type ?? "cash");
+  return <Card className="private-form-card wallet-editor">
+    <div className="private-form-heading"><div><span className="section-kicker">{t("Sumber uang virtual", "Virtual money source")}</span><h2>{wallet ? t("Edit dompet", "Edit wallet") : t("Dompet baru", "New wallet")}</h2></div><Button variant="ghost" size="icon" aria-label={t("Tutup", "Close")} onClick={onCancel}><X size={19} /></Button></div>
+    <form className="finance-form" onSubmit={(event) => { event.preventDefault(); onSubmit({ name: name.trim(), type }); }}>
+      <TextField label={t("Nama dompet", "Wallet name")} value={name} onChange={(event) => setName(event.target.value)} maxLength={100} placeholder={t("Contoh: Tunai", "Example: Cash")} required />
+      <label className="private-select-field"><span>{t("Jenis dompet", "Wallet type")}</span><select value={type} onChange={(event) => setType(event.target.value as Wallet["type"])}><option value="cash">{t("Tunai", "Cash")}</option><option value="bank">{t("Bank", "Bank")}</option><option value="e_wallet">E-wallet</option><option value="savings">{t("Tabungan", "Savings")}</option><option value="other">{t("Lainnya", "Other")}</option></select></label>
+      {error ? <p className="form-error" role="alert">{error}</p> : null}
+      <div className="private-form-actions"><Button type="submit" loading={busy}>{wallet ? t("Simpan perubahan", "Save changes") : t("Buat dompet", "Create wallet")}</Button><Button type="button" variant="secondary" onClick={onCancel}>{t("Batal", "Cancel")}</Button></div>
+      <p className="muted">{t("Saldo dan riwayat transaksi tidak berubah saat nama atau jenis dompet diperbarui.", "Changing a wallet name or type does not change its balance or transaction history.")}</p>
+    </form>
+  </Card>;
 }
 
 function walletTypeName(type: Wallet["type"], t: (id: string, en: string) => string) {

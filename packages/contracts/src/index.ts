@@ -157,6 +157,11 @@ export const walletCreateSchema = z.strictObject({
   name: z.string().trim().min(1).max(100),
   type: walletTypeSchema,
 });
+export const walletUpdateSchema = walletCreateSchema.extend({ archived: z.boolean().default(false) });
+export const walletUpdateResultSchema = z.strictObject({
+  id: z.uuid(),
+  archivedAt: effectiveAtSchema.nullable(),
+});
 export const walletSchema = z.strictObject({
   id: z.uuid(),
   name: z.string().max(100),
@@ -214,6 +219,9 @@ export const categoryCreateSchema = z.strictObject({
   parentId: z.uuid().nullable().optional(),
   iconKey: z.string().trim().max(80).nullable().optional(),
   colorToken: z.string().trim().max(80).nullable().optional(),
+});
+export const categoryUpdateSchema = categoryCreateSchema.extend({
+  archived: z.boolean().default(false),
 });
 export const categorySchema = z.strictObject({
   id: z.uuid(),
@@ -321,6 +329,48 @@ export const savingsContributionSchema = z.strictObject({
   destinationWalletName: z.string().max(100),
 });
 export const savingsContributionListSchema = z.array(savingsContributionSchema).max(100);
+export const financeReportDailySchema = z.strictObject({
+  localDate: localDateSchema,
+  incomeMinor: signedMinorAmountSchema,
+  expenseMinor: signedMinorAmountSchema,
+});
+export const financeReportCategorySchema = z.strictObject({
+  categoryId: z.uuid().nullable(),
+  categoryName: z.string().max(100),
+  amountMinor: signedMinorAmountSchema,
+  eventCount: z.number().int().nonnegative().max(2_147_483_647),
+});
+export const financeReportMerchantSchema = z.strictObject({
+  merchant: z.string().max(160),
+  amountMinor: signedMinorAmountSchema,
+  eventCount: z.number().int().nonnegative().max(2_147_483_647),
+});
+export const financeReportSchema = z.strictObject({
+  timezone: timezoneSchema,
+  from: localDateSchema,
+  to: localDateSchema,
+  current: z.strictObject({
+    incomeMinor: signedMinorAmountSchema,
+    grossExpenseMinor: signedMinorAmountSchema,
+    refundMinor: signedMinorAmountSchema,
+    eventCount: z.number().int().nonnegative().max(2_147_483_647),
+  }),
+  previous: z.strictObject({
+    incomeMinor: signedMinorAmountSchema,
+    grossExpenseMinor: signedMinorAmountSchema,
+    refundMinor: signedMinorAmountSchema,
+  }),
+  daily: z.array(financeReportDailySchema).max(366),
+  categories: z.array(financeReportCategorySchema).max(100),
+  merchants: z.array(financeReportMerchantSchema).max(100),
+});
+export const financeReportQuerySchema = z.strictObject({
+  from: localDateSchema,
+  to: localDateSchema,
+}).refine(({ from, to }) => {
+  const duration = (Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / 86_400_000 + 1;
+  return duration >= 1 && duration <= 366;
+}, "Rentang laporan harus 1–366 hari.");
 export const financeAllocationSchema = z.strictObject({
   categoryId: z.uuid(),
   amountMinor: positiveMinorAmountSchema,
@@ -433,6 +483,7 @@ export type BudgetCreate = z.infer<typeof budgetCreateSchema>;
 export type SavingsGoal = z.infer<typeof savingsGoalSchema>;
 export type SavingsGoalCreate = z.infer<typeof savingsGoalCreateSchema>;
 export type SavingsGoalUpdate = z.infer<typeof savingsGoalUpdateSchema>;
+export type FinanceReport = z.infer<typeof financeReportSchema>;
 export type FinancePost = z.infer<typeof financePostSchema>;
 export type FinanceEvent = z.infer<typeof financeEventSchema>;
 export type FinanceEventPage = z.infer<typeof financeEventPageSchema>;

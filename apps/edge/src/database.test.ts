@@ -42,6 +42,24 @@ describe("Neon Data API transport boundary", () => {
     expect(fetcher).not.toHaveBeenCalled();
   });
 
+  it("uses a representation-returning PATCH for RLS-scoped category updates", async () => {
+    const categoryId = "d1f78cc6-1fc6-45c7-831d-f626171990de";
+    const fetcher = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      expect(String(input)).toBe(`${env.NEON_DATA_API_URL}/categories?id=eq.${categoryId}&select=id%2Cname`);
+      expect(init?.method).toBe("PATCH");
+      expect(JSON.parse(String(init?.body))).toEqual({ name: "Kesehatan" });
+      expect(new Headers(init?.headers).get("Prefer")).toBe("return=representation");
+      return new Response(JSON.stringify([{ id: categoryId, name: "Kesehatan" }]), { status: 200 });
+    });
+    const result = await callDataApi<Array<{ name: string }>>(env, "signed-provider-jwt", {
+      kind: "update",
+      table: "categories",
+      query: { id: `eq.${categoryId}`, select: "id,name" },
+      body: { name: "Kesehatan" },
+    }, fetcher as typeof fetch);
+    expect(result[0]?.name).toBe("Kesehatan");
+  });
+
   it("maps database conflicts to a safe domain error without exposing SQL text", async () => {
     const canary = "PRIVATE_SQL_CANARY";
     const fetcher = vi.fn(async () => new Response(JSON.stringify({

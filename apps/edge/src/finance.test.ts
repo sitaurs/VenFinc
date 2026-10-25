@@ -180,6 +180,85 @@ describe("private finance routes", () => {
     expect(body).not.toContain("untrusted-browser-token");
   });
 
+  it("updates a wallet through the authenticated tenant-scoped Data API", async () => {
+    const walletId = "7b9be51e-0607-4c60-8315-e57ae8f61aba";
+    let captured: Record<string, unknown> | undefined;
+    let providerToken = "";
+    const setup = await testBindings(async (url, init) => {
+      expect(url.pathname).toBe("/neondb/rest/v1/wallets");
+      expect(url.searchParams.get("id")).toBe(`eq.${walletId}`);
+      expect(init.method).toBe("PATCH");
+      expect(new Headers(init.headers).get("Authorization")).toBe(`Bearer ${providerToken}`);
+      captured = JSON.parse(String(init.body)) as Record<string, unknown>;
+      return Response.json([{ id: walletId, archived_at: "2026-10-25T00:00:00Z" }]);
+    });
+    providerToken = setup.token;
+    const response = await app.request(`https://finance.test/api/v1/wallets/${walletId}`, {
+      method: "PATCH",
+      headers: {
+        Cookie: activeCookie(),
+        Origin: "https://finance.test",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name: "Bank Utama", type: "bank", archived: true }),
+    }, setup.bindings);
+    expect(response.status).toBe(200);
+    expect(captured).toMatchObject({ name: "Bank Utama", type: "bank", archived_at: expect.any(String) });
+    expect(captured).not.toHaveProperty("user_id");
+    expect(await response.json()).toMatchObject({ data: { id: walletId, archivedAt: "2026-10-25T00:00:00Z" } });
+  });
+
+  it("returns tenant-scoped exact finance report totals from the database projection", async () => {
+    const setup = await testBindings(async (url, init) => {
+      expect(url.pathname).toBe("/neondb/rest/v1/rpc/get_finance_report");
+      expect(JSON.parse(String(init.body))).toEqual({ p_from: "2026-10-01", p_to: "2026-10-25" });
+      return Response.json([{
+        timezone: "Asia/Jakarta",
+        period_from: "2026-10-01",
+        period_to: "2026-10-25",
+        income_minor: "9007199254740993",
+        gross_expense_minor: "300000",
+        refund_minor: "10000",
+        event_count: 4,
+        previous_income_minor: "0",
+        previous_gross_expense_minor: "100000",
+        previous_refund_minor: "0",
+        daily: [{ localDate: "2026-10-01", incomeMinor: "9007199254740993", expenseMinor: "290000" }],
+        categories: [{ categoryId: null, categoryName: "Tanpa kategori", amountMinor: "290000", eventCount: 2 }],
+        merchants: [{ merchant: "Kantin", amountMinor: "290000", eventCount: 2 }],
+      }]);
+    });
+    const response = await app.request("https://finance.test/api/v1/reports/summary?from=2026-10-01&to=2026-10-25", {
+      headers: { Cookie: activeCookie() },
+    }, setup.bindings);
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({ data: { current: { incomeMinor: "9007199254740993" }, timezone: "Asia/Jakarta" } });
+  });
+
+  it("blocks archiving a category with active children without issuing an update", async () => {
+    const categoryId = "c8ab55d2-5d51-4bd0-bd90-dc1c7b09d121";
+    const calls: string[] = [];
+    const setup = await testBindings(async (url, init) => {
+      calls.push(`${init.method} ${url.pathname}`);
+      expect(url.pathname).toBe("/neondb/rest/v1/categories");
+      expect(init.method).toBe("GET");
+      return Response.json([{ id: "adf84c2e-d121-4f39-a478-1c9a0fe183d2" }]);
+    });
+    const response = await app.request(`https://finance.test/api/v1/categories/${categoryId}`, {
+      method: "PATCH",
+      headers: {
+        Cookie: activeCookie(),
+        Origin: "https://finance.test",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name: "Rumah", parentId: null, iconKey: null, colorToken: null, archived: true }),
+    }, setup.bindings);
+    const result = await response.json();
+    expect(calls, JSON.stringify(result)).toHaveLength(1);
+    expect(calls[0]).toContain("GET /neondb/rest/v1/categories");
+    expect(response.status, JSON.stringify(result)).toBe(409);
+  });
+
   it("posts one strict transaction command with the stable idempotency header", async () => {
     let captured: Record<string, unknown> | undefined;
     const setup = await testBindings(async (_url, init) => {

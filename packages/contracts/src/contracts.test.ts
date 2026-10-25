@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   apiErrorSchema,
+  financeReportQuerySchema,
+  financeReportSchema,
   manualExpenseSchema,
   minorAmountSchema,
   paginationSchema,
@@ -83,5 +85,24 @@ describe("shared protocol", () => {
         error: { code: "SQL_FAILURE", message: "query", requestId: "bad" },
       }).success,
     ).toBe(false);
+  });
+});
+
+describe("tenant finance report contract", () => {
+  it("accepts exact money strings and bounded date ranges", () => {
+    const report = {
+      timezone: "Asia/Jakarta",
+      from: "2026-10-01",
+      to: "2026-10-02",
+      current: { incomeMinor: "9007199254740993", grossExpenseMinor: "12000", refundMinor: "2000", eventCount: 3 },
+      previous: { incomeMinor: "0", grossExpenseMinor: "10000", refundMinor: "0" },
+      daily: [{ localDate: "2026-10-01", incomeMinor: "9007199254740993", expenseMinor: "12000" }],
+      categories: [{ categoryId: null, categoryName: "Tanpa kategori", amountMinor: "10000", eventCount: 2 }],
+      merchants: [{ merchant: "Kantin", amountMinor: "10000", eventCount: 2 }],
+    };
+    expect(financeReportSchema.parse(report).current.incomeMinor).toBe("9007199254740993");
+    expect(financeReportSchema.safeParse({ ...report, current: { ...report.current, incomeMinor: Number.MAX_SAFE_INTEGER + 1 } }).success).toBe(false);
+    expect(financeReportQuerySchema.safeParse({ from: "2025-09-30", to: "2026-10-01" }).success).toBe(false);
+    expect(financeReportQuerySchema.safeParse({ from: "2026-10-02", to: "2026-10-01" }).success).toBe(false);
   });
 });

@@ -18,8 +18,28 @@ async function mockPrivateApi(page: Page) {
   let postedGoal: Record<string, unknown> | undefined;
   let postedContribution: Record<string, unknown> | undefined;
   const budgets: Array<Record<string, unknown>> = [];
+  const categories: Array<Record<string, unknown>> = [];
   const goals: Array<Record<string, unknown>> = [];
   const contributions: Array<Record<string, unknown>> = [];
+  const wallets: Array<Record<string, unknown>> = [{
+    id: walletId,
+    name: "Rekening Utama",
+    type: "bank",
+    currency: "IDR",
+    balanceMinor: "9007199254740993",
+    archivedAt: null,
+    createdAt: "2026-10-01T00:00:00Z",
+    updatedAt: "2026-10-24T00:00:00Z",
+  }, {
+    id: savingsWalletId,
+    name: "Tabungan Tujuan",
+    type: "savings",
+    currency: "IDR",
+    balanceMinor: "0",
+    archivedAt: null,
+    createdAt: "2026-10-01T00:00:00Z",
+    updatedAt: "2026-10-24T00:00:00Z",
+  }];
   await page.route("**/api/v1/**", async (route) => {
     const request = route.request();
     const url = new URL(request.url());
@@ -59,30 +79,68 @@ async function mockPrivateApi(page: Page) {
       }) });
       return;
     }
-    if (path === "/api/v1/wallets") {
-      await route.fulfill({ json: success([{
-        id: walletId,
-        name: "Rekening Utama",
-        type: "bank",
-        currency: "IDR",
-        balanceMinor: "9007199254740993",
-        archivedAt: null,
-        createdAt: "2026-10-01T00:00:00Z",
-        updatedAt: "2026-10-24T00:00:00Z",
-      }, {
-        id: savingsWalletId,
-        name: "Tabungan Tujuan",
-        type: "savings",
+    if (path === "/api/v1/wallets" && request.method() === "POST") {
+      const payload = request.postDataJSON() as Record<string, unknown>;
+      const wallet = {
+        id: "5e95dfcf-6d42-4e9f-8bf2-c88d0be6a335",
+        name: payload.name,
+        type: payload.type,
         currency: "IDR",
         balanceMinor: "0",
         archivedAt: null,
-        createdAt: "2026-10-01T00:00:00Z",
-        updatedAt: "2026-10-24T00:00:00Z",
-      }]) });
+        createdAt: "2026-10-25T00:00:00Z",
+        updatedAt: "2026-10-25T00:00:00Z",
+      };
+      wallets.push(wallet);
+      await route.fulfill({ status: 201, json: success(wallet) });
+      return;
+    }
+    if (path.startsWith("/api/v1/wallets/") && request.method() === "PATCH") {
+      const id = path.split("/").at(-1);
+      const payload = request.postDataJSON() as Record<string, unknown>;
+      const wallet = wallets.find((item) => item.id === id);
+      if (wallet) {
+        const { archived, ...fields } = payload;
+        Object.assign(wallet, fields, {
+          archivedAt: archived ? "2026-10-25T00:00:00Z" : null,
+          updatedAt: "2026-10-25T00:00:00Z",
+        });
+      }
+      await route.fulfill({ json: success({ id, archivedAt: wallet?.archivedAt ?? null }) });
+      return;
+    }
+    if (path === "/api/v1/wallets") {
+      await route.fulfill({ json: success(wallets) });
+      return;
+    }
+    if (path === "/api/v1/categories" && request.method() === "POST") {
+      const payload = request.postDataJSON() as Record<string, unknown>;
+      const category = {
+        id: "d1f78cc6-1fc6-45c7-831d-f626171990de",
+        name: payload.name,
+        parentId: payload.parentId ?? null,
+        iconKey: payload.iconKey ?? null,
+        colorToken: payload.colorToken ?? null,
+        archivedAt: null,
+      };
+      categories.push(category);
+      await route.fulfill({ json: success(category) });
+      return;
+    }
+    if (path.startsWith("/api/v1/categories/") && request.method() === "PATCH") {
+      const categoryId = path.split("/").at(-1);
+      const payload = request.postDataJSON() as Record<string, unknown>;
+      const category = categories.find((item) => item.id === categoryId);
+      if (category) {
+        const { archived, ...fields } = payload;
+        Object.assign(category, fields, { archivedAt: archived ? "2026-10-25T00:00:00Z" : null });
+      }
+      await route.fulfill({ json: success(category) });
       return;
     }
     if (path === "/api/v1/categories") {
-      await route.fulfill({ json: success([]) });
+      const includeArchived = url.searchParams.get("includeArchived") === "true";
+      await route.fulfill({ json: success(categories.filter((category) => includeArchived || !category.archivedAt)) });
       return;
     }
     if (path === "/api/v1/budgets" && request.method() === "POST") {
@@ -185,6 +243,30 @@ async function mockPrivateApi(page: Page) {
         goal.archivedAt = update.archived ? "2026-10-25T00:00:00Z" : null;
       }
       await route.fulfill({ json: success({ id: goalId, archivedAt: goal?.archivedAt ?? null }) });
+      return;
+    }
+    if (path === "/api/v1/reports/summary") {
+      const from = url.searchParams.get("from") ?? "2026-10-01";
+      const to = url.searchParams.get("to") ?? "2026-10-25";
+      const daily = from === to
+        ? [{ localDate: from, incomeMinor: "1200000", expenseMinor: "918000" }]
+        : [
+          { localDate: from, incomeMinor: "1200000", expenseMinor: "918000" },
+          { localDate: to, incomeMinor: "0", expenseMinor: "0" },
+        ];
+      await route.fulfill({ json: success({
+        timezone: "Asia/Jakarta",
+        from,
+        to,
+        current: { incomeMinor: "1200000", grossExpenseMinor: "920000", refundMinor: "2000", eventCount: 3 },
+        previous: { incomeMinor: "1100000", grossExpenseMinor: "800000", refundMinor: "0" },
+        daily,
+        categories: [
+          { categoryId: "a764be58-2faf-47d9-9776-c6a9c8ce9c4a", categoryName: "Makan", amountMinor: "620000", eventCount: 2 },
+          { categoryId: null, categoryName: "Tanpa kategori", amountMinor: "298000", eventCount: 1 },
+        ],
+        merchants: [{ merchant: "Kantin", amountMinor: "620000", eventCount: 2 }],
+      }) });
       return;
     }
     if (path === "/api/v1/transactions" && request.method() === "POST") {
@@ -291,6 +373,30 @@ test("private budget screen creates a monthly plan without posting or changing w
   expect(api.postedCommand()).toBeUndefined();
 });
 
+test("wallets can be created, renamed, archived, and restored while preserving exact balances", async ({ page }) => {
+  await mockPrivateApi(page);
+  await page.goto("/app/wallets");
+  await expect(page.getByRole("heading", { name: "Daftar dompet", exact: true })).toBeVisible();
+  await expect(page.locator(".private-wallet-total > strong")).toHaveText("Rp9.007.199.254.740.993");
+  await page.getByRole("button", { name: "Tambah dompet", exact: true }).first().click();
+  await expect(page.getByRole("heading", { name: "Dompet baru", exact: true })).toBeVisible();
+  await page.locator(".wallet-editor select").selectOption("cash");
+  await page.getByLabel("Nama dompet", { exact: true }).fill("Tunai Harian");
+  await page.getByRole("button", { name: "Buat dompet", exact: true }).click();
+  await expect(page.getByText("Tunai Harian", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Edit Rekening Utama", exact: true }).click();
+  await page.getByLabel("Nama dompet", { exact: true }).fill("Rekening Gaji");
+  await page.getByRole("button", { name: "Simpan perubahan", exact: true }).click();
+  await expect(page.getByText("Rekening Gaji", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Arsipkan", exact: true }).first().click();
+  await page.getByRole("button", { name: "Konfirmasi arsip", exact: true }).click();
+  await expect(page.getByText("2 sumber uang", { exact: true })).toBeVisible();
+  await page.getByText("Dompet arsip · 1", { exact: true }).click();
+  await page.getByRole("button", { name: "Pulihkan", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Edit Rekening Gaji", exact: true })).toBeVisible();
+  await expect(page.locator(".private-wallet-total > strong")).toHaveText("Rp9.007.199.254.740.993");
+});
+
 test("savings transfer selects a savings wallet and stays out of expense categories", async ({ page }) => {
   const api = await mockPrivateApi(page);
   await page.goto("/app/transactions/new");
@@ -355,6 +461,47 @@ test("savings goals can be edited, archived, and restored without deleting their
   await page.getByText("Target arsip · 1", { exact: true }).click();
   await page.getByRole("button", { name: "Pulihkan", exact: true }).click();
   await expect(page.getByRole("link", { name: /Liburan keluarga/ })).toBeVisible();
+});
+
+test("finance reports use confirmed data, compare equal periods, and export only the selected summary", async ({ page }) => {
+  await mockPrivateApi(page);
+  await page.goto("/app/insights");
+  await expect(page.getByRole("heading", { name: "Laporan & insight", exact: true })).toBeVisible();
+  await expect(page.locator(".report-metric-income > strong")).toHaveText("Rp1.200.000");
+  await expect(page.locator(".report-metric-expense > strong")).toHaveText("Rp918.000");
+  await expect(page.getByRole("heading", { name: "Pengeluaran per kategori", exact: true })).toBeVisible();
+  await expect(page.getByText("Kantin", { exact: true })).toBeVisible();
+  await expect(page.getByText(/transfer dan setoran tabungan tidak dihitung/)).toBeVisible();
+  const download = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Unduh ringkasan CSV", exact: true }).click();
+  expect((await download).suggestedFilename()).toMatch(/^venfinance-laporan-\d{4}-\d{2}-\d{2}-\d{4}-\d{2}-\d{2}\.csv$/);
+  await page.getByRole("button", { name: "7 hari", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Laporan & insight", exact: true })).toBeVisible();
+  await expect(page.locator(".report-daily-chart [role=listitem]")).toHaveCount(2);
+  await page.setViewportSize({ width: 361, height: 867 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(361);
+});
+
+test("categories can be added, edited, archived, and restored without changing transaction history", async ({ page }) => {
+  await mockPrivateApi(page);
+  await page.goto("/app/categories");
+  await expect(page.getByRole("heading", { name: "Kategori transaksi", exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Tambah kategori", exact: true }).click();
+  await page.getByLabel("Nama kategori", { exact: true }).fill("Perawatan");
+  await page.getByRole("combobox", { name: "Warna kategori", exact: true }).selectOption("mint");
+  await page.getByRole("button", { name: "Simpan kategori", exact: true }).click();
+  await expect(page.locator(".category-manager-copy > strong")).toHaveText("Perawatan");
+  await page.getByRole("button", { name: "Edit", exact: true }).click();
+  await page.getByLabel("Nama kategori", { exact: true }).fill("Kesehatan");
+  await page.getByRole("button", { name: "Simpan kategori", exact: true }).click();
+  await expect(page.locator(".category-manager-copy > strong")).toHaveText("Kesehatan");
+  await page.getByRole("button", { name: "Arsipkan", exact: true }).click();
+  await page.getByRole("button", { name: "Konfirmasi arsip", exact: true }).click();
+  await expect(page.getByText("0 kategori aktif", { exact: true })).toBeVisible();
+  await page.getByText("Kategori arsip · 1", { exact: true }).click();
+  await page.getByRole("button", { name: "Pulihkan", exact: true }).click();
+  await expect(page.locator(".category-manager-copy > strong")).toHaveText("Kesehatan");
+  await expect(page.getByText("1 kategori aktif", { exact: true })).toBeVisible();
 });
 
 test("a provider sign-in without a verified application session cannot open private data", async ({ page }) => {

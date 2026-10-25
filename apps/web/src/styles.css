@@ -4055,6 +4055,60 @@
   white-space: nowrap;
 }
 
+.private-wallet-manage-row {
+  grid-template-rows: auto auto;
+}
+
+.wallet-management-actions {
+  grid-column: 2 / -1;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  min-width: 0;
+}
+
+.wallet-archive-confirmation {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.wallet-archive-confirmation p {
+  flex: 1 1 230px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.wallet-archive-section {
+  margin-top: 24px;
+}
+
+.wallet-archive-section > summary {
+  width: fit-content;
+  margin-bottom: 12px;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.private-wallet-manage-row.is-archived {
+  opacity: 0.8;
+}
+
+.wallet-editor {
+  max-width: 680px;
+  margin-bottom: 18px;
+}
+
 .private-wallet-icon.bank {
   background: var(--info-soft);
   color: var(--info);
@@ -4391,6 +4445,14 @@
 
   .private-wallet-row > strong {
     grid-column: 2;
+  }
+
+  .wallet-management-actions {
+    grid-column: 1 / -1;
+  }
+
+  .wallet-archive-confirmation {
+    width: 100%;
   }
 }
 
@@ -5386,6 +5448,636 @@
 
 .savings-goal-card.is-archived {
   opacity: 0.78;
+}
+
+.category-manager-page {
+  width: min(100%, 1180px);
+  display: grid;
+  gap: 16px;
+  margin-inline: auto;
+}
+
+.category-manager-summary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+  padding: 13px 16px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  color: var(--brand);
+  background: var(--brand-soft);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.category-manager-summary small {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 450;
+}
+
+.category-manager-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.category-manager-card {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px 12px;
+  padding: 15px;
+}
+
+.category-manager-card.is-archived {
+  opacity: 0.78;
+}
+
+.category-manager-icon {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  color: var(--brand);
+  background: var(--brand-soft);
+}
+
+.category-manager-icon.peach {
+  color: var(--orange);
+  background: var(--peach);
+}
+
+.category-manager-icon.mint {
+  color: var(--success);
+  background: var(--mint);
+}
+
+.category-manager-icon.blue {
+  color: var(--info);
+  background: var(--info-soft);
+}
+
+.category-manager-icon.pink {
+  color: var(--rose);
+  background: var(--pink);
+}
+
+.category-manager-copy {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.category-manager-copy > strong {
+  overflow-wrap: anywhere;
+  font-size: 14px;
+}
+
+.category-manager-copy > small {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.category-manager-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding-top: 5px;
+  border-top: 1px solid var(--line);
+}
+
+.category-editor {
+  max-width: 720px;
+}
+
+.category-archive-section {
+  display: grid;
+  gap: 13px;
+}
+
+.category-archive-section > summary {
+  width: fit-content;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  color: var(--muted);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.category-archive-section[open] > summary {
+  margin-bottom: 1px;
+}
+
+.insights-page {
+  width: min(100%, 1400px);
+  display: grid;
+  gap: 16px;
+  margin-inline: auto;
+}
+
+.report-range-card {
+  display: grid;
+  gap: 12px;
+  padding: 15px 18px;
+}
+
+.report-range-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+.report-range-inputs {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.report-range-inputs label {
+  display: grid;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.report-range-inputs input {
+  min-height: 44px;
+  padding: 8px 11px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-field);
+  color: var(--text);
+  background: var(--surface);
+}
+
+.report-range-separator {
+  padding-bottom: 9px;
+  color: var(--muted);
+}
+
+.report-timezone {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding-inline: 7px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.report-period-caption {
+  margin: -4px 2px -5px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.report-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 13px;
+}
+
+.report-metric {
+  min-width: 0;
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  padding: 17px 18px;
+}
+
+.report-metric > span {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.report-metric > strong {
+  overflow-wrap: anywhere;
+  font-family: var(--font-heading);
+  font-size: clamp(19px, 2vw, 27px);
+  line-height: 1.28;
+  font-variant-numeric: tabular-nums;
+}
+
+.report-metric > small {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.report-metric-income > span,
+.report-metric-income > strong {
+  color: var(--success);
+}
+
+.report-metric-expense > span,
+.report-metric-expense > strong {
+  color: var(--error);
+}
+
+.report-metric-refund > span,
+.report-metric-refund > strong {
+  color: var(--orange);
+}
+
+.report-metric-cashflow > span,
+.report-metric-cashflow > strong {
+  color: var(--brand);
+}
+
+.report-content-grid,
+.report-detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+  gap: 14px;
+}
+
+.report-chart-card,
+.report-category-card,
+.report-detail-card {
+  min-width: 0;
+  padding: 20px;
+}
+
+.report-section-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.report-section-heading h2 {
+  font-size: 17px;
+}
+
+.report-section-heading p {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.report-chart-legend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.report-chart-legend i {
+  width: 9px;
+  height: 9px;
+  display: inline-block;
+  border-radius: 50%;
+}
+
+.report-chart-legend .income-key {
+  background: var(--brand);
+}
+
+.report-chart-legend .expense-key {
+  margin-left: 5px;
+  background: var(--success);
+}
+
+.report-daily-chart {
+  height: 210px;
+  display: flex;
+  align-items: end;
+  gap: 5px;
+  overflow-x: auto;
+  padding: 10px 2px 0;
+  border-bottom: 1px solid var(--line);
+  scrollbar-color: var(--brand-soft) transparent;
+}
+
+.report-day-column {
+  min-width: 29px;
+  height: 100%;
+  flex: 1 0 29px;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+}
+
+.report-day-bars {
+  width: 100%;
+  height: 170px;
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  gap: 4px;
+  border-bottom: 1px solid var(--line);
+  background-image: linear-gradient(to bottom, transparent calc(100% - 1px), var(--line) calc(100% - 1px));
+}
+
+.report-day-bars > span {
+  width: min(34%, 12px);
+  min-height: 0;
+  border-radius: 5px 5px 1px 1px;
+  transition: height 180ms ease;
+}
+
+.report-day-income {
+  background: var(--brand);
+}
+
+.report-day-expense {
+  background: var(--success);
+}
+
+.report-day-column > small {
+  min-height: 17px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.report-chart-empty {
+  min-height: 110px;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+.report-breakdown-list,
+.report-merchant-list {
+  display: grid;
+  gap: 13px;
+}
+
+.report-breakdown-row {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.report-breakdown-icon {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  color: var(--brand);
+  background: var(--brand-soft);
+}
+
+.report-breakdown-copy {
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.report-breakdown-copy > div:first-child {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 7px;
+}
+
+.report-breakdown-copy strong,
+.report-merchant-list strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.report-breakdown-copy small,
+.report-merchant-list small {
+  color: var(--muted);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.report-breakdown-track {
+  height: 7px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: var(--line);
+}
+
+.report-breakdown-track > span {
+  height: 100%;
+  display: block;
+  border-radius: inherit;
+  background: var(--brand);
+}
+
+.report-breakdown-row > strong {
+  max-width: 130px;
+  overflow-wrap: anywhere;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.report-comparison-row {
+  display: grid;
+  grid-template-columns: minmax(90px, 1fr) minmax(100px, auto) auto minmax(100px, auto) 25px;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 12px;
+}
+
+.report-comparison-row > span {
+  color: var(--muted);
+}
+
+.report-comparison-row > strong {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.report-comparison-periods {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 12px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.report-merchant-list > div,
+.report-merchant-list > div > span {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.report-merchant-list > div {
+  justify-content: space-between;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+.report-merchant-list > div:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.report-merchant-list > div > span > svg {
+  color: var(--brand);
+}
+
+.report-merchant-list > div > span > small {
+  flex: 0 0 auto;
+}
+
+.report-merchant-list > div > strong {
+  flex: 0 0 auto;
+  text-align: right;
+}
+
+.report-footnote {
+  padding: 0 3px 4px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+@media (width <= 1050px) {
+  .report-metric-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .report-content-grid,
+  .report-detail-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (width <= 760px) {
+  .category-manager-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .category-manager-summary small {
+    flex-basis: 100%;
+    margin-left: 28px;
+  }
+
+  .category-manager-card {
+    padding: 14px;
+  }
+}
+
+@media (width <= 760px) {
+  .insights-page .finance-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .report-range-card,
+  .report-chart-card,
+  .report-category-card,
+  .report-detail-card {
+    padding: 16px;
+  }
+
+  .report-range-inputs {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  }
+
+  .report-range-inputs input {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .report-range-separator {
+    align-self: end;
+    padding-bottom: 10px;
+  }
+
+  .report-timezone {
+    grid-column: 1 / -1;
+    min-height: 30px;
+    padding: 0;
+  }
+
+  .report-comparison-row {
+    grid-template-columns: minmax(85px, 1fr) minmax(74px, auto) minmax(74px, auto) 20px;
+    gap: 5px;
+    font-size: 11px;
+  }
+
+  .report-comparison-row > span:nth-of-type(2) {
+    display: none;
+  }
+
+  .report-comparison-periods {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    font-size: 10px;
+  }
+}
+
+@media (width <= 420px) {
+  .report-metric {
+    padding: 13px;
+  }
+
+  .report-metric > span {
+    gap: 6px;
+    font-size: 12px;
+  }
+
+  .report-metric > strong {
+    font-size: 17px;
+  }
+
+  .report-metric > small {
+    font-size: 10px;
+  }
+
+  .report-section-heading h2 {
+    font-size: 15px;
+  }
+
+  .report-chart-legend {
+    gap: 4px;
+    font-size: 9px;
+  }
+
+  .report-breakdown-row {
+    grid-template-columns: 31px minmax(0, 1fr) auto;
+    gap: 7px;
+  }
+
+  .report-breakdown-icon {
+    width: 30px;
+    height: 30px;
+  }
+
+  .report-breakdown-row > strong {
+    max-width: 92px;
+    font-size: 10px;
+  }
 }
 
 @media (width <= 860px) {
