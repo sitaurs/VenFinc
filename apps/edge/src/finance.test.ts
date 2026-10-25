@@ -752,6 +752,117 @@ describe("role-gated operator routes", () => {
     expect(upstream).not.toHaveBeenCalled();
   });
 
+  it("creates an opening debt through the tenant-bound atomic ledger RPC", async () => {
+    let captured: Record<string, unknown> | undefined;
+    let authorization: string | null = null;
+    const setup = await testBindings(async (url, init) => {
+      expect(url.pathname).toBe("/neondb/rest/v1/rpc/create_debt");
+      captured = JSON.parse(String(init.body)) as Record<string, unknown>;
+      authorization = new Headers(init.headers).get("Authorization");
+      return Response.json([{
+        debt_id: "c36df782-e943-4ab5-80d5-07b8f6eef620",
+        opening_event_id: "12d474d1-0470-4c65-a9c2-15f80b73f72e",
+        direction: "owed_by_user",
+        principal_minor: "9007199254740993",
+        remaining_minor: "9007199254740993",
+      }]);
+    });
+    const response = await app.request("https://finance.test/api/v1/debts", {
+      method: "POST",
+      headers: {
+        Cookie: activeCookie(), Origin: "https://finance.test", "Content-Type": "application/json",
+        "Idempotency-Key": "3212c76b-8875-4bf3-ace5-1e584e0a8d0d",
+      },
+      body: JSON.stringify({
+        direction: "owed_by_user", origin: "opening", counterpartyLabel: "Teman",
+        principalMinor: "9007199254740993", openingDate: "2026-10-24", dueDate: null,
+        installmentMinor: "100000", walletId: null, timezone: "Asia/Jakarta", note: "Catatan awal",
+      }),
+    }, setup.bindings);
+    expect(response.status).toBe(201);
+    expect(await response.json()).toMatchObject({
+      data: { principalMinor: "9007199254740993", remainingMinor: "9007199254740993" },
+    });
+    expect(captured).toMatchObject({
+      p_idempotency_key: "3212c76b-8875-4bf3-ace5-1e584e0a8d0d",
+      p_direction: "owed_by_user", p_origin: "opening", p_principal_minor: "9007199254740993",
+      p_wallet_id: null, p_allow_negative: false, p_timezone: "Asia/Jakarta",
+    });
+    expect(captured).not.toHaveProperty("p_user_id");
+    expect(authorization).toMatch(/^Bearer /);
+  });
+
+  it("forwards explicit negative-balance consent for a new receivable loan", async () => {
+    let captured: Record<string, unknown> | undefined;
+    const setup = await testBindings(async (url, init) => {
+      expect(url.pathname).toBe("/neondb/rest/v1/rpc/create_debt");
+      captured = JSON.parse(String(init.body)) as Record<string, unknown>;
+      return Response.json([{
+        debt_id: "c36df782-e943-4ab5-80d5-07b8f6eef620",
+        opening_event_id: "12d474d1-0470-4c65-a9c2-15f80b73f72e",
+        direction: "owed_to_user", principal_minor: "50000", remaining_minor: "50000",
+      }]);
+    });
+    const response = await app.request("https://finance.test/api/v1/debts", {
+      method: "POST",
+      headers: {
+        Cookie: activeCookie(), Origin: "https://finance.test", "Content-Type": "application/json",
+        "Idempotency-Key": "5212c76b-8875-4bf3-ace5-1e584e0a8d0d",
+      },
+      body: JSON.stringify({
+        direction: "owed_to_user", origin: "loan", counterpartyLabel: "Teman", principalMinor: "50000",
+        openingDate: "2026-10-25", dueDate: null, installmentMinor: null,
+        walletId: "7b9be51e-0607-4c60-8315-e57ae8f61aba", allowNegative: true,
+        timezone: "Asia/Jakarta",
+      }),
+    }, setup.bindings);
+    expect(response.status).toBe(201);
+    expect(captured).toMatchObject({
+      p_direction: "owed_to_user", p_origin: "loan", p_principal_minor: "50000",
+      p_wallet_id: "7b9be51e-0607-4c60-8315-e57ae8f61aba", p_allow_negative: true,
+    });
+  });
+
+  it("records debt principal and fee separately with one idempotency key", async () => {
+    let captured: Record<string, unknown> | undefined;
+    const setup = await testBindings(async (url, init) => {
+      expect(url.pathname).toBe("/neondb/rest/v1/rpc/record_debt_payment");
+      captured = JSON.parse(String(init.body)) as Record<string, unknown>;
+      return Response.json([{
+        payment_id: "c36df782-e943-4ab5-80d5-07b8f6eef620",
+        event_id: "12d474d1-0470-4c65-a9c2-15f80b73f72e",
+        fee_event_id: "22d474d1-0470-4c65-a9c2-15f80b73f72e",
+        principal_minor: "100000", fee_minor: "2500", effective_at: "2026-10-25T00:00:00Z",
+        negative_balance_confirmed: false,
+        timezone: "Asia/Jakarta", note: "Cicilan pertama",
+      }]);
+    });
+    const response = await app.request("https://finance.test/api/v1/debts/c36df782-e943-4ab5-80d5-07b8f6eef620/payments", {
+      method: "POST",
+      headers: {
+        Cookie: activeCookie(), Origin: "https://finance.test", "Content-Type": "application/json",
+        "Idempotency-Key": "4212c76b-8875-4bf3-ace5-1e584e0a8d0d",
+      },
+      body: JSON.stringify({
+        walletId: "7b9be51e-0607-4c60-8315-e57ae8f61aba", principalMinor: "100000", feeMinor: "2500",
+        allowNegative: true,
+        effectiveAt: "2026-10-25T00:00:00Z", timezone: "Asia/Jakarta",
+        principalCategoryId: "8b9be51e-0607-4c60-8315-e57ae8f61aba",
+        feeCategoryId: "9b9be51e-0607-4c60-8315-e57ae8f61aba", note: "Cicilan pertama",
+      }),
+    }, setup.bindings);
+    expect(response.status).toBe(201);
+    expect(await response.json()).toMatchObject({ data: { principalMinor: "100000", feeMinor: "2500", negativeBalanceConfirmed: false } });
+    expect(captured).toMatchObject({
+      p_debt_id: "c36df782-e943-4ab5-80d5-07b8f6eef620",
+      p_principal_minor: "100000", p_fee_minor: "2500",
+      p_allow_negative: true,
+      p_idempotency_key: "4212c76b-8875-4bf3-ace5-1e584e0a8d0d",
+      p_principal_category_id: "8b9be51e-0607-4c60-8315-e57ae8f61aba",
+      p_fee_category_id: "9b9be51e-0607-4c60-8315-e57ae8f61aba",
+    });
+  });
+
   it("allows admin routes for admins but keeps system routes superuser-only", async () => {
     let role = "admin";
     const setup = await testBindings(async (url) => {

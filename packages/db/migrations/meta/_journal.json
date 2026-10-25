@@ -64,6 +64,13 @@
       "when": 1792899990000,
       "tag": "0008_search_finance_events",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1792901579284,
+      "tag": "0009_debts_and_payments",
+      "breakpoints": true
     }
   ]
 }

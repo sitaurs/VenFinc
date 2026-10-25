@@ -328,6 +328,77 @@ export const savingsContributionSchema = z.strictObject({
   destinationWalletId: z.uuid(),
   destinationWalletName: z.string().max(100),
 });
+export const debtDirectionSchema = z.enum(["owed_by_user", "owed_to_user"]);
+export const debtOriginSchema = z.enum(["opening", "loan"]);
+export const debtCreateSchema = z.strictObject({
+  direction: debtDirectionSchema,
+  origin: debtOriginSchema,
+  counterpartyLabel: z.string().trim().max(100).nullable().default(null),
+  principalMinor: positiveMinorAmountSchema,
+  openingDate: localDateSchema,
+  dueDate: localDateSchema.nullable().default(null),
+  installmentMinor: positiveMinorAmountSchema.nullable().default(null),
+  walletId: z.uuid().nullable().default(null),
+  allowNegative: z.boolean().default(false),
+  timezone: timezoneSchema,
+  note: z.string().trim().max(500).optional(),
+}).superRefine((value, context) => {
+  if ((value.origin === "loan") !== (value.walletId !== null)) {
+    context.addIssue({ code: "custom", path: ["walletId"], message: "Sumber uang wajib dipilih untuk pinjaman baru." });
+  }
+  if (value.dueDate && value.dueDate < value.openingDate) {
+    context.addIssue({ code: "custom", path: ["dueDate"], message: "Jatuh tempo tidak boleh sebelum tanggal pembukaan." });
+  }
+});
+export const debtSchema = z.strictObject({
+  id: z.uuid(),
+  direction: debtDirectionSchema,
+  origin: debtOriginSchema,
+  counterpartyLabel: z.string().max(100).nullable(),
+  principalMinor: positiveMinorAmountSchema,
+  paidMinor: minorAmountSchema,
+  remainingMinor: minorAmountSchema,
+  openingDate: localDateSchema,
+  dueDate: localDateSchema.nullable(),
+  installmentMinor: positiveMinorAmountSchema.nullable(),
+  openingEventId: z.uuid(),
+  walletId: z.uuid().nullable(),
+  walletName: z.string().max(100).nullable(),
+  note: z.string().max(500).nullable(),
+  archivedAt: effectiveAtSchema.nullable(),
+  status: z.enum(["active", "settled"]),
+});
+export const debtListSchema = z.array(debtSchema).max(500);
+export const debtCreateResultSchema = z.strictObject({
+  id: z.uuid(),
+  openingEventId: z.uuid(),
+  direction: debtDirectionSchema,
+  principalMinor: positiveMinorAmountSchema,
+  remainingMinor: minorAmountSchema,
+});
+export const debtPaymentCreateSchema = z.strictObject({
+  walletId: z.uuid(),
+  principalMinor: positiveMinorAmountSchema,
+  feeMinor: minorAmountSchema.default("0"),
+  allowNegative: z.boolean().default(false),
+  effectiveAt: effectiveAtSchema,
+  timezone: timezoneSchema,
+  principalCategoryId: z.uuid().nullable().default(null),
+  feeCategoryId: z.uuid().nullable().default(null),
+  note: z.string().trim().max(500).optional(),
+});
+export const debtPaymentSchema = z.strictObject({
+  id: z.uuid(),
+  eventId: z.uuid(),
+  feeEventId: z.uuid().nullable(),
+  principalMinor: positiveMinorAmountSchema,
+  feeMinor: minorAmountSchema,
+  negativeBalanceConfirmed: z.boolean(),
+  effectiveAt: effectiveAtSchema,
+  timezone: timezoneSchema,
+  note: z.string().max(500).nullable(),
+});
+export const debtPaymentListSchema = z.array(debtPaymentSchema).max(500);
 export const savingsContributionListSchema = z.array(savingsContributionSchema).max(100);
 export const financeReportDailySchema = z.strictObject({
   localDate: localDateSchema,
@@ -483,6 +554,9 @@ export type BudgetCreate = z.infer<typeof budgetCreateSchema>;
 export type SavingsGoal = z.infer<typeof savingsGoalSchema>;
 export type SavingsGoalCreate = z.infer<typeof savingsGoalCreateSchema>;
 export type SavingsGoalUpdate = z.infer<typeof savingsGoalUpdateSchema>;
+export type Debt = z.infer<typeof debtSchema>;
+export type DebtCreate = z.infer<typeof debtCreateSchema>;
+export type DebtPayment = z.infer<typeof debtPaymentSchema>;
 export type FinanceReport = z.infer<typeof financeReportSchema>;
 export type FinancePost = z.infer<typeof financePostSchema>;
 export type FinanceEvent = z.infer<typeof financeEventSchema>;

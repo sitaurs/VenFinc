@@ -7,28 +7,39 @@ const savingsWalletId = "8d4a5f5d-63e1-43e1-83aa-bd4311e33e51";
 const eventId = "12d474d1-0470-4c65-a9c2-15f80b73f72e";
 const goalId = "3bf4f79b-fdbc-43ee-9726-c5784e550704";
 const savingsEventId = "d96f06d6-107d-4f87-99c8-36d1475b203b";
+const debtId = "b9f30f43-8a71-4ff9-9ecf-1e8ac39bb857";
+const debtOpeningEventId = "041936eb-8456-4d5c-a9a4-8bd08d9aa7aa";
+const debtPaymentId = "f0ef50f7-2a78-4c28-b846-b3befd5f13d5";
+const debtPaymentEventId = "b6301548-07c6-4e99-8941-5957a4d219e0";
+const debtFeeEventId = "dd0b7ca2-0c42-4d5f-83c4-6ccfa1bfe18b";
 
 function success(data: unknown) {
   return { data, meta: { requestId, version: 1 } };
 }
 
-async function mockPrivateApi(page: Page, options: { includeRefundableExpense?: boolean } = {}) {
+async function mockPrivateApi(page: Page, options: { includeRefundableExpense?: boolean; walletBalanceMinor?: string } = {}) {
   let postedCommand: Record<string, unknown> | undefined;
   let postedIdempotencyKey: string | undefined;
   let postedBudget: Record<string, unknown> | undefined;
   let postedGoal: Record<string, unknown> | undefined;
   let postedContribution: Record<string, unknown> | undefined;
+  let postedDebt: Record<string, unknown> | undefined;
+  let postedDebtIdempotencyKey: string | undefined;
+  let postedDebtPayment: Record<string, unknown> | undefined;
+  let postedDebtPaymentIdempotencyKey: string | undefined;
   const transactionQueries: URLSearchParams[] = [];
   const budgets: Array<Record<string, unknown>> = [];
   const categories: Array<Record<string, unknown>> = [];
   const goals: Array<Record<string, unknown>> = [];
   const contributions: Array<Record<string, unknown>> = [];
+  const debts: Array<Record<string, unknown>> = [];
+  const debtPayments: Array<Record<string, unknown>> = [];
   const wallets: Array<Record<string, unknown>> = [{
     id: walletId,
     name: "Rekening Utama",
     type: "bank",
     currency: "IDR",
-    balanceMinor: "9007199254740993",
+    balanceMinor: options.walletBalanceMinor ?? "9007199254740993",
     archivedAt: null,
     createdAt: "2026-10-01T00:00:00Z",
     updatedAt: "2026-10-24T00:00:00Z",
@@ -180,6 +191,88 @@ async function mockPrivateApi(page: Page, options: { includeRefundableExpense?: 
     }
     if (path === "/api/v1/budgets") {
       await route.fulfill({ json: success(budgets) });
+      return;
+    }
+    if (path === "/api/v1/debts" && request.method() === "POST") {
+      const debtCommand = request.postDataJSON() as Record<string, unknown>;
+      postedDebt = debtCommand;
+      postedDebtIdempotencyKey = request.headers()["idempotency-key"];
+      const record = {
+        id: debtId,
+        direction: debtCommand.direction,
+        origin: debtCommand.origin,
+        counterpartyLabel: debtCommand.counterpartyLabel,
+        principalMinor: debtCommand.principalMinor,
+        paidMinor: "0",
+        remainingMinor: debtCommand.principalMinor,
+        openingDate: debtCommand.openingDate,
+        dueDate: debtCommand.dueDate,
+        installmentMinor: debtCommand.installmentMinor,
+        openingEventId: debtOpeningEventId,
+        walletId: debtCommand.walletId,
+        walletName: debtCommand.walletId ? "Rekening Utama" : null,
+        note: debtCommand.note ?? null,
+        archivedAt: null,
+        status: "active",
+      };
+      debts.push(record);
+      if (debtCommand.origin === "loan" && debtCommand.walletId) {
+        const wallet = wallets.find((item) => item.id === debtCommand.walletId);
+        if (wallet) {
+          const balance = BigInt(String(wallet.balanceMinor));
+          const principal = BigInt(String(debtCommand.principalMinor));
+          wallet.balanceMinor = (debtCommand.direction === "owed_by_user" ? balance + principal : balance - principal).toString();
+        }
+      }
+      await route.fulfill({ status: 201, json: success({
+        id: debtId,
+        openingEventId: debtOpeningEventId,
+        direction: debtCommand.direction,
+        principalMinor: debtCommand.principalMinor,
+        remainingMinor: debtCommand.principalMinor,
+      }) });
+      return;
+    }
+    if (path === "/api/v1/debts") {
+      await route.fulfill({ json: success(debts) });
+      return;
+    }
+    if (path === `/api/v1/debts/${debtId}/payments` && request.method() === "POST") {
+      const paymentCommand = request.postDataJSON() as Record<string, unknown>;
+      postedDebtPayment = paymentCommand;
+      postedDebtPaymentIdempotencyKey = request.headers()["idempotency-key"];
+      const debt = debts.find((item) => item.id === debtId);
+      const wallet = wallets.find((item) => item.id === paymentCommand.walletId);
+      const totalOut = BigInt(String(paymentCommand.principalMinor)) + BigInt(String(paymentCommand.feeMinor));
+      const negativeBalanceConfirmed = debt?.direction === "owed_by_user" && wallet
+        ? BigInt(String(wallet.balanceMinor)) < totalOut
+        : false;
+      if (debt) {
+        debt.paidMinor = (BigInt(String(debt.paidMinor)) + BigInt(String(paymentCommand.principalMinor))).toString();
+        debt.remainingMinor = (BigInt(String(debt.principalMinor)) - BigInt(String(debt.paidMinor))).toString();
+        debt.status = debt.remainingMinor === "0" ? "settled" : "active";
+      }
+      if (wallet) {
+        const balance = BigInt(String(wallet.balanceMinor));
+        wallet.balanceMinor = (debt?.direction === "owed_by_user" ? balance - totalOut : balance + totalOut).toString();
+      }
+      const payment = {
+        id: debtPaymentId,
+        eventId: debtPaymentEventId,
+        feeEventId: String(paymentCommand.feeMinor) === "0" ? null : debtFeeEventId,
+        principalMinor: paymentCommand.principalMinor,
+        feeMinor: paymentCommand.feeMinor,
+        negativeBalanceConfirmed,
+        effectiveAt: paymentCommand.effectiveAt,
+        timezone: paymentCommand.timezone,
+        note: paymentCommand.note ?? null,
+      };
+      debtPayments.push(payment);
+      await route.fulfill({ status: 201, json: success(payment) });
+      return;
+    }
+    if (path === `/api/v1/debts/${debtId}/payments`) {
+      await route.fulfill({ json: success(debtPayments) });
       return;
     }
     if (path === "/api/v1/savings-goals" && request.method() === "POST") {
@@ -357,14 +450,100 @@ async function mockPrivateApi(page: Page, options: { includeRefundableExpense?: 
     postedBudget: () => postedBudget,
     postedGoal: () => postedGoal,
     postedContribution: () => postedContribution,
+    postedDebt: () => postedDebt,
+    postedDebtIdempotencyKey: () => postedDebtIdempotencyKey,
+    postedDebtPayment: () => postedDebtPayment,
+    postedDebtPaymentIdempotencyKey: () => postedDebtPaymentIdempotencyKey,
     transactionQueries: () => transactionQueries,
   };
 }
+
+test("debt and receivable ledger flow keeps principal separate from fees", async ({ page }) => {
+  const api = await mockPrivateApi(page);
+  await page.goto("/app/debts");
+  await expect(page.getByRole("heading", { name: "Utang & piutang", exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Catat utang/piutang", exact: true }).first().click();
+  await page.getByLabel("Pihak (opsional)", { exact: true }).fill("Budi");
+  await page.getByLabel("Pokok awal (rupiah)", { exact: true }).fill("300000");
+  await page.getByLabel("Jatuh tempo (opsional)", { exact: true }).fill("2026-11-30");
+  await page.getByRole("button", { name: "Simpan catatan", exact: true }).click();
+
+  await expect(page.getByRole("heading", { name: "Budi", exact: true })).toBeVisible();
+  await expect(page.getByText("Rp300.000", { exact: true }).first()).toBeVisible();
+  expect(api.postedDebt()).toMatchObject({
+    direction: "owed_by_user",
+    origin: "opening",
+    counterpartyLabel: "Budi",
+    principalMinor: "300000",
+    dueDate: "2026-11-30",
+    walletId: null,
+    timezone: "Asia/Jakarta",
+  });
+  expect(api.postedDebtIdempotencyKey()).toMatch(/^[0-9a-f-]{36}$/i);
+
+  await page.getByRole("link", { name: "Catat pembayaran", exact: true }).click();
+  await page.getByLabel("Pokok dibayar (rupiah)", { exact: true }).fill("125000");
+  await page.getByLabel("Bunga/biaya terpisah (rupiah)", { exact: true }).fill("5000");
+  await page.getByLabel("Catatan (opsional)", { exact: true }).fill("Cicilan pertama");
+  await page.getByRole("button", { name: "Catat pembayaran", exact: true }).click();
+
+  await expect(page.getByRole("heading", { name: "Riwayat pembayaran", exact: true })).toBeVisible();
+  await expect(page.getByText("Pokok: Rp125.000 · Bunga/biaya: Rp5.000", { exact: true })).toBeVisible();
+  await expect(page.getByText("Rp175.000", { exact: true }).first()).toBeVisible();
+  expect(api.postedDebtPayment()).toMatchObject({
+    walletId,
+    principalMinor: "125000",
+    feeMinor: "5000",
+    timezone: "Asia/Jakarta",
+    note: "Cicilan pertama",
+  });
+  expect(api.postedDebtPaymentIdempotencyKey()).toMatch(/^[0-9a-f-]{36}$/i);
+});
+
+test("a real debt payment can confirm a negative recorded balance", async ({ page }) => {
+  const api = await mockPrivateApi(page, { walletBalanceMinor: "1000" });
+  await page.goto("/app/debts");
+  await page.getByRole("button", { name: "Catat utang/piutang", exact: true }).first().click();
+  await page.getByLabel("Pokok awal (rupiah)", { exact: true }).fill("50000");
+  await page.getByRole("button", { name: "Simpan catatan", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Tanpa pihak", exact: true })).toBeVisible();
+  await page.getByRole("link", { name: "Catat pembayaran", exact: true }).click();
+  await page.getByRole("button", { name: "Catat pembayaran", exact: true }).click();
+  await expect(page.getByRole("alert").filter({ hasText: "Saldo dompet lebih kecil" })).toBeVisible();
+  expect(api.postedDebtPayment()).toBeUndefined();
+  await page.getByRole("checkbox", { name: /Izinkan saldo catatan dompet menjadi negatif/ }).check();
+  await page.getByRole("button", { name: "Catat pembayaran", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Riwayat pembayaran", exact: true })).toBeVisible();
+  expect(api.postedDebtPayment()).toMatchObject({ principalMinor: "50000", allowNegative: true });
+});
+
+test("a real loan disbursement needs explicit confirmation when the wallet will go negative", async ({ page }) => {
+  const api = await mockPrivateApi(page, { walletBalanceMinor: "1000" });
+  await page.goto("/app/debts");
+  await page.getByRole("button", { name: "Catat utang/piutang", exact: true }).first().click();
+  await page.getByRole("combobox", { name: "Arah saldo", exact: true }).selectOption("owed_to_user");
+  await page.getByRole("combobox", { name: "Asal catatan", exact: true }).selectOption("loan");
+  await page.getByLabel("Pokok awal (rupiah)", { exact: true }).fill("50000");
+  await page.getByRole("button", { name: "Simpan catatan", exact: true }).click();
+  await expect(page.getByRole("alert").filter({ hasText: "Saldo dompet lebih kecil dari pinjaman" })).toBeVisible();
+  expect(api.postedDebt()).toBeUndefined();
+  await page.getByRole("checkbox", { name: /Izinkan saldo catatan menjadi negatif jika pinjaman/ }).check();
+  await page.getByRole("button", { name: "Simpan catatan", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Tanpa pihak", exact: true })).toBeVisible();
+  expect(api.postedDebt()).toMatchObject({
+    direction: "owed_to_user",
+    origin: "loan",
+    principalMinor: "50000",
+    walletId,
+    allowNegative: true,
+  });
+});
 
 test("private dashboard uses owner API values and records an exact idempotent transaction", async ({ page }) => {
   const api = await mockPrivateApi(page);
   await page.goto("/app");
   await expect(page.getByRole("heading", { name: "Ringkasan keuangan" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Utang dan piutang", exact: true })).toBeVisible();
   await expect(page.locator(".private-balance-card > strong")).toHaveText("Rp9.007.199.254.740.993");
   await expect(page.getByText("Penerimaan Uji", { exact: true })).toBeVisible();
   await page.getByRole("link", { name: "Catat transaksi", exact: true }).click();

@@ -2,7 +2,7 @@ export type DataApiBindings = {
   NEON_DATA_API_URL?: string;
 };
 
-export type PublicTable = "user_profiles" | "wallets" | "categories" | "budgets" | "budget_periods" | "savings_goals" | "savings_goal_contributions";
+export type PublicTable = "user_profiles" | "wallets" | "categories" | "budgets" | "budget_periods" | "savings_goals" | "savings_goal_contributions" | "debts" | "debt_payments";
 export type PublicRpc =
   | "current_platform_role"
   | "list_wallets"
@@ -17,7 +17,11 @@ export type PublicRpc =
   | "update_savings_goal"
   | "contribute_to_savings_goal"
   | "list_savings_goal_contributions"
-  | "get_finance_report";
+  | "get_finance_report"
+  | "create_debt"
+  | "list_debts"
+  | "record_debt_payment"
+  | "list_debt_payments";
 
 export type DataApiOperation =
   | {
@@ -136,7 +140,7 @@ function failureFromResponse(status: number, body: unknown): DataApiFailure {
   if (message.includes("IDEMPOTENCY_KEY_REUSED") || sqlState === "23505") {
     return new DataApiFailure("conflict", 409);
   }
-  if (["WALLET_NOT_FOUND", "CATEGORY_NOT_FOUND", "REFUND_SOURCE_NOT_FOUND"].some((code) => message.includes(code))) {
+  if (["WALLET_NOT_FOUND", "CATEGORY_NOT_FOUND", "REFUND_SOURCE_NOT_FOUND", "DEBT_NOT_FOUND"].some((code) => message.includes(code))) {
     return new DataApiFailure("not_found", 404);
   }
   if (status === 401) return new DataApiFailure("unauthorized", 401);

@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-25",
+  "scope": "VenFinance debt and receivable code path",
+  "requirements": [
+    "AC-FIN-023-A",
+    "AC-FIN-023-B",
+    "AC-FIN-028-A"
+  ],
+  "implementation": {
+    "status": "code_and_mocked_flow_implemented",
+    "features": [
+      "cash-neutral opening debt and receivable records",
+      "new loan receipt or disbursement tied to a selected wallet",
+      "partial or final principal payments with separate interest/fee events",
+      "idempotency keys, exact IDR strings, tenant-bound RPC calls and RLS tables",
+      "optional installment category allocation, separate from consumption spending",
+      "explicit confirmation for a real payment that makes the recorded wallet negative",
+      "explicit confirmation for a real loan disbursement that makes the recorded wallet negative",
+      "dashboard debt and receivable totals from the owner-scoped API"
+    ],
+    "databaseMigration": "packages/db/migrations/0009_debts_and_payments.sql",
+    "productionMigrationApplied": false,
+    "productionDeploymentPerformed": false
+  },
+  "checks": {
+    "node": {
+      "version": "24.22.1",
+      "source": "repository-local .tools/node/bin/node via tools/pnpm.sh"
+    },
+    "typecheck": "PASS",
+    "lint": "PASS",
+    "unitTests": {
+      "status": "PASS",
+      "tests": 139
+    },
+    "contractTests": {
+      "status": "PASS",
+      "tests": 24
+    },
+    "securityTests": {
+      "status": "PASS",
+      "tests": 9,
+      "clientSecretBoundaryScan": "PASS"
+    },
+    "build": "PASS",
+    "builtArtifactPreviewSmoke": {
+      "status": "PASS",
+      "command": "./tools/pnpm.sh infra:smoke",
+      "scope": "fresh loopback preview; static assets, real Hono route, fail-closed unauthenticated API",
+      "externalProvidersTested": false
+    },
+    "playwright": {
+      "status": "PASS",
+      "tests": 40,
+      "project": "chromium",
+      "apiMode": "mocked owner-scoped API; not a live Neon test"
+    },
+    "drizzleSchemaCheck": "PASS",
+    "documentationAndTraceabilityCheck": "PASS",
+    "localPostgresMigrationAndLedgerTest": {
+      "status": "BLOCKED",
+      "exitCode": 2,
+      "reason": "PostgreSQL server binaries (pg_config/initdb/psql) are not installed in this environment."
+    },
+    "remoteNeonMigrationOrWorkerRLSTest": "NOT_RUN"
+  },
+  "releaseReadiness": {
+    "status": "NOT_READY",
+    "reason": "Database migration/function SQL has not been executed against PostgreSQL, and operator MFA, staging Worker/RLS, provider, legal, recovery and production release gates remain separate."
+  }
+}

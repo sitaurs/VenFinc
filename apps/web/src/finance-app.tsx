@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } 
 import { Link, Navigate, NavLink, Route, Routes, useLocation, useNavigate, useParams, useSearchParams } from "react-router";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  ArrowDownLeft, ArrowLeftRight, ArrowRight, ArrowUpRight, Banknote,
+  ArrowDownLeft, ArrowLeftRight, ArrowRight, ArrowUpRight, Banknote, HandCoins,
   ChartNoAxesCombined, CircleHelp, Eye, EyeOff, Home, List, LoaderCircle,
   CloudOff, ChevronRight, KeyRound, LaptopMinimal, LogOut, Plus, RefreshCw,
   Settings, ShieldCheck, Smartphone, WalletCards, X, PiggyBank, CalendarDays, Target,
@@ -16,6 +16,8 @@ import {
   savingsContributionCreateSchema, savingsContributionListSchema, savingsContributionSchema,
   savingsGoalCreateResultSchema, savingsGoalCreateSchema,
   savingsGoalListSchema, savingsGoalUpdateResultSchema, type SavingsGoal, type SavingsGoalUpdate,
+  debtCreateResultSchema, debtCreateSchema, debtListSchema, debtPaymentCreateSchema,
+  debtPaymentListSchema, debtPaymentSchema, type Debt,
   financeEventPageSchema, financePostResultSchema, financePostSchema,
   privateSessionSchema, publicConfigSchema, profileCreateResultSchema,
   profileReadResultSchema, walletSchema, walletUpdateResultSchema, walletUpdateSchema, type Budget, type BudgetCreate,
@@ -179,6 +181,7 @@ function FinanceShell({ profile, ownerId }: { profile: UserProfile; ownerId: str
       : location.pathname.includes("/insights") ? "settings"
         : location.pathname.includes("/categories") ? "settings"
       : location.pathname.includes("/goals") ? "goals"
+      : location.pathname.includes("/debts") ? "debts"
       : location.pathname.includes("/wallets") ? "wallets"
       : location.pathname.includes("/offline") ? "offline"
         : location.pathname.includes("/settings") ? "settings" : "home";
@@ -203,6 +206,7 @@ function FinanceShell({ profile, ownerId }: { profile: UserProfile; ownerId: str
           <NavLink to="/app/transactions" className={({ isActive }) => isActive ? "active" : ""}><List size={19} />{t("Transaksi", "Transactions")}</NavLink>
           <NavLink to="/app/budgets" className={({ isActive }) => isActive ? "active" : ""}><PiggyBank size={19} />{t("Anggaran", "Budgets")}</NavLink>
           <NavLink to="/app/goals" className={({ isActive }) => isActive ? "active" : ""}><Target size={19} />{t("Target tabungan", "Savings goals")}</NavLink>
+          <NavLink to="/app/debts" className={({ isActive }) => isActive ? "active" : ""}><HandCoins size={19} />{t("Utang & piutang", "Debts & receivables")}</NavLink>
           <NavLink to="/app/insights" className={({ isActive }) => isActive ? "active" : ""}><ChartNoAxesCombined size={19} />{t("Laporan", "Reports")}</NavLink>
           <NavLink to="/app/wallets" className={({ isActive }) => isActive ? "active" : ""}><WalletCards size={19} />{t("Dompet", "Wallets")}</NavLink>
           <NavLink to="/app/offline" className={({ isActive }) => isActive ? "active" : ""}><CloudOff size={19} />{t("Draf offline", "Offline drafts")}</NavLink>
@@ -230,6 +234,9 @@ function FinanceShell({ profile, ownerId }: { profile: UserProfile; ownerId: str
             <Route path="budgets" element={<BudgetsPage profile={profile} ownerId={ownerId} />} />
             <Route path="goals" element={<SavingsGoalsPage profile={profile} ownerId={ownerId} />} />
             <Route path="goals/:goalId" element={<SavingsGoalsPage profile={profile} ownerId={ownerId} />} />
+            <Route path="debts" element={<DebtsPage ownerId={ownerId} profile={profile} />} />
+            <Route path="debts/:debtId" element={<DebtsPage ownerId={ownerId} profile={profile} />} />
+            <Route path="debts/:debtId/pay" element={<DebtsPage ownerId={ownerId} profile={profile} />} />
             <Route path="insights" element={<InsightsPage profile={profile} ownerId={ownerId} />} />
             <Route path="categories" element={<CategoriesPage ownerId={ownerId} />} />
             <Route path="wallets" element={<WalletsPage ownerId={ownerId} />} />
@@ -270,6 +277,11 @@ function MoreSettingsPage({ profile }: { profile: UserProfile }) {
         <Link className="settings-directory-card" to="/app/goals">
           <span className="settings-directory-icon"><Target size={22} /></span>
           <span><strong>{t("Target tabungan", "Savings goals")}</strong><small>{t("Pantau target dan setoran dari transfer nyata.", "Track a goal and contributions from actual transfers.")}</small></span>
+          <ChevronRight size={20} />
+        </Link>
+        <Link className="settings-directory-card" to="/app/debts">
+          <span className="settings-directory-icon"><HandCoins size={22} /></span>
+          <span><strong>{t("Utang & piutang", "Debts & receivables")}</strong><small>{t("Pantau pokok, jatuh tempo, dan pembayaran tanpa menggandakan pengeluaran.", "Track principal, due dates, and payments without double-counting spending.")}</small></span>
           <ChevronRight size={20} />
         </Link>
         <Link className="settings-directory-card" to="/app/insights">
@@ -798,12 +810,21 @@ function Dashboard({ profile, ownerId }: { profile: UserProfile; ownerId: string
   const { t, locale, hidden, toggleHidden } = usePreferences();
   const wallets = useWallets(ownerId);
   const recent = useRecentEvents(ownerId, 5);
+  const debts = useQuery({
+    queryKey: ["finance-debts", ownerId],
+    queryFn: () => apiData("/api/v1/debts", debtListSchema),
+    staleTime: 15_000,
+  });
   const month = monthInTimezone(profile.timezone);
   const budgets = useBudgets(ownerId, month);
   if (wallets.isPending || recent.isPending) return loadingPanel(t("Memuat ringkasan keuangan…", "Loading your finance overview…"));
   if (wallets.isError || recent.isError) return unavailablePanel(() => { void wallets.refetch(); void recent.refetch(); }, t("Saldo atau catatan terbaru tidak dapat dimuat.", "Balances or recent records could not be loaded."));
   const total = sumMinor(wallets.data.items.filter((wallet) => wallet.archivedAt === null).map((wallet) => wallet.balanceMinor));
   const events = recent.data.items;
+  const activeDebts = debts.data?.filter((debt) => debt.status === "active" && !debt.archivedAt) ?? [];
+  const amount = (value: string) => hidden ? "Rp••••••" : formatIdr(value, locale);
+  const totalOwed = sumMinor(activeDebts.filter((debt) => debt.direction === "owed_by_user").map((debt) => debt.remainingMinor));
+  const totalReceivable = sumMinor(activeDebts.filter((debt) => debt.direction === "owed_to_user").map((debt) => debt.remainingMinor));
   return (
     <>
       <FinanceHeading title={t("Ringkasan keuangan", "Finance overview")} description={new Intl.DateTimeFormat(locale, { dateStyle: "full", timeZone: profile.timezone }).format(new Date())} action={<Button asChild><Link to="/app/transactions/new"><Plus size={18} />{t("Catat transaksi", "Record transaction")}</Link></Button>} />
@@ -813,6 +834,10 @@ function Dashboard({ profile, ownerId }: { profile: UserProfile; ownerId: string
         <Card className="private-summary-note"><ChartNoAxesCombined size={24} /><div><strong>{t("Ringkasan dari catatanmu", "Based on your records")}</strong><p>{t("Saldo berasal dari mutasi terkonfirmasi. Panel anggaran membandingkan rencana dan transaksi pada bulan ini.", "Balances come from confirmed postings. The budget panel compares this month’s plans and transactions.")}</p></div></Card>
       </div>
       {budgets.isPending ? loadingPanel(t("Memuat anggaran…", "Loading budgets…")) : budgets.isError ? <Card className="budget-summary-card"><EmptyState icon={<PiggyBank />} title={t("Anggaran sementara belum dapat dimuat", "Budgets are temporarily unavailable")} action={<Button variant="secondary" onClick={() => void budgets.refetch()}><RefreshCw size={17} />{t("Coba lagi", "Try again")}</Button>}>{t("Saldo dan transaksi tetap ditampilkan dari data server yang berhasil diverifikasi.", "Your verified balances and transactions remain available.")}</EmptyState></Card> : <BudgetSummary budgets={budgets.data} month={month} locale={locale} />}
+      <Card className="private-debt-summary">
+        <div className="private-section-heading"><div><h2>{t("Utang dan piutang", "Debts and receivables")}</h2><p>{t("Sisa pokok dari catatan ledger terkonfirmasi", "Remaining principal from confirmed ledger records")}</p></div><Link to="/app/debts">{t("Lihat semua", "View all")}<ArrowRight size={16} /></Link></div>
+        {debts.isPending ? <p className="muted" role="status">{t("Memuat saldo utang/piutang…", "Loading debt balances…")}</p> : debts.isError || !debts.data ? <div className="offline-stale-notice" role="status">{t("Saldo utang/piutang belum dapat diverifikasi.", "Debt balances could not be verified.")} <Button variant="ghost" size="small" onClick={() => void debts.refetch()}>{t("Coba lagi", "Try again")}</Button></div> : <div className="private-debt-totals"><div><span>{t("Sisa utang", "Debt remaining")}</span><strong>{amount(totalOwed)}</strong></div><div><span>{t("Sisa piutang", "Receivable remaining")}</span><strong>{amount(totalReceivable)}</strong></div></div>}
+      </Card>
       <Card className="private-recent-card">
         <div className="private-section-heading"><div><h2>{t("Transaksi terbaru", "Recent transactions")}</h2><p>{t("Catatan yang sudah masuk ke buku besar", "Records posted to your ledger")}</p></div><Link to="/app/transactions">{t("Lihat semua", "View all")}<ArrowRight size={16} /></Link></div>
         {events.length ? <EventList events={events} locale={locale} timezone={profile.timezone} hidden={hidden} /> : <EmptyState icon={<Banknote />} title={t("Belum ada transaksi", "No transactions yet")} action={<Button asChild><Link to="/app/transactions/new"><Plus size={17} />{t("Catat transaksi pertama", "Record your first transaction")}</Link></Button>}>{t("Transaksi contoh hanya ada di demo. Catatan pribadi mulai muncul setelah kamu mencatatnya.", "Sample transactions live in the demo only. Your private records appear after you add one.")}</EmptyState>}
@@ -1629,6 +1654,300 @@ function walletTypeName(type: Wallet["type"], t: (id: string, en: string) => str
     savings: ["Tabungan", "Savings"], other: ["Lainnya", "Other"],
   };
   return t(...names[type]);
+}
+
+function DebtsPage({ ownerId, profile }: { ownerId: string; profile: UserProfile }) {
+  const { t, locale, hidden } = usePreferences();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { debtId } = useParams();
+  const queryClient = useQueryClient();
+  const [creating, setCreating] = useState(false);
+  const [directionFilter, setDirectionFilter] = useState<"all" | "owed_by_user" | "owed_to_user">("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "settled">("active");
+  const createKey = useRef<{ fingerprint: string; key: string } | null>(null);
+  const paymentKey = useRef<{ fingerprint: string; key: string } | null>(null);
+  const debts = useQuery({
+    queryKey: ["finance-debts", ownerId],
+    queryFn: () => apiData("/api/v1/debts", debtListSchema),
+    staleTime: 15_000,
+  });
+  const wallets = useWallets(ownerId);
+  const categories = useCategories(ownerId);
+  const payments = useQuery({
+    queryKey: ["finance-debt-payments", ownerId, debtId],
+    queryFn: () => apiData(`/api/v1/debts/${debtId}/payments`, debtPaymentListSchema),
+    enabled: Boolean(debtId) && !location.pathname.endsWith("/pay"),
+    staleTime: 10_000,
+  });
+  const create = useMutation({
+    mutationFn: async ({ payload, fingerprint }: { payload: ReturnType<typeof debtCreateSchema.parse>; fingerprint: string }) => {
+      if (!createKey.current || createKey.current.fingerprint !== fingerprint) {
+        createKey.current = { fingerprint, key: crypto.randomUUID() };
+      }
+      return apiData("/api/v1/debts", debtCreateResultSchema, {
+        method: "POST",
+        headers: { "Idempotency-Key": createKey.current.key },
+        body: JSON.stringify(payload),
+      });
+    },
+    onSuccess: async (result) => {
+      createKey.current = null;
+      setCreating(false);
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["finance-debts", ownerId] }),
+        queryClient.invalidateQueries({ queryKey: ["finance-wallets", ownerId] }),
+        queryClient.invalidateQueries({ queryKey: ["finance-events", ownerId] }),
+      ]);
+      navigate(`/app/debts/${result.id}`);
+    },
+  });
+  const pay = useMutation({
+    mutationFn: async ({ debt, payload, fingerprint }: {
+      debt: Debt;
+      payload: ReturnType<typeof debtPaymentCreateSchema.parse>;
+      fingerprint: string;
+    }) => {
+      if (!paymentKey.current || paymentKey.current.fingerprint !== fingerprint) {
+        paymentKey.current = { fingerprint, key: crypto.randomUUID() };
+      }
+      return apiData(`/api/v1/debts/${debt.id}/payments`, debtPaymentSchema, {
+        method: "POST",
+        headers: { "Idempotency-Key": paymentKey.current.key },
+        body: JSON.stringify(payload),
+      });
+    },
+    onSuccess: async () => {
+      paymentKey.current = null;
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["finance-debts", ownerId] }),
+        queryClient.invalidateQueries({ queryKey: ["finance-debt-payments", ownerId, debtId] }),
+        queryClient.invalidateQueries({ queryKey: ["finance-wallets", ownerId] }),
+        queryClient.invalidateQueries({ queryKey: ["finance-events", ownerId] }),
+      ]);
+      if (debtId) navigate(`/app/debts/${debtId}`);
+    },
+  });
+  if (debts.isPending) return loadingPanel(t("Memuat utang dan piutang…", "Loading debts and receivables…"));
+  if (debts.isError || !debts.data) return unavailablePanel(
+    () => void debts.refetch(),
+    t("Data utang/piutang privat belum dapat dimuat.", "Private debt and receivable data could not be loaded."),
+  );
+
+  const entries = debts.data;
+  const selected = debtId ? entries.find((debt) => debt.id === debtId) : undefined;
+  const activeWallets = wallets.data?.items.filter((wallet) => !wallet.archivedAt) ?? [];
+  const activeCategories = categories.data?.items.filter((category) => !category.archivedAt) ?? [];
+  const displayMoney = (amount: string) => hidden ? "Rp••••••" : formatIdr(amount, locale);
+  const dateText = (date: string | null) => date
+    ? new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`))
+    : t("Belum dijadwalkan", "No due date");
+  const submitCreate = (payload: ReturnType<typeof debtCreateSchema.parse>) => {
+    create.reset();
+    create.mutate({ payload, fingerprint: JSON.stringify(payload) });
+  };
+  const submitPayment = (payload: ReturnType<typeof debtPaymentCreateSchema.parse>) => {
+    if (!selected) return;
+    pay.reset();
+    pay.mutate({ debt: selected, payload, fingerprint: JSON.stringify({ debtId: selected.id, ...payload }) });
+  };
+
+  if (debtId && !selected) return <Card><EmptyState icon={<HandCoins />} title={t("Utang/piutang tidak ditemukan", "Debt or receivable not found")} action={<Button asChild variant="secondary"><Link to="/app/debts">{t("Kembali ke daftar", "Back to list")}</Link></Button>}>{t("Data ini tidak tersedia untuk akunmu atau sudah tidak aktif.", "This record is unavailable to your account or is no longer active.")}</EmptyState></Card>;
+
+  if (selected && location.pathname.endsWith("/pay")) {
+    if (selected.status === "settled") return <Card><EmptyState icon={<HandCoins />} title={t("Pokok sudah lunas", "Principal is settled")} action={<Button asChild variant="secondary"><Link to={`/app/debts/${selected.id}`}>{t("Lihat detail", "View details")}</Link></Button>}>{t("Pembayaran baru tidak dapat melebihi saldo pokok yang tersisa.", "A new payment cannot exceed the remaining principal.")}</EmptyState></Card>;
+    return <section className="debts-page">
+      <div className="debt-back-row"><Button asChild variant="ghost" size="small"><Link to={`/app/debts/${selected.id}`}><ArrowRight className="debt-back-icon" size={16} />{t("Kembali ke detail", "Back to details")}</Link></Button></div>
+      <FinanceHeading title={t("Catat pembayaran", "Record payment")} description={t("Pokok mengurangi saldo utang/piutang; bunga atau biaya dicatat sebagai peristiwa terpisah.", "Principal reduces the debt balance; interest or fees are recorded as a separate event.")} />
+      <Card className="debt-payment-summary"><span>{selected.counterpartyLabel ?? t("Tanpa pihak", "No counterparty")}</span><strong>{displayMoney(selected.remainingMinor)}</strong><small>{t("Sisa pokok", "Remaining principal")}</small></Card>
+      {wallets.isPending || categories.isPending ? loadingPanel(t("Memuat sumber uang dan kategori…", "Loading wallets and categories…")) : wallets.isError ? unavailablePanel(() => void wallets.refetch(), t("Sumber uang belum dapat dimuat.", "Wallets could not be loaded.")) : !activeWallets.length ? <Card><EmptyState icon={<WalletCards />} title={t("Siapkan dompet terlebih dahulu", "Set up a wallet first")} action={<Button asChild><Link to="/app/wallets">{t("Tambah dompet", "Add wallet")}</Link></Button>}>{t("Pembayaran memerlukan dompet yang aktif.", "A payment needs an active wallet.")}</EmptyState></Card> : <DebtPaymentForm
+        debt={selected} profile={profile} wallets={activeWallets} categories={activeCategories}
+        busy={pay.isPending}
+        error={pay.error instanceof ApiClientError ? pay.error.publicMessage ?? t("Pembayaran belum tersimpan. Coba lagi.", "Payment was not saved. Try again.") : pay.error ? t("Periksa nominal, waktu, dan sumber uang.", "Check the amounts, time, and wallet.") : null}
+        onCancel={() => navigate(`/app/debts/${selected.id}`)} onSubmit={submitPayment}
+      />}
+    </section>;
+  }
+
+  if (selected) {
+    const progress = progressPercent(selected.paidMinor, selected.principalMinor);
+    return <section className="debts-page">
+      <div className="debt-back-row"><Button asChild variant="ghost" size="small"><Link to="/app/debts"><ArrowRight className="debt-back-icon" size={16} />{t("Semua utang & piutang", "All debts & receivables")}</Link></Button></div>
+      <FinanceHeading title={selected.counterpartyLabel ?? t("Tanpa pihak", "No counterparty")} description={selected.direction === "owed_by_user" ? t("Utang yang perlu kamu bayar.", "Money you owe.") : t("Piutang yang perlu kamu terima.", "Money owed to you.")} action={selected.status === "active" ? <Button asChild><Link to={`/app/debts/${selected.id}/pay`}><Banknote size={17} />{t("Catat pembayaran", "Record payment")}</Link></Button> : undefined} />
+      <Card className={`debt-detail-hero ${selected.direction}`}>
+        <span>{selected.direction === "owed_by_user" ? t("Sisa pokok utang", "Remaining debt principal") : t("Sisa pokok piutang", "Remaining receivable")}</span>
+        <strong>{displayMoney(selected.remainingMinor)}</strong>
+        <div className="debt-progress" role="progressbar" aria-label={t("Pokok terbayar", "Principal paid")} aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress}><span style={{ width: `${progress}%` }} /></div>
+        <small>{t(`${progress}% pokok telah dibayar dari ${displayMoney(selected.principalMinor)}`, `${progress}% of ${displayMoney(selected.principalMinor)} principal paid`)}</small>
+      </Card>
+      <div className="debt-detail-grid">
+        <Card className="debt-facts-card"><h2>{t("Rincian", "Details")}</h2><dl>
+          <div><dt>{t("Jenis", "Type")}</dt><dd>{selected.direction === "owed_by_user" ? t("Utang", "Debt") : t("Piutang", "Receivable")}</dd></div>
+          <div><dt>{t("Pokok awal", "Original principal")}</dt><dd>{displayMoney(selected.principalMinor)}</dd></div>
+          <div><dt>{t("Terbayar", "Paid")}</dt><dd>{displayMoney(selected.paidMinor)}</dd></div>
+          <div><dt>{t("Dibuka", "Opened")}</dt><dd>{dateText(selected.openingDate)}</dd></div>
+          <div><dt>{t("Jatuh tempo", "Due date")}</dt><dd>{dateText(selected.dueDate)}</dd></div>
+          <div><dt>{t("Rencana cicilan", "Planned installment")}</dt><dd>{selected.installmentMinor ? displayMoney(selected.installmentMinor) : t("Belum diatur", "Not set")}</dd></div>
+          <div><dt>{t("Saldo dompet saat dibuka", "Opening wallet")}</dt><dd>{selected.walletName ?? t("Tidak mengubah dompet", "No wallet change")}</dd></div>
+        </dl>{selected.note ? <p className="debt-note">{selected.note}</p> : null}</Card>
+        <Card className="debt-payment-history"><h2>{t("Riwayat pembayaran", "Payment history")}</h2>
+          {payments.isPending ? <p role="status">{t("Memuat riwayat…", "Loading history…")}</p> : payments.isError ? <div className="offline-stale-notice" role="status">{t("Riwayat pembayaran belum dapat dimuat.", "Payment history could not be loaded.")} <Button variant="ghost" size="small" onClick={() => void payments.refetch()}>{t("Coba lagi", "Try again")}</Button></div> : payments.data?.length ? <ol className="debt-payment-list">{payments.data.map((payment) => <li key={payment.id}><span className="debt-payment-marker" aria-hidden="true"><Banknote size={17} /></span><div><strong>{dateText(payment.effectiveAt.slice(0, 10))}</strong><span>{payment.note ?? t("Pembayaran pokok", "Principal payment")}</span><small>{t("Pokok", "Principal")}: {displayMoney(payment.principalMinor)}{payment.feeMinor !== "0" ? ` · ${t("Bunga/biaya", "Interest/fee")}: ${displayMoney(payment.feeMinor)}` : ""}</small></div></li>)}</ol> : <EmptyState icon={<Banknote />} title={t("Belum ada pembayaran", "No payments yet")}>{t("Pembayaran hanya dicatat setelah benar-benar dilakukan.", "A payment is recorded only after it actually happens.")}</EmptyState>}
+        </Card>
+      </div>
+    </section>;
+  }
+
+  const activeDebts = entries.filter((debt) => debt.status === "active" && !debt.archivedAt);
+  const owedByTotal = sumMinor(activeDebts.filter((debt) => debt.direction === "owed_by_user").map((debt) => debt.remainingMinor));
+  const owedToTotal = sumMinor(activeDebts.filter((debt) => debt.direction === "owed_to_user").map((debt) => debt.remainingMinor));
+  const visibleDebts = entries.filter((debt) =>
+    (directionFilter === "all" || debt.direction === directionFilter) &&
+    (statusFilter === "all" || debt.status === statusFilter),
+  );
+  return <section className="debts-page">
+    <FinanceHeading title={t("Utang & piutang", "Debts & receivables")} description={t("Pantau pokok, jadwal, dan pembayaran. Bunga atau biaya terpisah dari konsumsi.", "Track principal, schedule, and payments. Interest and fees stay separate from consumption.")} action={<Button onClick={() => { setCreating((current) => !current); create.reset(); }}><Plus size={18} />{t("Catat utang/piutang", "Add debt/receivable")}</Button>} />
+    {creating ? wallets.isPending ? loadingPanel(t("Memuat sumber uang…", "Loading wallets…")) : wallets.isError ? unavailablePanel(() => void wallets.refetch(), t("Sumber uang belum dapat dimuat.", "Wallets could not be loaded.")) : <DebtCreateForm
+      profile={profile} wallets={activeWallets} busy={create.isPending}
+      error={create.error instanceof ApiClientError ? create.error.publicMessage ?? t("Utang/piutang belum dapat dicatat. Coba lagi.", "Debt or receivable could not be saved. Try again.") : create.error ? t("Periksa nominal, tanggal, dan sumber uang.", "Check the amount, dates, and wallet.") : null}
+      onCancel={() => { setCreating(false); create.reset(); }} onSubmit={submitCreate}
+    /> : null}
+    <div className="debt-summary-grid">
+      <Card className="debt-summary-card debt-summary-owed"><span className="debt-summary-icon"><HandCoins size={20} /></span><span>{t("Total utang · sisa pokok", "Total debt · remaining principal")}</span><strong>{displayMoney(owedByTotal)}</strong><small>{t(`${activeDebts.filter((debt) => debt.direction === "owed_by_user").length} utang aktif`, `${activeDebts.filter((debt) => debt.direction === "owed_by_user").length} active debts`)}</small></Card>
+      <Card className="debt-summary-card debt-summary-receivable"><span className="debt-summary-icon"><ArrowDownLeft size={20} /></span><span>{t("Total piutang · sisa pokok", "Total receivable · remaining principal")}</span><strong>{displayMoney(owedToTotal)}</strong><small>{t(`${activeDebts.filter((debt) => debt.direction === "owed_to_user").length} piutang aktif`, `${activeDebts.filter((debt) => debt.direction === "owed_to_user").length} active receivables`)}</small></Card>
+    </div>
+    <Card className="debt-list-card">
+      <div className="debt-list-heading"><div><h2>{t("Daftar catatan", "Records")}</h2><p>{t("Sisa saldo dihitung dari pembukaan dan pembayaran ledger.", "Remaining balances come from opening and ledger payment events.")}</p></div>
+        <div className="debt-filter-controls"><label className="private-select-field"><span>{t("Jenis", "Type")}</span><select aria-label={t("Jenis utang/piutang", "Debt or receivable type")} value={directionFilter} onChange={(event) => setDirectionFilter(event.target.value as typeof directionFilter)}><option value="all">{t("Semua", "All")}</option><option value="owed_by_user">{t("Utang", "Debt")}</option><option value="owed_to_user">{t("Piutang", "Receivable")}</option></select></label><label className="private-select-field"><span>{t("Status", "Status")}</span><select aria-label={t("Status utang/piutang", "Debt or receivable status")} value={statusFilter} onChange={(event) => setStatusFilter(event.target.value as typeof statusFilter)}><option value="all">{t("Semua", "All")}</option><option value="active">{t("Aktif", "Active")}</option><option value="settled">{t("Lunas", "Settled")}</option></select></label></div>
+      </div>
+      {visibleDebts.length ? <div className="debt-card-list">{visibleDebts.map((debt) => <article className={`debt-list-item ${debt.archivedAt ? "is-archived" : ""}`} key={debt.id}>
+        <div className="debt-list-identity"><span className={`debt-list-icon ${debt.direction}`}><HandCoins size={19} /></span><div><strong>{debt.counterpartyLabel ?? t("Tanpa pihak", "No counterparty")}</strong><span>{debt.direction === "owed_by_user" ? t("Kamu berutang", "You owe") : t("Orang berutang kepadamu", "Owed to you")}</span></div><span className={`debt-status ${debt.status}`}>{debt.status === "active" ? t("Aktif", "Active") : t("Lunas", "Settled")}</span></div>
+        <dl className="debt-list-facts"><div><dt>{t("Sisa pokok", "Remaining principal")}</dt><dd>{displayMoney(debt.remainingMinor)}</dd></div><div><dt>{t("Jatuh tempo", "Due date")}</dt><dd>{dateText(debt.dueDate)}</dd></div><div><dt>{t("Rencana cicilan", "Planned installment")}</dt><dd>{debt.installmentMinor ? displayMoney(debt.installmentMinor) : "—"}</dd></div></dl>
+        <div className="debt-list-actions"><Button asChild variant="secondary" size="small"><Link to={`/app/debts/${debt.id}`}>{t("Lihat detail", "View details")}<ChevronRight size={16} /></Link></Button>{debt.status === "active" && !debt.archivedAt ? <Button asChild size="small"><Link to={`/app/debts/${debt.id}/pay`}><Banknote size={16} />{t("Catat pembayaran", "Record payment")}</Link></Button> : null}</div>
+      </article>)}</div> : <EmptyState icon={<HandCoins />} title={t("Belum ada catatan utang/piutang", "No debt or receivable records")} action={<Button onClick={() => setCreating(true)}><Plus size={17} />{t("Catat utang/piutang", "Add debt/receivable")}</Button>}>{t("Catatan pembukaan memakai ledger; draf atau ilustrasi tidak mengubah saldo.", "Opening records use the ledger; drafts or illustrations never change balances.")}</EmptyState>}
+    </Card>
+  </section>;
+}
+
+function DebtCreateForm({ profile, wallets, busy, error, onCancel, onSubmit }: {
+  profile: UserProfile;
+  wallets: Wallet[];
+  busy: boolean;
+  error: string | null;
+  onCancel: () => void;
+  onSubmit: (payload: ReturnType<typeof debtCreateSchema.parse>) => void;
+}) {
+  const { t } = usePreferences();
+  const [direction, setDirection] = useState<"owed_by_user" | "owed_to_user">("owed_by_user");
+  const [origin, setOrigin] = useState<"opening" | "loan">("opening");
+  const [counterparty, setCounterparty] = useState("");
+  const [principal, setPrincipal] = useState("");
+  const [openingDate, setOpeningDate] = useState(() => toLocalInput(profile.timezone).slice(0, 10));
+  const [dueDate, setDueDate] = useState("");
+  const [installment, setInstallment] = useState("");
+  const [walletId, setWalletId] = useState(wallets[0]?.id ?? "");
+  const [allowNegative, setAllowNegative] = useState(false);
+  const [note, setNote] = useState("");
+  const [validationError, setValidationError] = useState<string | null>(null);
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    setValidationError(null);
+    try {
+      const principalMinor = parseIdrInput(principal);
+      const selectedWalletId = origin === "loan" ? walletId || null : null;
+      const walletBalance = BigInt(wallets.find((wallet) => wallet.id === selectedWalletId)?.balanceMinor ?? "0");
+      if (origin === "loan" && direction === "owed_to_user" && walletBalance < BigInt(principalMinor) && !allowNegative) {
+        throw new Error(t("Saldo dompet lebih kecil dari pinjaman yang diberikan. Konfirmasikan jika saldo catatan boleh menjadi negatif.", "The wallet balance is below the loan amount. Confirm if the recorded balance may become negative."));
+      }
+      onSubmit(debtCreateSchema.parse({
+        direction, origin, counterpartyLabel: counterparty.trim() || null,
+        principalMinor, openingDate,
+        dueDate: dueDate || null, installmentMinor: installment ? parseIdrInput(installment) : null,
+        walletId: selectedWalletId,
+        allowNegative: origin === "loan" && direction === "owed_to_user" && allowNegative,
+        timezone: profile.timezone, note: note.trim() || undefined,
+      }));
+    } catch (cause) {
+      setValidationError(cause instanceof Error ? cause.message : t("Periksa kembali data utang/piutang.", "Check the debt or receivable details."));
+    }
+  };
+  return <Card className="private-form-card debt-editor">
+    <div className="private-form-heading"><div><span className="section-kicker">{t("Catatan ledger pribadi", "Private ledger record")}</span><h2>{t("Catat utang atau piutang", "Add a debt or receivable")}</h2></div><Button variant="ghost" size="icon" aria-label={t("Tutup", "Close")} onClick={onCancel}><X size={19} /></Button></div>
+    <form className="finance-form" onSubmit={submit}>
+      <label className="private-select-field"><span>{t("Arah saldo", "Balance direction")}</span><select value={direction} onChange={(event) => setDirection(event.target.value as typeof direction)}><option value="owed_by_user">{t("Saya berutang", "I owe money")}</option><option value="owed_to_user">{t("Orang berutang kepada saya", "Someone owes me")}</option></select></label>
+      <label className="private-select-field"><span>{t("Asal catatan", "Record origin")}</span><select value={origin} onChange={(event) => setOrigin(event.target.value as typeof origin)}><option value="opening">{t("Saldo yang sudah ada", "Existing balance")}</option><option value="loan">{t("Pinjaman baru", "New loan")}</option></select></label>
+      <p className="debt-form-guidance" role="status">{origin === "opening" ? t("Saldo pembukaan mencatat posisi utang/piutang yang sudah ada tanpa mengubah dompet.", "An opening balance records an existing debt or receivable without changing a wallet.") : direction === "owed_by_user" ? t("Pokok pinjaman baru masuk ke dompet pilihan dan membentuk kewajiban.", "New borrowed principal enters the selected wallet and creates a liability.") : t("Pokok pinjaman yang kamu berikan keluar dari dompet dan membentuk piutang.", "New lent principal leaves the selected wallet and creates a receivable.")}</p>
+      <TextField label={t("Pihak (opsional)", "Counterparty (optional)")} value={counterparty} onChange={(event) => setCounterparty(event.target.value)} maxLength={100} placeholder={t("Nama orang atau lembaga", "Person or organization")} />
+      <TextField label={t("Pokok awal (rupiah)", "Original principal (rupiah)")} inputMode="numeric" autoComplete="off" value={principal} onChange={(event) => setPrincipal(event.target.value)} placeholder="300.000" required />
+      {origin === "loan" ? <label className="private-select-field"><span>{direction === "owed_by_user" ? t("Uang masuk ke dompet", "Money enters wallet") : t("Uang keluar dari dompet", "Money leaves wallet")}</span><select value={walletId} onChange={(event) => setWalletId(event.target.value)} required>{wallets.map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name} · {formatIdr(wallet.balanceMinor)}</option>)}</select></label> : null}
+      {origin === "loan" && direction === "owed_to_user" ? <label className="negative-confirmation"><input type="checkbox" checked={allowNegative} onChange={(event) => setAllowNegative(event.target.checked)} /><span>{t("Izinkan saldo catatan menjadi negatif jika pinjaman ini sudah benar-benar diberikan.", "Allow the recorded balance to go negative if this loan has already been issued.")}</span></label> : null}
+      <div className="debt-form-two-col"><TextField label={t("Tanggal dibuka", "Opening date")} type="date" value={openingDate} onChange={(event) => setOpeningDate(event.target.value)} required /><TextField label={t("Jatuh tempo (opsional)", "Due date (optional)")} type="date" value={dueDate} onChange={(event) => setDueDate(event.target.value)} min={openingDate || undefined} /></div>
+      <TextField label={t("Rencana cicilan pokok (opsional)", "Planned principal installment (optional)")} inputMode="numeric" autoComplete="off" value={installment} onChange={(event) => setInstallment(event.target.value)} placeholder="100.000" />
+      <TextField label={t("Catatan (opsional)", "Note (optional)")} value={note} onChange={(event) => setNote(event.target.value)} maxLength={500} />
+      {validationError ? <p className="form-error" role="alert">{validationError}</p> : null}
+      {error ? <p className="form-error" role="alert">{error}</p> : null}
+      <div className="private-form-actions"><Button type="submit" loading={busy}>{t("Simpan catatan", "Save record")}</Button><Button type="button" variant="secondary" onClick={onCancel}>{t("Batal", "Cancel")}</Button></div>
+    </form>
+  </Card>;
+}
+
+function DebtPaymentForm({ debt, profile, wallets, categories, busy, error, onCancel, onSubmit }: {
+  debt: Debt;
+  profile: UserProfile;
+  wallets: Wallet[];
+  categories: { id: string; name: string; parentId: string | null; iconKey: string | null; colorToken: string | null; archivedAt: string | null }[];
+  busy: boolean;
+  error: string | null;
+  onCancel: () => void;
+  onSubmit: (payload: ReturnType<typeof debtPaymentCreateSchema.parse>) => void;
+}) {
+  const { t } = usePreferences();
+  const [walletId, setWalletId] = useState(wallets[0]?.id ?? "");
+  const [principal, setPrincipal] = useState(debt.installmentMinor ?? debt.remainingMinor);
+  const [fee, setFee] = useState("0");
+  const [principalCategoryId, setPrincipalCategoryId] = useState("");
+  const [feeCategoryId, setFeeCategoryId] = useState("");
+  const [allowNegative, setAllowNegative] = useState(false);
+  const [effectiveAt, setEffectiveAt] = useState(() => toLocalInput(profile.timezone));
+  const [note, setNote] = useState("");
+  const [validationError, setValidationError] = useState<string | null>(null);
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    setValidationError(null);
+    try {
+      const principalMinor = parseIdrInput(principal);
+      const feeMinor = fee.trim() ? parseIdrInput(fee) : "0";
+      if (BigInt(principalMinor) > BigInt(debt.remainingMinor)) throw new Error(t("Pokok pembayaran melebihi sisa saldo.", "Principal payment exceeds the remaining balance."));
+      const walletBalance = BigInt(wallets.find((wallet) => wallet.id === walletId)?.balanceMinor ?? "0");
+      if (debt.direction === "owed_by_user" && walletBalance < BigInt(principalMinor) + BigInt(feeMinor) && !allowNegative) {
+        throw new Error(t("Saldo dompet lebih kecil dari pembayaran. Konfirmasikan jika saldo catatan boleh menjadi negatif.", "The wallet balance is below this payment. Confirm if the recorded balance may become negative."));
+      }
+      onSubmit(debtPaymentCreateSchema.parse({
+        walletId, principalMinor, feeMinor, allowNegative,
+        effectiveAt: localDateTimeToIso(effectiveAt, profile.timezone), timezone: profile.timezone,
+        principalCategoryId: principalCategoryId || null, feeCategoryId: feeCategoryId || null,
+        note: note.trim() || undefined,
+      }));
+    } catch (cause) {
+      setValidationError(cause instanceof Error ? cause.message : t("Periksa data pembayaran.", "Check the payment details."));
+    }
+  };
+  return <Card className="private-form-card debt-payment-editor">
+    <div className="private-form-heading"><div><span className="section-kicker">{debt.counterpartyLabel ?? t("Utang/piutang", "Debt or receivable")}</span><h2>{t("Konfirmasi pembayaran nyata", "Confirm an actual payment")}</h2></div><Button variant="ghost" size="icon" aria-label={t("Tutup", "Close")} onClick={onCancel}><X size={19} /></Button></div>
+    <p className="debt-form-guidance">{debt.direction === "owed_by_user" ? t("Saldo dompet berkurang sebesar pokok dan biaya. Pokok bukan pengeluaran konsumsi.", "Wallet balance decreases by principal and fees. Principal is not consumption spending.") : t("Saldo dompet bertambah sebesar pokok dan penerimaan bunga/biaya dicatat terpisah.", "Wallet balance increases by principal; received interest or fees are recorded separately.")}</p>
+    <form className="finance-form" onSubmit={submit}>
+      <TextField label={t("Pokok dibayar (rupiah)", "Principal paid (rupiah)")} inputMode="numeric" autoComplete="off" value={principal} onChange={(event) => setPrincipal(event.target.value)} required />
+      <TextField label={t("Bunga/biaya terpisah (rupiah)", "Separate interest/fee (rupiah)")} inputMode="numeric" autoComplete="off" value={fee} onChange={(event) => setFee(event.target.value)} description={t("Isi 0 jika tidak ada; biaya tidak mengurangi pokok.", "Enter 0 if none; fees do not reduce principal.")} required />
+      <label className="private-select-field"><span>{debt.direction === "owed_by_user" ? t("Bayar dari dompet", "Pay from wallet") : t("Terima ke dompet", "Receive into wallet")}</span><select value={walletId} onChange={(event) => setWalletId(event.target.value)} required>{wallets.map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name} · {formatIdr(wallet.balanceMinor)}</option>)}</select></label>
+      {debt.direction === "owed_by_user" ? <label className="negative-confirmation"><input type="checkbox" checked={allowNegative} onChange={(event) => setAllowNegative(event.target.checked)} /><span>{t("Izinkan saldo catatan dompet menjadi negatif jika pembayaran ini sudah benar-benar terjadi.", "Allow the recorded wallet balance to go negative if this payment has already happened.")}</span></label> : null}
+      <label className="private-select-field"><span>{t("Kategori envelope Cicilan (opsional)", "Installment budget category (optional)")}</span><select value={principalCategoryId} onChange={(event) => setPrincipalCategoryId(event.target.value)}><option value="">{t("Tanpa kategori", "No category")}</option>{categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}</select></label>
+      {categories.length ? <label className="private-select-field"><span>{t("Kategori bunga/biaya (opsional)", "Interest/fee category (optional)")}</span><select value={feeCategoryId} onChange={(event) => setFeeCategoryId(event.target.value)}><option value="">{t("Tanpa kategori", "No category")}</option>{categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}</select></label> : null}
+      <TextField label={t("Waktu pembayaran", "Payment time")} type="datetime-local" value={effectiveAt} onChange={(event) => setEffectiveAt(event.target.value)} required />
+      <TextField label={t("Catatan (opsional)", "Note (optional)")} value={note} onChange={(event) => setNote(event.target.value)} maxLength={500} />
+      {validationError ? <p className="form-error" role="alert">{validationError}</p> : null}
+      {error ? <p className="form-error" role="alert">{error}</p> : null}
+      <div className="private-form-actions"><Button type="submit" loading={busy}>{t("Catat pembayaran", "Record payment")}</Button><Button type="button" variant="secondary" onClick={onCancel}>{t("Batal", "Cancel")}</Button></div>
+    </form>
+  </Card>;
 }
 
 function PrivateNotFound() {

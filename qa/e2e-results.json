@@ -139,12 +139,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 14570,
+                  "duration": 3618,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T04:03:20.417Z",
+                  "startTime": "2026-10-25T04:36:21.847Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -173,12 +173,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 5976,
+                  "duration": 2057,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T04:03:35.465Z",
+                  "startTime": "2026-10-25T04:36:25.595Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -207,12 +207,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 9604,
+                  "duration": 1955,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T04:03:41.502Z",
+                  "startTime": "2026-10-25T04:36:27.666Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -241,12 +241,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 5459,
+                  "duration": 1545,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T04:03:51.206Z",
+                  "startTime": "2026-10-25T04:36:29.643Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -275,12 +275,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 12452,
+                  "duration": 3409,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T04:03:56.732Z",
+                  "startTime": "2026-10-25T04:36:31.207Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -309,12 +309,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 9322,
+                  "duration": 2040,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T04:04:09.235Z",
+                  "startTime": "2026-10-25T04:36:34.632Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -343,12 +343,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 6634,
+                  "duration": 1738,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T04:04:18.602Z",
+                  "startTime": "2026-10-25T04:36:36.687Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -377,12 +377,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 6157,
+                  "duration": 1874,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T04:04:25.284Z",
+                  "startTime": "2026-10-25T04:36:38.435Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -419,12 +419,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 6437,
+                  "duration": 1552,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T04:04:31.529Z",
+                  "startTime": "2026-10-25T04:36:40.332Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -453,12 +453,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 4627,
+                  "duration": 1500,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T04:04:38.004Z",
+                  "startTime": "2026-10-25T04:36:41.897Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -495,12 +495,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 4842,
+                  "duration": 1390,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T04:04:42.738Z",
+                  "startTime": "2026-10-25T04:36:43.427Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -537,12 +537,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 16854,
+                  "duration": 5148,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T04:04:47.659Z",
+                  "startTime": "2026-10-25T04:36:44.846Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -571,12 +571,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 19039,
+                  "duration": 5321,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T04:05:04.562Z",
+                  "startTime": "2026-10-25T04:36:50.008Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -598,6 +598,108 @@
       "line": 0,
       "specs": [
         {
+          "title": "debt and receivable ledger flow keeps principal separate from fees",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2478,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-25T04:36:55.369Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4dd8c78929417285d361-be3366ef431c3744f607",
+          "file": "private-finance.spec.ts",
+          "line": 461,
+          "column": 1
+        },
+        {
+          "title": "a real debt payment can confirm a negative recorded balance",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2259,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-25T04:36:57.857Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4dd8c78929417285d361-237ca04bdad9217b768a",
+          "file": "private-finance.spec.ts",
+          "line": 503,
+          "column": 1
+        },
+        {
+          "title": "a real loan disbursement needs explicit confirmation when the wallet will go negative",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2153,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-25T04:37:00.127Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4dd8c78929417285d361-02d406e7ccf34b256144",
+          "file": "private-finance.spec.ts",
+          "line": 520,
+          "column": 1
+        },
+        {
           "title": "private dashboard uses owner API values and records an exact idempotent transaction",
           "ok": true,
           "tags": [],
@@ -613,12 +715,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 6597,
+                  "duration": 2246,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T04:05:23.825Z",
+                  "startTime": "2026-10-25T04:37:02.292Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -628,7 +730,7 @@
           ],
           "id": "4dd8c78929417285d361-95fd20014e939bd2efd0",
           "file": "private-finance.spec.ts",
-          "line": 364,
+          "line": 542,
           "column": 1
         },
         {
@@ -647,12 +749,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 6169,
+                  "duration": 1950,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T04:05:30.494Z",
+                  "startTime": "2026-10-25T04:37:04.552Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -662,7 +764,7 @@
           ],
           "id": "4dd8c78929417285d361-16a8faa21dffeefb4a51",
           "file": "private-finance.spec.ts",
-          "line": 390,
+          "line": 569,
           "column": 1
         },
         {
@@ -681,12 +783,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 4889,
+                  "duration": 1803,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T04:05:36.737Z",
+                  "startTime": "2026-10-25T04:37:06.513Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -696,7 +798,7 @@
           ],
           "id": "4dd8c78929417285d361-4910dfba06c75d77c1f8",
           "file": "private-finance.spec.ts",
-          "line": 430,
+          "line": 609,
           "column": 1
         },
         {
@@ -715,12 +817,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 6793,
+                  "duration": 2139,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T04:05:41.687Z",
+                  "startTime": "2026-10-25T04:37:08.326Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -730,7 +832,7 @@
           ],
           "id": "4dd8c78929417285d361-fc4a278733cef731e06c",
           "file": "private-finance.spec.ts",
-          "line": 441,
+          "line": 620,
           "column": 1
         },
         {
@@ -749,12 +851,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 6075,
+                  "duration": 2004,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T04:05:48.528Z",
+                  "startTime": "2026-10-25T04:37:10.476Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -764,7 +866,7 @@
           ],
           "id": "4dd8c78929417285d361-a0f66cb162b4fba1fb6e",
           "file": "private-finance.spec.ts",
-          "line": 454,
+          "line": 633,
           "column": 1
         },
         {
@@ -783,12 +885,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 6269,
+                  "duration": 1976,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T04:05:54.650Z",
+                  "startTime": "2026-10-25T04:37:12.490Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -798,7 +900,7 @@
           ],
           "id": "4dd8c78929417285d361-0f0fd4300c6f60d90b17",
           "file": "private-finance.spec.ts",
-          "line": 471,
+          "line": 650,
           "column": 1
         },
         {
@@ -817,12 +919,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 6340,
+                  "duration": 1453,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T04:06:00.973Z",
+                  "startTime": "2026-10-25T04:37:14.476Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -832,7 +934,7 @@
           ],
           "id": "4dd8c78929417285d361-fadba42191f03d91fd22",
           "file": "private-finance.spec.ts",
-          "line": 490,
+          "line": 669,
           "column": 1
         },
         {
@@ -851,12 +953,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 12108,
+                  "duration": 1830,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T04:06:07.372Z",
+                  "startTime": "2026-10-25T04:37:15.942Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -866,7 +968,7 @@
           ],
           "id": "4dd8c78929417285d361-1eab75c8878ba0054d7b",
           "file": "private-finance.spec.ts",
-          "line": 511,
+          "line": 690,
           "column": 1
         },
         {
@@ -885,12 +987,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 7150,
+                  "duration": 1785,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T04:06:19.592Z",
+                  "startTime": "2026-10-25T04:37:17.780Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -900,7 +1002,7 @@
           ],
           "id": "4dd8c78929417285d361-d8f3c0af8a6b59f39808",
           "file": "private-finance.spec.ts",
-          "line": 535,
+          "line": 714,
           "column": 1
         },
         {
@@ -919,12 +1021,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 9158,
+                  "duration": 2414,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T04:06:26.888Z",
+                  "startTime": "2026-10-25T04:37:19.575Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -934,7 +1036,7 @@
           ],
           "id": "4dd8c78929417285d361-b1791f691de8555f75b5",
           "file": "private-finance.spec.ts",
-          "line": 552,
+          "line": 731,
           "column": 1
         },
         {
@@ -953,12 +1055,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 8545,
+                  "duration": 3394,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T04:06:36.119Z",
+                  "startTime": "2026-10-25T04:37:22.002Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -968,7 +1070,7 @@
           ],
           "id": "4dd8c78929417285d361-bc5b3ce5ef394c1c3fa5",
           "file": "private-finance.spec.ts",
-          "line": 579,
+          "line": 758,
           "column": 1
         },
         {
@@ -987,12 +1089,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 6702,
+                  "duration": 1382,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T04:06:44.723Z",
+                  "startTime": "2026-10-25T04:37:25.412Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1002,7 +1104,7 @@
           ],
           "id": "4dd8c78929417285d361-9cde21ddf60b8d16e1e3",
           "file": "private-finance.spec.ts",
-          "line": 601,
+          "line": 780,
           "column": 1
         },
         {
@@ -1021,12 +1123,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 7272,
+                  "duration": 1626,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T04:06:51.481Z",
+                  "startTime": "2026-10-25T04:37:26.803Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1036,7 +1138,7 @@
           ],
           "id": "4dd8c78929417285d361-847b9cb75429b60668a0",
           "file": "private-finance.spec.ts",
-          "line": 620,
+          "line": 799,
           "column": 1
         },
         {
@@ -1055,12 +1157,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 4066,
+                  "duration": 1025,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T04:06:58.804Z",
+                  "startTime": "2026-10-25T04:37:28.440Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1070,7 +1172,7 @@
           ],
           "id": "4dd8c78929417285d361-5558867a2b1e3c8518b3",
           "file": "private-finance.spec.ts",
-          "line": 642,
+          "line": 821,
           "column": 1
         }
       ]
@@ -1097,12 +1199,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 5833,
+                  "duration": 1326,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T04:07:02.956Z",
+                  "startTime": "2026-10-25T04:37:29.485Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1131,12 +1233,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 4686,
+                  "duration": 1784,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T04:07:08.841Z",
+                  "startTime": "2026-10-25T04:37:30.819Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1165,12 +1267,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 6734,
+                  "duration": 1826,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T04:07:13.577Z",
+                  "startTime": "2026-10-25T04:37:32.612Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1207,12 +1309,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 4152,
+                  "duration": 1204,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T04:07:20.383Z",
+                  "startTime": "2026-10-25T04:37:34.460Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1241,12 +1343,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 4450,
+                  "duration": 1023,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T04:07:24.581Z",
+                  "startTime": "2026-10-25T04:37:35.673Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1275,12 +1377,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 3096,
+                  "duration": 1102,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T04:07:29.099Z",
+                  "startTime": "2026-10-25T04:37:36.707Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1309,12 +1411,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 4267,
+                  "duration": 1063,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T04:07:32.235Z",
+                  "startTime": "2026-10-25T04:37:37.817Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1343,12 +1445,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 4294,
+                  "duration": 1107,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T04:07:36.551Z",
+                  "startTime": "2026-10-25T04:37:38.890Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1377,12 +1479,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 3833,
+                  "duration": 1331,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T04:07:40.894Z",
+                  "startTime": "2026-10-25T04:37:40.006Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1411,12 +1513,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 5994,
+                  "duration": 1339,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-25T04:07:44.773Z",
+                  "startTime": "2026-10-25T04:37:41.347Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -1434,9 +1536,9 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-10-25T04:02:59.661Z",
-    "duration": 291560.928,
-    "expected": 37,
+    "startTime": "2026-10-25T04:36:15.599Z",
+    "duration": 87259.341,
+    "expected": 40,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

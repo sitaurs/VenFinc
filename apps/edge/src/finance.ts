@@ -3,6 +3,12 @@ import {
   categoryCreateSchema,
   categorySchema,
   categoryUpdateSchema,
+  debtCreateResultSchema,
+  debtCreateSchema,
+  debtListSchema,
+  debtPaymentCreateSchema,
+  debtPaymentListSchema,
+  debtPaymentSchema,
   financeReportQuerySchema,
   financeReportSchema,
   budgetCreateSchema,
@@ -214,6 +220,41 @@ function mapSavingsContribution(row: DbRow) {
     sourceWalletName: row.source_wallet_name,
     destinationWalletId: row.destination_wallet_id,
     destinationWalletName: row.destination_wallet_name,
+  });
+}
+
+function mapDebt(row: DbRow) {
+  return {
+    id: row.debt_id,
+    direction: row.direction,
+    origin: row.origin,
+    counterpartyLabel: row.counterparty_label ?? null,
+    principalMinor: String(row.principal_minor),
+    paidMinor: String(row.paid_minor),
+    remainingMinor: String(row.remaining_minor),
+    openingDate: row.opening_date,
+    dueDate: row.due_date ?? null,
+    installmentMinor: row.installment_minor == null ? null : String(row.installment_minor),
+    openingEventId: row.opening_event_id,
+    walletId: row.wallet_id ?? null,
+    walletName: row.wallet_name ?? null,
+    note: row.note ?? null,
+    archivedAt: row.archived_at ?? null,
+    status: row.status,
+  };
+}
+
+function mapDebtPayment(row: DbRow) {
+  return debtPaymentSchema.parse({
+    id: row.payment_id,
+    eventId: row.event_id,
+    feeEventId: row.fee_event_id ?? null,
+    principalMinor: String(row.principal_minor),
+    feeMinor: String(row.fee_minor),
+    negativeBalanceConfirmed: row.negative_balance_confirmed,
+    effectiveAt: row.effective_at,
+    timezone: row.timezone,
+    note: row.note ?? null,
   });
 }
 
@@ -529,6 +570,125 @@ api.post("/budgets", async (c) => {
       plannedMinor: row.planned_minor,
     });
     return c.json(successEnvelope(data, c.get("requestId")), 201);
+  } catch (error) {
+    return dataFailure(c, error, true);
+  }
+});
+
+api.get("/debts", async (c) => {
+  if ([...new URL(c.req.url).searchParams.keys()].length) {
+    return fail(c, "INVALID_INPUT", "Filter utang/piutang tidak valid.", 400);
+  }
+  try {
+    const identity = c.get("identity");
+    const result = rows(await callDataApi(c.env, identity.providerJwt, {
+      kind: "rpc",
+      name: "list_debts",
+    })).map(mapDebt);
+    return c.json(successEnvelope(debtListSchema.parse(result), c.get("requestId")));
+  } catch (error) {
+    return dataFailure(c, error);
+  }
+});
+
+api.post("/debts", async (c) => {
+  const idempotencyKey = idempotencyKeySchema.safeParse(c.req.header("Idempotency-Key"));
+  if (!idempotencyKey.success) return fail(c, "INVALID_INPUT", "Kunci utang/piutang wajib berupa UUID.", 400);
+  const body = await requestJson(c, 8 * 1024);
+  if (!body.ok) return fail(c, "INVALID_INPUT", "Data utang/piutang tidak valid.", body.tooLarge ? 413 : 400);
+  const parsed = debtCreateSchema.safeParse(body.value);
+  if (!parsed.success) return fail(c, "INVALID_INPUT", "Data utang/piutang tidak valid.", 400);
+  try {
+    const identity = c.get("identity");
+    const command = parsed.data;
+    const result = rows(await callDataApi(c.env, identity.providerJwt, {
+      kind: "rpc",
+      name: "create_debt",
+      body: {
+        p_idempotency_key: idempotencyKey.data,
+        p_direction: command.direction,
+        p_origin: command.origin,
+        p_counterparty_label: command.counterpartyLabel,
+        p_principal_minor: command.principalMinor,
+        p_opening_date: command.openingDate,
+        p_due_date: command.dueDate,
+        p_installment_minor: command.installmentMinor,
+        p_wallet_id: command.walletId,
+        p_allow_negative: command.allowNegative,
+        p_timezone: command.timezone,
+        p_note: command.note ?? null,
+        p_trace_id: c.get("requestId"),
+      },
+    }));
+    if (result.length !== 1) return fail(c, "DEPENDENCY_UNAVAILABLE", "Utang/piutang belum dapat dicatat.", 503);
+    const row = result[0]!;
+    return c.json(successEnvelope(debtCreateResultSchema.parse({
+      id: row.debt_id,
+      openingEventId: row.opening_event_id,
+      direction: row.direction,
+      principalMinor: String(row.principal_minor),
+      remainingMinor: String(row.remaining_minor),
+    }), c.get("requestId")), 201);
+  } catch (error) {
+    return dataFailure(c, error, true);
+  }
+});
+
+api.get("/debts/:debtId/payments", async (c) => {
+  const debtId = c.req.param("debtId");
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(debtId)) {
+    return fail(c, "INVALID_INPUT", "Utang/piutang tidak valid.", 400);
+  }
+  if ([...new URL(c.req.url).searchParams.keys()].length) {
+    return fail(c, "INVALID_INPUT", "Filter pembayaran tidak valid.", 400);
+  }
+  try {
+    const identity = c.get("identity");
+    const result = rows(await callDataApi(c.env, identity.providerJwt, {
+      kind: "rpc",
+      name: "list_debt_payments",
+      body: { p_debt_id: debtId },
+    })).map(mapDebtPayment);
+    return c.json(successEnvelope(debtPaymentListSchema.parse(result), c.get("requestId")));
+  } catch (error) {
+    return dataFailure(c, error);
+  }
+});
+
+api.post("/debts/:debtId/payments", async (c) => {
+  const debtId = c.req.param("debtId");
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(debtId)) {
+    return fail(c, "INVALID_INPUT", "Utang/piutang tidak valid.", 400);
+  }
+  const idempotencyKey = idempotencyKeySchema.safeParse(c.req.header("Idempotency-Key"));
+  if (!idempotencyKey.success) return fail(c, "INVALID_INPUT", "Kunci pembayaran wajib berupa UUID.", 400);
+  const body = await requestJson(c, 8 * 1024);
+  if (!body.ok) return fail(c, "INVALID_INPUT", "Data pembayaran tidak valid.", body.tooLarge ? 413 : 400);
+  const parsed = debtPaymentCreateSchema.safeParse(body.value);
+  if (!parsed.success) return fail(c, "INVALID_INPUT", "Data pembayaran tidak valid.", 400);
+  try {
+    const identity = c.get("identity");
+    const command = parsed.data;
+    const result = rows(await callDataApi(c.env, identity.providerJwt, {
+      kind: "rpc",
+      name: "record_debt_payment",
+      body: {
+        p_debt_id: debtId,
+        p_wallet_id: command.walletId,
+        p_principal_minor: command.principalMinor,
+        p_fee_minor: command.feeMinor,
+        p_allow_negative: command.allowNegative,
+        p_effective_at: command.effectiveAt,
+        p_timezone: command.timezone,
+        p_principal_category_id: command.principalCategoryId,
+        p_fee_category_id: command.feeCategoryId,
+        p_idempotency_key: idempotencyKey.data,
+        p_note: command.note ?? null,
+        p_trace_id: c.get("requestId"),
+      },
+    }));
+    if (result.length !== 1) return fail(c, "DEPENDENCY_UNAVAILABLE", "Pembayaran belum dapat dicatat.", 503);
+    return c.json(successEnvelope(mapDebtPayment(result[0]!), c.get("requestId")), 201);
   } catch (error) {
     return dataFailure(c, error, true);
   }

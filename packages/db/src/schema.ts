@@ -483,6 +483,101 @@ export const commandIdempotency = pgTable(
   ],
 );
 
+export const debts = pgTable(
+  "debts",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: text("user_id").notNull().references(() => userProfiles.userId, { onDelete: "cascade" }),
+    direction: text("direction").notNull(),
+    origin: text("origin").notNull(),
+    counterpartyLabel: varchar("counterparty_label", { length: 100 }),
+    principalMinor: bigint("principal_minor", { mode: "bigint" }).notNull(),
+    openingDate: date("opening_date", { mode: "string" }).notNull(),
+    dueDate: date("due_date", { mode: "string" }),
+    installmentMinor: bigint("installment_minor", { mode: "bigint" }),
+    ledgerAccountId: uuid("ledger_account_id").notNull(),
+    openingEventId: uuid("opening_event_id").notNull(),
+    walletId: uuid("wallet_id"),
+    clientMutationId: uuid("client_mutation_id").notNull(),
+    requestPayload: jsonb("request_payload").notNull(),
+    note: varchar("note", { length: 500 }),
+    archivedAt: timestamp("archived_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    unique("debts_user_id_id_uq").on(table.userId, table.id),
+    unique("debts_opening_event_uq").on(table.userId, table.openingEventId),
+    unique("debts_client_mutation_uq").on(table.userId, table.clientMutationId),
+    foreignKey({
+      name: "debts_ledger_account_same_user_fk",
+      columns: [table.userId, table.ledgerAccountId],
+      foreignColumns: [ledgerAccounts.userId, ledgerAccounts.id],
+    }),
+    foreignKey({
+      name: "debts_opening_event_same_user_fk",
+      columns: [table.userId, table.openingEventId],
+      foreignColumns: [financeEvents.userId, financeEvents.id],
+    }),
+    foreignKey({
+      name: "debts_wallet_same_user_fk",
+      columns: [table.userId, table.walletId],
+      foreignColumns: [wallets.userId, wallets.id],
+    }),
+    check("debts_direction_valid", sql`${table.direction} IN ('owed_by_user', 'owed_to_user')`),
+    check("debts_origin_valid", sql`${table.origin} IN ('opening', 'loan')`),
+    check("debts_origin_wallet_shape", sql`(${table.origin} = 'opening' AND ${table.walletId} IS NULL) OR (${table.origin} = 'loan' AND ${table.walletId} IS NOT NULL)`),
+    check("debts_label_nonempty", sql`${table.counterpartyLabel} IS NULL OR length(btrim(${table.counterpartyLabel})) BETWEEN 1 AND 100`),
+    check("debts_principal_positive", sql`${table.principalMinor} > 0`),
+    check("debts_installment_positive", sql`${table.installmentMinor} IS NULL OR ${table.installmentMinor} > 0`),
+    check("debts_dates_valid", sql`${table.dueDate} IS NULL OR ${table.dueDate} >= ${table.openingDate}`),
+    index("debts_user_opening_idx").on(table.userId, table.openingDate.desc(), table.id),
+  ],
+);
+
+export const debtPayments = pgTable(
+  "debt_payments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: text("user_id").notNull(),
+    debtId: uuid("debt_id").notNull(),
+    financeEventId: uuid("finance_event_id").notNull(),
+    feeEventId: uuid("fee_event_id"),
+    principalMinor: bigint("principal_minor", { mode: "bigint" }).notNull(),
+    feeMinor: bigint("fee_minor", { mode: "bigint" }).notNull(),
+    clientMutationId: uuid("client_mutation_id").notNull(),
+    requestPayload: jsonb("request_payload").notNull(),
+    memo: varchar("memo", { length: 500 }),
+    effectiveAt: timestamp("effective_at", { withTimezone: true }).notNull(),
+    timezone: varchar("timezone", { length: 100 }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    unique("debt_payments_user_id_id_uq").on(table.userId, table.id),
+    unique("debt_payments_event_uq").on(table.userId, table.financeEventId),
+    unique("debt_payments_client_mutation_uq").on(table.userId, table.clientMutationId),
+    foreignKey({
+      name: "debt_payments_debt_same_user_fk",
+      columns: [table.userId, table.debtId],
+      foreignColumns: [debts.userId, debts.id],
+    }),
+    foreignKey({
+      name: "debt_payments_event_same_user_fk",
+      columns: [table.userId, table.financeEventId],
+      foreignColumns: [financeEvents.userId, financeEvents.id],
+    }),
+    foreignKey({
+      name: "debt_payments_fee_event_same_user_fk",
+      columns: [table.userId, table.feeEventId],
+      foreignColumns: [financeEvents.userId, financeEvents.id],
+    }),
+    check("debt_payments_principal_positive", sql`${table.principalMinor} > 0`),
+    check("debt_payments_fee_nonnegative", sql`${table.feeMinor} >= 0`),
+    check("debt_payments_timezone_valid_shape", sql`length(${table.timezone}) BETWEEN 1 AND 100`),
+    index("debt_payments_debt_date_idx").on(table.userId, table.debtId, table.effectiveAt.desc(), table.id),
+  ],
+);
+
 export const securityEvents = audit.table(
   "security_events",
   {
@@ -513,5 +608,7 @@ export type Budget = typeof budgets.$inferSelect;
 export type BudgetPeriod = typeof budgetPeriods.$inferSelect;
 export type SavingsGoal = typeof savingsGoals.$inferSelect;
 export type SavingsGoalContribution = typeof savingsGoalContributions.$inferSelect;
+export type Debt = typeof debts.$inferSelect;
+export type DebtPayment = typeof debtPayments.$inferSelect;
 export type FinanceEvent = typeof financeEvents.$inferSelect;
 export type LedgerPosting = typeof ledgerPostings.$inferSelect;

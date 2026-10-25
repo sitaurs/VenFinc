@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   apiErrorSchema,
+  debtCreateSchema,
+  debtPaymentCreateSchema,
   financeReportQuerySchema,
   financeReportSchema,
   manualExpenseSchema,
@@ -104,5 +106,45 @@ describe("tenant finance report contract", () => {
     expect(financeReportSchema.safeParse({ ...report, current: { ...report.current, incomeMinor: Number.MAX_SAFE_INTEGER + 1 } }).success).toBe(false);
     expect(financeReportQuerySchema.safeParse({ from: "2025-09-30", to: "2026-10-01" }).success).toBe(false);
     expect(financeReportQuerySchema.safeParse({ from: "2026-10-02", to: "2026-10-01" }).success).toBe(false);
+  });
+});
+
+describe("debt and payment contracts", () => {
+  const dateFields = {
+    openingDate: "2026-10-24",
+    dueDate: "2026-11-24",
+    installmentMinor: "100000",
+    timezone: "Asia/Jakarta",
+  };
+  it("requires a wallet only for a new loan and keeps opening debt cash-neutral", () => {
+    const opening = debtCreateSchema.parse({
+      direction: "owed_by_user", origin: "opening", principalMinor: "9007199254740993", ...dateFields,
+    });
+    expect(opening.walletId).toBeNull();
+    expect(opening.allowNegative).toBe(false);
+    expect(opening.principalMinor).toBe("9007199254740993");
+    expect(debtCreateSchema.safeParse({
+      direction: "owed_by_user", origin: "loan", principalMinor: "10000", ...dateFields,
+    }).success).toBe(false);
+    expect(debtCreateSchema.parse({
+      direction: "owed_to_user", origin: "loan", principalMinor: "10000",
+      walletId: "d63cc8c7-5c5c-4d31-9cc1-239150ecce9a", allowNegative: true, ...dateFields,
+    }).allowNegative).toBe(true);
+    expect(debtCreateSchema.safeParse({
+      direction: "owed_to_user", origin: "opening", principalMinor: "10000", walletId: "d63cc8c7-5c5c-4d31-9cc1-239150ecce9a", ...dateFields,
+    }).success).toBe(false);
+  });
+  it("rejects a due date before opening and separates payment principal from fees", () => {
+    expect(debtCreateSchema.safeParse({
+      direction: "owed_by_user", origin: "opening", principalMinor: "10000",
+      ...dateFields, dueDate: "2026-10-23",
+    }).success).toBe(false);
+    const payment = debtPaymentCreateSchema.parse({
+      walletId: "d63cc8c7-5c5c-4d31-9cc1-239150ecce9a",
+      principalMinor: "9007199254740993",
+      effectiveAt: "2026-10-24T12:00:00+07:00",
+      timezone: "Asia/Jakarta",
+    });
+    expect(payment).toMatchObject({ principalMinor: "9007199254740993", feeMinor: "0", allowNegative: false, principalCategoryId: null, feeCategoryId: null });
   });
 });
