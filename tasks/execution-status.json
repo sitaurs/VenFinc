@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-24 13:22:04 UTC",
+  "updated_at": "2026-10-25 01:16:44 UTC",
   "source_of_truth": "Execution status only; task source markdown keeps the original baseline wording. A blocked external gate is not done.",
   "status_values": [
     "todo",
@@ -368,15 +368,13 @@
         "P1-003",
         "P1-005"
       ],
-      "status": "blocked",
+      "status": "done",
       "evidence": [
         ".github/workflows/quality.yml",
         "qa/negative-gate-evidence.json",
         "qa/github-quality-run-2026-10-24.json"
       ],
-      "blockers": [
-        "Hosted run 40149471779 on commit 9564608 failed at Validate handoff documents after prior quality steps passed. GitHub error annotation identified a machine-local absolute skill link in qa/P1-LOCAL-HANDOFF.md; it was replaced with a portable reference in the working tree. Python 3.12.14 reproduces no validator failure locally. Keep blocked until the hosted run passes with the portable-link fix."
-      ],
+      "blockers": [],
       "minimum_verification": "Pipeline fail when test/lint fails."
     },
     {

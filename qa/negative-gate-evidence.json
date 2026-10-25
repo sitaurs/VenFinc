@@ -1,6 +1,6 @@
 {
   "status": "PASS",
-  "scope": "Local failure behavior of the exact CI test/lint commands. GitHub-hosted execution has not run.",
+  "scope": "Negative failure behavior of the exact CI test/lint commands was verified locally. The normal hosted CI run 40149653835 passed on a clean checkout; no deliberately broken fixture was injected into GitHub Actions.",
   "fixturesRemoved": true,
   "checks": [
     {
