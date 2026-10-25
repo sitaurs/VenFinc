@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-25",
+  "scope": "Owner-initiated CSV transaction export and versioned JSON data export v1",
+  "included": [
+    "Minimal profile metadata (display name, locale, timezone, and preferred currency); provider user ID and email are excluded.",
+    "Active and archived wallets and categories.",
+    "All confirmed finance events, including status, reversals/refunds, exact decimal-string amounts, category allocations, and wallet/category labels.",
+    "CSV transaction rows with spreadsheet-formula protection for text fields.",
+    "JSON backup schemaVersion 1."
+  ],
+  "safety": [
+    "Pagination follows the authenticated same-origin Hono API and detects missing, repeated, or empty cursors.",
+    "The browser fails without creating a partial file above 25,000 events.",
+    "Draf lokal dan hasil OCR yang belum terkonfirmasi tidak dimasukkan."
+  ],
+  "verification": {
+    "lint": { "command": "./tools/pnpm.sh lint", "result": "PASS" },
+    "typecheck": { "command": "./tools/pnpm.sh typecheck", "result": "PASS" },
+    "unit": { "command": "./tools/pnpm.sh test", "result": "PASS", "tests": 131 },
+    "build": { "command": "XDG_CONFIG_HOME=/tmp/venfinance-wrangler-config WRANGLER_SEND_METRICS=false ./tools/pnpm.sh build", "result": "PASS", "worker": true, "pwaClient": true },
+    "security": { "command": "./tools/pnpm.sh test:security", "result": "PASS", "tests": 9, "clientFilesScanned": 13, "limitation": "Heuristic artifact scan; not a live staging auth/RLS audit." },
+    "builtPreviewSmoke": { "command": "./tools/pnpm.sh infra:smoke", "result": "PASS", "unauthenticatedPrivateApiStatus": 503, "externalProvidersTested": false },
+    "exportAndDateFilterE2e": { "command": "XDG_CONFIG_HOME=/tmp/venfinance-wrangler-dev WRANGLER_SEND_METRICS=false ./tools/pnpm.sh test:e2e --grep 'owner backup exports|transaction date filters'", "result": "PASS", "tests": 2, "checks": ["exact large IDR string", "CSV formula prefix", "versioned JSON scope", "no owner user ID", "361px viewport without horizontal overflow", "timezone-aware local date range"] },
+    "refundE2e": { "command": "XDG_CONFIG_HOME=/tmp/venfinance-wrangler-dev WRANGLER_SEND_METRICS=false ./tools/pnpm.sh test:e2e --grep 'refund starts from its posted expense'", "result": "PASS", "tests": 1, "checks": ["posted expense source binding", "partial exact IDR amount", "refundOf and category allocation submitted"] },
+    "fullE2e": { "command": "XDG_CONFIG_HOME=/tmp/venfinance-wrangler-dev WRANGLER_SEND_METRICS=false ./tools/pnpm.sh test:e2e", "result": "PASS", "tests": 35, "failed": 0, "skipped": 0 }
+  },
+  "limitations": [
+    "Backup v1 currently covers profile, wallets, categories, and finance events. Budget plans/period history, debts (not yet implemented in the repository), and attachment blobs need dedicated export handling before this is the complete product-wide export required by FIN-034.",
+    "Attachment export remains a separate operation as required by the product contract.",
+    "The 25,000-event browser ceiling is fail-closed and visible as an export error; there is no silent truncation."
+  ],
+  "releaseState": "Code and local QA only. No Neon migration or production deployment was performed; no task was marked done based only on this evidence."
+}

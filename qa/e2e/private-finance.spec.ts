@@ -1,4 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
+import { readFile } from "node:fs/promises";
 
 const requestId = "90bb7219-cbb1-4a49-9c72-d00e05048d77";
 const walletId = "7b9be51e-0607-4c60-8315-e57ae8f61aba";
@@ -11,12 +12,13 @@ function success(data: unknown) {
   return { data, meta: { requestId, version: 1 } };
 }
 
-async function mockPrivateApi(page: Page) {
+async function mockPrivateApi(page: Page, options: { includeRefundableExpense?: boolean } = {}) {
   let postedCommand: Record<string, unknown> | undefined;
   let postedIdempotencyKey: string | undefined;
   let postedBudget: Record<string, unknown> | undefined;
   let postedGoal: Record<string, unknown> | undefined;
   let postedContribution: Record<string, unknown> | undefined;
+  const transactionQueries: URLSearchParams[] = [];
   const budgets: Array<Record<string, unknown>> = [];
   const categories: Array<Record<string, unknown>> = [];
   const goals: Array<Record<string, unknown>> = [];
@@ -288,30 +290,57 @@ async function mockPrivateApi(page: Page) {
       return;
     }
     if (path === "/api/v1/transactions") {
+      transactionQueries.push(new URLSearchParams(url.searchParams));
+      const cursor = url.searchParams.get("cursor");
+      const rows: Array<Record<string, unknown>> = [{
+        id: eventId,
+        kind: "income",
+        status: "posted",
+        amountMinor: "9007199254740993",
+        currency: "IDR",
+        walletId,
+        walletName: "Rekening Utama",
+        destinationWalletId: null,
+        destinationWalletName: null,
+        categoryId: null,
+        categoryName: null,
+        effectiveAt: "2026-10-24T07:30:00Z",
+        timezone: "Asia/Jakarta",
+        note: null,
+        merchant: "Penerimaan Uji",
+        sourceChannel: "manual",
+        refundOf: null,
+        allocations: [],
+        negativeBalanceConfirmed: false,
+        createdAt: "2026-10-24T07:30:00Z",
+      }];
+      if (options.includeRefundableExpense) rows.push({
+        ...rows[0]!,
+        id: "8134f43e-49ac-44fd-b6ba-5a8d51aa4118",
+        kind: "expense",
+        amountMinor: "125000",
+        categoryId: "a764be58-2faf-47d9-9776-c6a9c8ce9c4a",
+        categoryName: "Makan",
+        note: "Makan siang",
+        merchant: "Kantin",
+        allocations: [{ categoryId: "a764be58-2faf-47d9-9776-c6a9c8ce9c4a", categoryName: "Makan", amountMinor: "125000", note: null }],
+        createdAt: "2026-10-24T08:30:00Z",
+      });
+      const paginated = url.searchParams.get("limit") === "99";
+      if (paginated && cursor) rows.push({
+        ...rows[0]!,
+        id: "8134f43e-49ac-44fd-b6ba-5a8d51aa4118",
+        kind: "expense",
+        amountMinor: "125000",
+        categoryId: "a764be58-2faf-47d9-9776-c6a9c8ce9c4a",
+        categoryName: "Makan",
+        note: "=2+2",
+        merchant: "Kantin",
+        createdAt: "2026-10-24T08:30:00Z",
+      });
       await route.fulfill({ json: success({
-        items: [{
-          id: eventId,
-          kind: "income",
-          status: "posted",
-          amountMinor: "9007199254740993",
-          currency: "IDR",
-          walletId,
-          walletName: "Rekening Utama",
-          destinationWalletId: null,
-          destinationWalletName: null,
-          categoryId: null,
-          categoryName: null,
-          effectiveAt: "2026-10-24T07:30:00Z",
-          timezone: "Asia/Jakarta",
-          note: null,
-          merchant: "Penerimaan Uji",
-          sourceChannel: "manual",
-          refundOf: null,
-          allocations: [],
-          negativeBalanceConfirmed: false,
-          createdAt: "2026-10-24T07:30:00Z",
-        }],
-        page: { hasMore: false, nextCursor: null },
+        items: paginated && !cursor ? rows : paginated ? rows.slice(1) : rows,
+        page: { hasMore: paginated && !cursor, nextCursor: paginated && !cursor ? "next-page" : null },
       }) });
       return;
     }
@@ -323,6 +352,7 @@ async function mockPrivateApi(page: Page) {
     postedBudget: () => postedBudget,
     postedGoal: () => postedGoal,
     postedContribution: () => postedContribution,
+    transactionQueries: () => transactionQueries,
   };
 }
 
@@ -350,6 +380,76 @@ test("private dashboard uses owner API values and records an exact idempotent tr
   });
   expect(api.postedCommand()).not.toHaveProperty("user_id");
   expect(api.postedIdempotencyKey()).toMatch(/^[0-9a-f-]{36}$/i);
+});
+
+test("owner transaction exports include every page, preserve exact money, and disclose JSON scope", async ({ page }) => {
+  await mockPrivateApi(page);
+  await page.goto("/app/transactions");
+  await expect(page.getByRole("heading", { name: "Riwayat transaksi", exact: true })).toBeVisible();
+
+  const csvPending = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Ekspor semua CSV", exact: true }).click();
+  const csvDownload = await csvPending;
+  expect(csvDownload.suggestedFilename()).toMatch(/^venfinance-transaksi-\d{4}-\d{2}-\d{2}\.csv$/);
+  const csvPath = await csvDownload.path();
+  expect(csvPath).toBeTruthy();
+  const csv = await readFile(csvPath!, "utf8");
+  expect(csv).toContain("9007199254740993");
+  expect(csv).toContain("125000");
+  expect(csv).toContain("'=2+2");
+  expect(csv).toContain("8134f43e-49ac-44fd-b6ba-5a8d51aa4118");
+
+  const jsonPending = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Ekspor data JSON", exact: true }).click();
+  const jsonDownload = await jsonPending;
+  expect(jsonDownload.suggestedFilename()).toMatch(/^venfinance-export-v1-\d{4}-\d{2}-\d{2}\.json$/);
+  const jsonPath = await jsonDownload.path();
+  expect(jsonPath).toBeTruthy();
+  const backup = JSON.parse(await readFile(jsonPath!, "utf8")) as Record<string, unknown>;
+  expect(backup.schemaVersion).toBe(1);
+  expect(backup.scope).toEqual({
+    included: ["profile", "wallets", "categories", "transactions"],
+    excluded: ["budget_periods", "debts", "attachments"],
+  });
+  expect(backup.wallets).toHaveLength(2);
+  expect(backup.transactions).toHaveLength(2);
+  expect(backup).not.toHaveProperty("userId");
+  expect(backup.profile).not.toHaveProperty("userId");
+  expect(backup.transactions).toEqual(expect.arrayContaining([
+    expect.objectContaining({ id: "8134f43e-49ac-44fd-b6ba-5a8d51aa4118", amountMinor: "125000", note: "=2+2" }),
+  ]));
+  await page.setViewportSize({ width: 361, height: 867 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(361);
+});
+
+test("transaction date filters use the account timezone and request all matching pages", async ({ page }) => {
+  const api = await mockPrivateApi(page);
+  await page.goto("/app/transactions");
+  await page.getByLabel("Dari tanggal", { exact: true }).fill("2026-10-20");
+  await page.getByLabel("Sampai tanggal", { exact: true }).fill("2026-10-24");
+  await expect.poll(() => api.transactionQueries().some((params) =>
+    params.get("from") === "2026-10-19T17:00:00.000Z" && params.get("to") === "2026-10-24T17:00:00.000Z",
+  )).toBe(true);
+  await expect(page.getByLabel("Dari tanggal", { exact: true })).toHaveValue("2026-10-20");
+});
+
+test("refund starts from its posted expense and submits a linked exact partial amount", async ({ page }) => {
+  const api = await mockPrivateApi(page, { includeRefundableExpense: true });
+  await page.goto("/app/transactions");
+  await page.getByRole("button", { name: "Catat refund", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Catat pengembalian dana", exact: true })).toBeVisible();
+  await expect(page.getByRole("status").filter({ hasText: "Sisa yang dapat dikembalikan" })).toBeVisible();
+  await page.getByLabel("Nominal rupiah", { exact: true }).fill("45.000");
+  await page.getByLabel("Catatan (opsional)", { exact: true }).fill("Pengembalian sebagian");
+  await page.getByRole("button", { name: "Simpan transaksi", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Riwayat transaksi", exact: true })).toBeVisible();
+  expect(api.postedCommand()).toMatchObject({
+    kind: "refund",
+    walletId,
+    amountMinor: "45000",
+    refundOf: "8134f43e-49ac-44fd-b6ba-5a8d51aa4118",
+    allocations: [{ categoryId: "a764be58-2faf-47d9-9776-c6a9c8ce9c4a", amountMinor: "45000" }],
+  });
 });
 
 test("private budget screen creates a monthly plan without posting or changing wallet balances", async ({ page }) => {

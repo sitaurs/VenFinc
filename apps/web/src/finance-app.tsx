@@ -45,7 +45,8 @@ type AuthDeviceSession = {
   current: boolean;
 };
 type EventPage = FinanceEventPage;
-type EventKind = "income" | "expense" | "transfer" | "savings_transfer" | "opening";
+type EventKind = "income" | "expense" | "transfer" | "savings_transfer" | "opening" | "refund";
+const MAX_FINANCE_EXPORT_EVENTS = 25_000;
 
 function loadingPanel(message: string) {
   return <Card className="finance-state" role="status"><LoaderCircle className="spin" size={20} />{message}</Card>;
@@ -1207,13 +1208,13 @@ function eventTitle(event: FinanceEvent, t: (id: string, en: string) => string) 
   return t(...pair);
 }
 
-function EventList({ events, locale, timezone, hidden }: { events: FinanceEvent[]; locale: "id-ID" | "en-US"; timezone: string; hidden: boolean }) {
+function EventList({ events, locale, timezone, hidden, onRefund }: { events: FinanceEvent[]; locale: "id-ID" | "en-US"; timezone: string; hidden: boolean; onRefund?: (event: FinanceEvent) => void }) {
   const { t } = usePreferences();
   return <div className="private-event-list">{events.map((event) => {
     const sign = signForEvent(event);
     const date = new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short", timeZone: event.timezone || timezone }).format(new Date(event.effectiveAt));
     const wallet = event.walletName ?? event.destinationWalletName ?? t("Dompet", "Wallet");
-    return <article className="private-event-row" key={event.id}><span className={`private-event-icon ${sign}`} aria-hidden="true">{sign === "in" ? <ArrowDownLeft size={19} /> : sign === "out" ? <ArrowUpRight size={19} /> : <ArrowLeftRight size={19} />}</span><div className="private-event-description"><strong>{eventTitle(event, t)}</strong><span>{[event.categoryName, wallet, date].filter(Boolean).join(" · ")}</span></div><strong className={`private-event-amount ${sign}`}>{hidden ? "Rp••••••" : `${sign === "in" ? "+" : sign === "out" ? "−" : ""}${formatIdr(event.amountMinor, locale)}`}</strong></article>;
+    return <article className="private-event-row" key={event.id}><span className={`private-event-icon ${sign}`} aria-hidden="true">{sign === "in" ? <ArrowDownLeft size={19} /> : sign === "out" ? <ArrowUpRight size={19} /> : <ArrowLeftRight size={19} />}</span><div className="private-event-description"><strong>{eventTitle(event, t)}</strong><span>{[event.categoryName, wallet, date].filter(Boolean).join(" · ")}</span>{onRefund && event.status === "posted" && event.kind === "expense" ? <Button className="event-refund-button" size="small" variant="ghost" onClick={() => onRefund(event)}><Receipt size={15} />{t("Catat refund", "Record refund")}</Button> : null}</div><strong className={`private-event-amount ${sign}`}>{hidden ? "Rp••••••" : `${sign === "in" ? "+" : sign === "out" ? "−" : ""}${formatIdr(event.amountMinor, locale)}`}</strong></article>;
   })}</div>;
 }
 
@@ -1224,12 +1225,19 @@ function TransactionsPage({ profile, ownerId }: { profile: UserProfile; ownerId:
   const navigate = useNavigate();
   const [kind, setKind] = useState("all");
   const [search, setSearch] = useState("");
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
+  const [exportFormat, setExportFormat] = useState<"csv" | "json" | null>(null);
+  const [exportCount, setExportCount] = useState<number | null>(null);
+  const [exportError, setExportError] = useState<string | null>(null);
   const query = useInfiniteQuery({
-    queryKey: ["finance-events", ownerId, "list", kind],
+    queryKey: ["finance-events", ownerId, "list", kind, fromDate, toDate, profile.timezone],
     initialPageParam: null as string | null,
     queryFn: async ({ pageParam }): Promise<EventPage> => {
       const searchParams = new URLSearchParams({ limit: "20" });
       if (kind !== "all") searchParams.set("kind", kind);
+      if (fromDate) searchParams.set("from", localDateTimeToIso(`${fromDate}T00:00`, profile.timezone));
+      if (toDate) searchParams.set("to", localDateTimeToIso(`${nextLocalDate(toDate)}T00:00`, profile.timezone));
       if (pageParam) searchParams.set("cursor", pageParam);
       return apiData(`/api/v1/transactions?${searchParams}`, financeEventPageSchema);
     },
@@ -1248,21 +1256,143 @@ function TransactionsPage({ profile, ownerId }: { profile: UserProfile; ownerId:
     if (location.pathname.endsWith("/new")) void navigate("/app/transactions", { replace: true });
     else setParams({}, { replace: true });
   };
+  async function downloadOwnerBackup(format: "csv" | "json") {
+    if (exportFormat) return;
+    setExportFormat(format);
+    setExportCount(0);
+    setExportError(null);
+    try {
+      const backup = await collectFinanceExport(setExportCount);
+      if (format === "json") {
+        downloadFile(
+          JSON.stringify(backup, null, 2),
+          `venfinance-export-v1-${new Date().toISOString().slice(0, 10)}.json`,
+          "application/json;charset=utf-8",
+        );
+      } else {
+        const columns = [
+          "eventId", "status", "kind", "effectiveAt", "timezone", "amountMinor", "currency",
+          "walletId", "walletName", "destinationWalletId", "destinationWalletName", "categoryId",
+          "categoryName", "note", "merchant", "sourceChannel", "refundOf",
+          "negativeBalanceConfirmed", "allocations",
+        ];
+        const rows = backup.transactions.map((event) => [
+          event.id, event.status, event.kind, event.effectiveAt, event.timezone, event.amountMinor,
+          event.currency, event.walletId ?? "", event.walletName ?? "", event.destinationWalletId ?? "",
+          event.destinationWalletName ?? "", event.categoryId ?? "", event.categoryName ?? "",
+          event.note ?? "", event.merchant ?? "", event.sourceChannel, event.refundOf ?? "",
+          String(event.negativeBalanceConfirmed), JSON.stringify(event.allocations),
+        ]);
+        const csv = [columns, ...rows]
+          .map((row) => row.map((value) => escapeCsvCell(String(value))).join(","))
+          .join("\r\n");
+        downloadFile(
+          `\uFEFF${csv}`,
+          `venfinance-transaksi-${new Date().toISOString().slice(0, 10)}.csv`,
+          "text/csv;charset=utf-8",
+        );
+      }
+    } catch (cause) {
+      setExportError(cause instanceof ApiClientError
+        ? cause.publicMessage ?? t("Ekspor belum dapat dibuat. Coba lagi saat tersambung.", "The export could not be created. Try again while connected.")
+        : t("Ekspor tidak lengkap atau datanya belum dapat dimuat. Tidak ada file yang dibuat.", "The export could not be completed. No file was created."));
+    } finally {
+      setExportFormat(null);
+      setExportCount(null);
+    }
+  }
   return (
     <>
-      <FinanceHeading title={t("Riwayat transaksi", "Transaction history")} description={t("Catatan yang sudah dikonfirmasi. Draf dan hasil bacaan belum masuk ke saldo.", "Confirmed records. Drafts and extracted items are excluded from balances.")} action={<Button onClick={() => setParams({ new: "1" })}><Plus size={18} />{t("Catat transaksi", "Record transaction")}</Button>} />
-      {openForm ? <TransactionForm profile={profile} ownerId={ownerId} onCancel={closeForm} onSaved={() => { closeForm(); void query.refetch(); void navigate("/app/transactions"); }} /> : null}
+      <FinanceHeading title={t("Riwayat transaksi", "Transaction history")} description={t("Catatan yang sudah dikonfirmasi. Draf dan hasil bacaan belum masuk ke saldo.", "Confirmed records. Drafts and extracted items are excluded from balances.")} action={<div className="finance-heading-actions"><div className="finance-export-actions"><Button variant="secondary" loading={exportFormat === "csv"} disabled={exportFormat !== null} onClick={() => void downloadOwnerBackup("csv")}><Download size={17} />{t("Ekspor semua CSV", "Export all CSV")}</Button><Button variant="secondary" loading={exportFormat === "json"} disabled={exportFormat !== null} onClick={() => void downloadOwnerBackup("json")}><Download size={17} />{t("Ekspor data JSON", "Export JSON data")}</Button></div><Button onClick={() => setParams({ new: "1" })}><Plus size={18} />{t("Catat transaksi", "Record transaction")}</Button></div>} />
+      {exportCount !== null ? <p className="export-progress" role="status">{t(`Menyiapkan ekspor privat: ${exportCount.toLocaleString("id-ID")} transaksi…`, `Preparing private export: ${exportCount.toLocaleString("en-US")} transactions…`)}</p> : null}
+      {exportError ? <p className="form-error" role="alert">{exportError}</p> : null}
+      {openForm ? <TransactionForm profile={profile} ownerId={ownerId} refundSource={events.find((event) => event.id === params.get("refund"))} onCancel={closeForm} onSaved={() => { closeForm(); void query.refetch(); void navigate("/app/transactions"); }} /> : null}
       <Card className="private-transactions-card">
         {query.isError ? <div className="offline-stale-notice" role="status">{t("Riwayat transaksi server sedang tidak tersedia. Draf lokal tetap tersimpan terpisah dan belum mengubah saldo.", "Server transaction history is unavailable. Local drafts remain separate and do not change balances.")}</div> : null}
         <div className="private-filter-row">
           <TextField label={t("Cari catatan yang sudah dimuat", "Search loaded records")} value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t("Nama, kategori, atau dompet", "Name, category, or wallet")} />
           <label className="private-select-field"><span>{t("Jenis transaksi", "Transaction type")}</span><select value={kind} onChange={(event) => setKind(event.target.value)}><option value="all">{t("Semua", "All")}</option><option value="expense">{t("Pengeluaran", "Expenses")}</option><option value="income">{t("Pemasukan", "Income")}</option><option value="transfer">{t("Transfer", "Transfers")}</option><option value="savings_transfer">{t("Setoran tabungan", "Savings transfers")}</option><option value="refund">{t("Refund", "Refunds")}</option><option value="opening">{t("Saldo awal", "Opening balance")}</option><option value="adjustment">{t("Penyesuaian", "Adjustments")}</option></select></label>
+          <TextField label={t("Dari tanggal", "From date")} type="date" value={fromDate} onChange={(event) => { const value = event.target.value; setFromDate(value); if (value && toDate && value > toDate) setToDate(value); }} />
+          <TextField label={t("Sampai tanggal", "Through date")} type="date" value={toDate} onChange={(event) => { const value = event.target.value; setToDate(value); if (value && fromDate && value < fromDate) setFromDate(value); }} />
         </div>
-        {visible.length ? <EventList events={visible} locale={locale} timezone={profile.timezone} hidden={hidden} /> : <EmptyState icon={<List />} title={events.length ? t("Tidak ada catatan yang cocok", "No matching records") : t("Belum ada transaksi", "No transactions yet")} action={events.length ? <Button variant="secondary" onClick={() => { setSearch(""); setKind("all"); }}>{t("Hapus filter", "Clear filters")}</Button> : <Button onClick={() => setParams({ new: "1" })}><Plus size={17} />{t("Catat transaksi pertama", "Record your first transaction")}</Button>}>{events.length ? t("Coba filter lain. Pencarian mencakup transaksi yang sudah dimuat.", "Try another filter. Search covers the records loaded so far.") : t("Transaksi contoh hanya muncul di demo.", "Sample transactions appear in the demo only.")}</EmptyState>}
+        {visible.length ? <EventList events={visible} locale={locale} timezone={profile.timezone} hidden={hidden} onRefund={(source) => setParams({ new: "1", refund: source.id })} /> : <EmptyState icon={<List />} title={events.length ? t("Tidak ada catatan yang cocok", "No matching records") : t("Belum ada transaksi", "No transactions yet")} action={events.length ? <Button variant="secondary" onClick={() => { setSearch(""); setKind("all"); }}>{t("Hapus filter", "Clear filters")}</Button> : <Button onClick={() => setParams({ new: "1" })}><Plus size={17} />{t("Catat transaksi pertama", "Record your first transaction")}</Button>}>{events.length ? t("Coba filter lain. Pencarian mencakup transaksi yang sudah dimuat.", "Try another filter. Search covers the records loaded so far.") : t("Transaksi contoh hanya muncul di demo.", "Sample transactions appear in the demo only.")}</EmptyState>}
         {query.hasNextPage ? <div className="private-load-more"><Button variant="secondary" loading={query.isFetchingNextPage} onClick={() => void query.fetchNextPage()}>{t("Muat transaksi berikutnya", "Load more transactions")}</Button></div> : null}
       </Card>
     </>
   );
+}
+
+type FinanceExportV1 = {
+  schemaVersion: 1;
+  exportedAt: string;
+  scope: {
+    included: ["profile", "wallets", "categories", "transactions"];
+    excluded: ["budget_periods", "debts", "attachments"];
+  };
+  profile: Pick<UserProfile, "displayName" | "locale" | "timezone" | "preferredCurrency">;
+  wallets: Wallet[];
+  categories: Category[];
+  transactions: FinanceEvent[];
+};
+
+async function collectFinanceExport(onProgress: (count: number) => void): Promise<FinanceExportV1> {
+  const [profileResult, wallets, categories] = await Promise.all([
+    apiData("/api/v1/me", profileReadResultSchema),
+    apiData("/api/v1/wallets", walletArraySchema),
+    apiData("/api/v1/categories?includeArchived=true", categoryArraySchema),
+  ]);
+  if (!profileResult.profile) throw new Error("Profile is unavailable.");
+  const transactions: FinanceEvent[] = [];
+  const seenCursors = new Set<string>();
+  let cursor: string | null = null;
+  while (true) {
+    const params = new URLSearchParams({ limit: "99" });
+    if (cursor) params.set("cursor", cursor);
+    const page = await apiData(`/api/v1/transactions?${params}`, financeEventPageSchema);
+    transactions.push(...page.items);
+    onProgress(transactions.length);
+    if (transactions.length > MAX_FINANCE_EXPORT_EVENTS) {
+      throw new Error("Export exceeds the safe browser limit.");
+    }
+    if (!page.page.hasMore) break;
+    const nextCursor = page.page.nextCursor;
+    if (!nextCursor || seenCursors.has(nextCursor) || page.items.length === 0) {
+      throw new Error("Transaction pagination was incomplete.");
+    }
+    seenCursors.add(nextCursor);
+    cursor = nextCursor;
+  }
+  return {
+    schemaVersion: 1,
+    exportedAt: new Date().toISOString(),
+    scope: {
+      included: ["profile", "wallets", "categories", "transactions"],
+      excluded: ["budget_periods", "debts", "attachments"],
+    },
+    profile: {
+      displayName: profileResult.profile.displayName,
+      locale: profileResult.profile.locale,
+      timezone: profileResult.profile.timezone,
+      preferredCurrency: profileResult.profile.preferredCurrency,
+    },
+    wallets,
+    categories,
+    transactions,
+  };
+}
+
+function escapeCsvCell(value: string) {
+  const formulaSafe = /^[\s\uFEFF]*[=+@-]/.test(value) ? `'${value}` : value;
+  return `"${formulaSafe.replaceAll('"', '""')}"`;
+}
+
+function downloadFile(contents: string, filename: string, type: string) {
+  const url = URL.createObjectURL(new Blob([contents], { type }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  link.click();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 function toLocalInput(timezone: string) {
@@ -1293,15 +1423,22 @@ function localDateTimeToIso(value: string, timezone: string): string {
   return new Date(candidate).toISOString();
 }
 
-function TransactionForm({ profile, ownerId, onCancel, onSaved }: { profile: UserProfile; ownerId: string; onCancel: () => void; onSaved: () => void }) {
+function nextLocalDate(value: string): string {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!match) throw new Error("Tanggal transaksi tidak valid.");
+  const [, year, month, day] = match;
+  return new Date(Date.UTC(Number(year), Number(month) - 1, Number(day) + 1)).toISOString().slice(0, 10);
+}
+
+function TransactionForm({ profile, ownerId, refundSource, onCancel, onSaved }: { profile: UserProfile; ownerId: string; refundSource?: FinanceEvent | undefined; onCancel: () => void; onSaved: () => void }) {
   const { t } = usePreferences();
   const queryClient = useQueryClient();
   const wallets = useWallets(ownerId);
   const categories = useCategories(ownerId);
-  const [kind, setKind] = useState<EventKind>("expense");
-  const [walletId, setWalletId] = useState("");
+  const [kind, setKind] = useState<EventKind>(refundSource ? "refund" : "expense");
+  const [walletId, setWalletId] = useState(refundSource?.walletId ?? "");
   const [destinationWalletId, setDestinationWalletId] = useState("");
-  const [categoryId, setCategoryId] = useState("");
+  const [categoryId, setCategoryId] = useState(refundSource?.categoryId ?? "");
   const [amount, setAmount] = useState("");
   const [effectiveAt, setEffectiveAt] = useState(() => toLocalInput(profile.timezone));
   const [note, setNote] = useState("");
@@ -1347,7 +1484,8 @@ function TransactionForm({ profile, ownerId, onCancel, onSaved }: { profile: Use
       kind, walletId: selectedWalletId, ...(["transfer", "savings_transfer"].includes(kind) ? { destinationWalletId: selectedDestinationWalletId } : {}),
       amountMinor, currency: "IDR", effectiveAt: localDateTimeToIso(effectiveAt, profile.timezone),
       timezone: profile.timezone,
-      ...(kind === "expense" && categoryId ? { allocations: [{ categoryId, amountMinor }] } : {}),
+      ...((kind === "expense" || kind === "refund") && categoryId ? { allocations: [{ categoryId, amountMinor }] } : {}),
+      ...(kind === "refund" && refundSource ? { refundOf: refundSource.id } : {}),
       ...(note.trim() ? { note: note.trim() } : {}), allowNegative,
     });
   }
@@ -1385,15 +1523,16 @@ function TransactionForm({ profile, ownerId, onCancel, onSaved }: { profile: Use
   if (wallets.isError) return <Card role="alert" className="private-form-card">{t("Daftar dompet belum dapat dimuat. Buka Draf offline saat online untuk menyiapkan perangkat sebelum mencoba lagi tanpa jaringan.", "Wallets could not be loaded. Open Offline drafts while online to prepare this device before working without a connection.")}</Card>;
   return (
     <Card className="private-form-card" aria-labelledby="transaction-form-title">
-      <div className="private-form-heading"><div><span className="section-kicker">{t("Catatan pribadi", "Private record")}</span><h2 id="transaction-form-title">{t("Catat transaksi", "Record a transaction")}</h2></div><Button variant="ghost" size="icon" aria-label={t("Tutup", "Close")} onClick={onCancel}><X size={20} /></Button></div>
+      <div className="private-form-heading"><div><span className="section-kicker">{t("Catatan pribadi", "Private record")}</span><h2 id="transaction-form-title">{kind === "refund" ? t("Catat pengembalian dana", "Record a refund") : t("Catat transaksi", "Record a transaction")}</h2></div><Button variant="ghost" size="icon" aria-label={t("Tutup", "Close")} onClick={onCancel}><X size={20} /></Button></div>
       {offlineNotice ? <p className="offline-notice" role="status">{offlineNotice}</p> : null}
       {wallets.isPending ? <p role="status">{t("Memuat dompet…", "Loading wallets…")}</p> : activeWallets.length ? (
         <form className="finance-form" onSubmit={submit}>
-          <label className="private-select-field"><span>{t("Jenis", "Type")}</span><select value={kind} onChange={(event) => setKind(event.target.value as EventKind)}><option value="expense">{t("Pengeluaran", "Expense")}</option><option value="income">{t("Pemasukan", "Income")}</option><option value="transfer">{t("Transfer", "Transfer")}</option>{activeWallets.some((wallet) => wallet.type === "savings") ? <option value="savings_transfer">{t("Setoran tabungan", "Savings transfer")}</option> : null}<option value="opening">{t("Saldo awal", "Opening balance")}</option></select></label>
+          <label className="private-select-field"><span>{t("Jenis", "Type")}</span><select value={kind} onChange={(event) => setKind(event.target.value as EventKind)}><option value="expense">{t("Pengeluaran", "Expense")}</option><option value="income">{t("Pemasukan", "Income")}</option><option value="transfer">{t("Transfer", "Transfer")}</option>{activeWallets.some((wallet) => wallet.type === "savings") ? <option value="savings_transfer">{t("Setoran tabungan", "Savings transfer")}</option> : null}{refundSource ? <option value="refund">{t("Pengembalian dana", "Refund")}</option> : null}<option value="opening">{t("Saldo awal", "Opening balance")}</option></select></label>
+          {kind === "refund" && refundSource ? <p className="offline-stale-notice" role="status">{t(`Refund ini terkait ${eventTitle(refundSource, t)}. Sisa yang dapat dikembalikan akan diperiksa server.`, `This refund is linked to ${eventTitle(refundSource, t)}. The server checks the remaining refundable amount.`)}</p> : null}
           <TextField label={t("Nominal rupiah", "Amount in rupiah")} inputMode="numeric" autoComplete="off" value={amount} onChange={(event) => setAmount(event.target.value)} placeholder="10.000" required />
-          <label className="private-select-field"><span>{kind === "income" || kind === "opening" ? t("Masuk ke dompet", "To wallet") : t("Dari dompet", "From wallet")}</span><select value={selectedWalletId} onChange={(event) => setWalletId(event.target.value)} required>{activeWallets.map((wallet) => <option value={wallet.id} key={wallet.id}>{wallet.name} · {formatIdr(wallet.balanceMinor)}</option>)}</select></label>
+          <label className="private-select-field"><span>{kind === "income" || kind === "opening" || kind === "refund" ? t("Masuk ke dompet", "To wallet") : t("Dari dompet", "From wallet")}</span><select value={selectedWalletId} onChange={(event) => setWalletId(event.target.value)} required>{activeWallets.map((wallet) => <option value={wallet.id} key={wallet.id}>{wallet.name} · {formatIdr(wallet.balanceMinor)}</option>)}</select></label>
           {kind === "transfer" || kind === "savings_transfer" ? <label className="private-select-field"><span>{kind === "savings_transfer" ? t("Ke dompet tabungan", "To savings wallet") : t("Ke dompet", "To wallet")}</span><select value={selectedDestinationWalletId} onChange={(event) => setDestinationWalletId(event.target.value)} required disabled={!destinationCandidates.length}>{destinationCandidates.map((wallet) => <option value={wallet.id} key={wallet.id}>{wallet.name}</option>)}</select></label> : null}
-          {kind === "expense" && categories.data?.items.length ? <label className="private-select-field"><span>{t("Kategori (opsional)", "Category (optional)")}</span><select value={categoryId} onChange={(event) => setCategoryId(event.target.value)}><option value="">{t("Tanpa kategori", "Uncategorized")}</option>{categories.data.items.map((category) => <option value={category.id} key={category.id}>{category.name}</option>)}</select></label> : null}
+          {(kind === "expense" || kind === "refund") && categories.data?.items.length ? <label className="private-select-field"><span>{kind === "refund" ? t("Kategori refund asal (opsional)", "Original refund category (optional)") : t("Kategori (opsional)", "Category (optional)")}</span><select value={categoryId} onChange={(event) => setCategoryId(event.target.value)}><option value="">{t("Tanpa kategori", "Uncategorized")}</option>{categories.data.items.filter((category) => kind === "expense" || category.id === refundSource?.categoryId || refundSource?.allocations.some((allocation) => allocation.categoryId === category.id)).map((category) => <option value={category.id} key={category.id}>{category.name}</option>)}</select></label> : null}
           <TextField label={t("Waktu transaksi", "Transaction time")} type="datetime-local" value={effectiveAt} onChange={(event) => setEffectiveAt(event.target.value)} required />
           <TextField label={t("Catatan (opsional)", "Note (optional)")} value={note} onChange={(event) => setNote(event.target.value)} maxLength={500} />
           {kind === "expense" ? <label className="negative-confirmation"><input type="checkbox" checked={allowNegative} onChange={(event) => setAllowNegative(event.target.checked)} /><span>{t("Saya memahami saldo catatan dompet ini dapat menjadi negatif.", "I understand this recorded wallet balance may become negative.")}</span></label> : null}
