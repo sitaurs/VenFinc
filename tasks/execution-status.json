@@ -375,7 +375,7 @@
         "qa/github-quality-run-2026-10-24.json"
       ],
       "blockers": [
-        "Hosted run 40098859530 on commit 55e76ad failed at Validate handoff documents after prior quality steps passed. Local validation passes on Python 3.14.4 and 3.12.14. Previous GitHub job-log download returned HTTP 403 ('Must have admin rights to Repository'), and the public check-run summary had no validator output. The workflow now publishes Python version and validator JSON to the job summary. Keep blocked until a hosted pass and root-cause explanation are recorded."
+        "Hosted run 40149471779 on commit 9564608 failed at Validate handoff documents after prior quality steps passed. GitHub error annotation identified a machine-local absolute skill link in qa/P1-LOCAL-HANDOFF.md; it was replaced with a portable reference in the working tree. Python 3.12.14 reproduces no validator failure locally. Keep blocked until the hosted run passes with the portable-link fix."
       ],
       "minimum_verification": "Pipeline fail when test/lint fails."
     },

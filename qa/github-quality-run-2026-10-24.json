@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
-  "verifiedAt": "2026-10-24T13:38:46Z",
+  "verifiedAt": "2026-10-25T01:10:59Z",
   "taskId": "P1-009",
   "workflow": ".github/workflows/quality.yml",
   "hostedRun": {
-    "runId": 40098859530,
-    "commit": "55e76adc249cc42184982268e93f72016c8467c9",
+    "runId": 40149471779,
+    "commit": "9564608e600c33132ac99be2bd779646c6dca225",
     "branch": "main",
     "event": "push",
     "status": "completed",
     "conclusion": "failure",
     "failedStep": "Validate handoff documents",
-    "url": "https://github.com/sitaurs/VenFinc/actions/runs/40098859530",
+    "url": "https://github.com/sitaurs/VenFinc/actions/runs/40149471779",
     "annotations": [
       "Install, lint, typecheck, unit tests, build, security, and Python version steps passed before the handoff validator failed.",
-      "The GitHub job/check metadata did not include validator output; the validator JSON and Python version will be written to the next run's job summary."
+      "The validator found qa/P1-LOCAL-HANDOFF.md linking to a local-only /home/zamn/.codex/.../12ui-design/SKILL.md path that is absent from GitHub checkout."
     ]
   },
   "hostedLogAccess": {
@@ -23,8 +23,12 @@
     "message": "Must have admin rights to Repository.",
     "detailsAvailable": false,
     "observedForRun": 40096695066,
-    "latestCheckRunId": 40098859530,
-    "latestCheckRunSummary": null
+    "latestCheckRunId": 121037748529,
+    "latestCheckRunSummary": null,
+    "latestErrorAnnotation": {
+      "title": "handoff:broken_file",
+      "message": "qa/P1-LOCAL-HANDOFF.md -> /home/zamn/.codex/plugins/cache/openai-curated-remote/12ui-design/0.2.65/skills/12ui-design/SKILL.md"
+    }
   },
   "localReproduction": {
     "node": "24.22.1 via tools/pnpm.sh",
@@ -40,7 +44,7 @@
     ],
     "buildSandboxNote": "Wrangler emitted a read-only home log-file warning in this sandbox; the build exited 0 and generated the Worker and PWA artifacts."
   },
-  "conclusion": "Hosted run 40098859530 failed at Validate handoff documents after all preceding quality steps passed. Local docs:check passes on Python 3.14.4, and both constituent validators also pass on Python 3.12.14. Job/check metadata did not expose the validator output; the previous observed logs endpoint returned 403: Must have admin rights to Repository. The workflow now adds the validator JSON and Python version to the job summary. P1-009 remains blocked until a hosted pass and root-cause explanation are recorded.",
+  "conclusion": "Hosted run 40149471779 failed at Validate handoff documents after all preceding quality steps passed. The root cause is an absolute skill path present on the local machine but absent from the GitHub checkout. The reference was made portable in qa/P1-LOCAL-HANDOFF.md; the fix still needs a passing hosted run. Local docs:check passes on Python 3.14.4, and both constituent validators also pass on Python 3.12.14.",
   "repositoryChangedByInspection": false,
   "productionTouched": false,
   "python312Reproduction": {
@@ -54,7 +58,17 @@
       "handoffValidator": "PASS; 65 Markdown files, 1,444 internal links, 177 REQ, 14 decisions, 373 tasks, all 180 screenshots and 59 assets hashed",
       "executionValidator": "PASS; 373 tasks, 14 decisions, 11 gates, zero consistency issues; production_ready false"
     },
-    "conclusion": "Python 3.12.14 locally passes both validators; the Python minor-version difference does not reproduce the hosted failure. Hosted root cause remains unknown."
+    "conclusion": "Python 3.12.14 locally passes both validators; the hosted failure was caused by a machine-specific absolute Markdown link, not the Python version."
+  },
+  "portableLinkFix": {
+    "file": "qa/P1-LOCAL-HANDOFF.md",
+    "rootCause": "A Markdown link targeted the agent machine's /home/zamn/.codex/.../12ui-design/SKILL.md file, which is not part of a GitHub checkout.",
+    "change": "Replace the host-specific filesystem URL with a portable plain-text skill reference.",
+    "localVerification": [
+      { "command": "./tools/pnpm.sh docs:check", "exitCode": 0, "internalLinksChecked": 1443 },
+      { "command": "UV_CACHE_DIR=/tmp/venfinance-uv-cache UV_PYTHON_INSTALL_DIR=/tmp/venfinance-python uv run --no-project --python 3.12.14 -- python tools/validate_handoff.py", "exitCode": 0 }
+    ],
+    "hostedConfirmationPending": true
   },
   "diagnosticWorkflowChange": {
     "file": ".github/workflows/quality.yml",
