@@ -6,6 +6,8 @@ node_modules/
 .env.*
 !.env.example
 .dev.vars*
+!qa/neon-poc/.dev.vars.example
+!qa/neon-poc/.env.local.example
 dist/
 coverage/
 test-results/

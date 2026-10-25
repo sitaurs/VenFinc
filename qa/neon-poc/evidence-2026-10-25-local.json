@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-25T01:35:43Z",
+  "taskId": "P0-005",
+  "result": "local_worker_boundary_tests_pass_live_staging_blocked",
+  "scope": {
+    "projectId": "hidden-unit-95812377",
+    "branchId": "br-aged-mode-b4rcy9i0",
+    "branchName": "venfinance-p0-auth-20261024",
+    "productionTouched": false,
+    "workerDeployed": false,
+    "databaseWrittenByThisCheck": false
+  },
+  "runtime": {
+    "nodeVersion": "24.22.1",
+    "pnpmVersion": "11.25.0"
+  },
+  "localTests": {
+    "command": "./tools/pnpm.sh test",
+    "exitCode": 0,
+    "testFilesPassed": 11,
+    "testsPassed": 102,
+    "p0WorkerBoundaryTests": [
+      "signup remains closed until verified staging accounts exist",
+      "bearer-only request rejected without provider calls",
+      "verified active HttpOnly-cookie session checked before server-side RLS request",
+      "stale cookie rejected after provider session revocation",
+      "unverified user rejected before Data API request"
+    ]
+  },
+  "localWorkerRuntimeSmoke": {
+    "command": "./tools/pnpm.sh --filter @venfinance/qa-neon-poc worker; Node fetch against 127.0.0.1:8788 /__p0/health, anonymous /__p0/rows, bearer-only /__p0/rows, and /api/auth/sign-up/email",
+    "exitCode": 0,
+    "httpStatuses": {
+      "health": 200,
+      "anonymous": 401,
+      "bearerOnly": 401,
+      "signupClosed": 403
+    },
+    "remoteProviderCalls": false,
+    "databaseWrites": false
+  },
+  "qualityChecks": {
+    "lint": { "command": "./tools/pnpm.sh lint", "exitCode": 0 },
+    "typecheck": { "command": "./tools/pnpm.sh typecheck", "exitCode": 0 },
+    "build": {
+      "command": "XDG_CONFIG_HOME=/tmp/venfinance-wrangler-config WRANGLER_SEND_METRICS=false ./tools/pnpm.sh build",
+      "exitCode": 0
+    },
+    "security": {
+      "command": "./tools/pnpm.sh test:security",
+      "exitCode": 0,
+      "clientBoundaryFailures": 0
+    },
+    "handoffAndExecutionDocs": {
+      "command": "./tools/pnpm.sh docs:check",
+      "exitCode": 0
+    }
+  },
+  "liveStagingBrowserTest": {
+    "executed": false,
+    "reason": "The local ignored environment does not contain two verified, owner-controlled staging test accounts. No account was created and no credentials were printed."
+  },
+  "remainingReleaseBlockers": [
+    "Live browser A/B isolation and sign-out replay remain unverified against staging Neon Auth and the deployed Worker.",
+    "Staging Auth verification, email delivery, operator MFA/step-up, and production Auth behavior remain unproven.",
+    "The staging Data API architecture and direct stale-token behavior still require an approved ADR and release decision."
+  ],
+  "productionReady": false,
+  "deploymentPerformed": false
+}

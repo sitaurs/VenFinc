@@ -2,29 +2,33 @@ import { Hono, type Context } from "hono";
 import { cors } from "hono/cors";
 import { secureHeaders } from "hono/secure-headers";
 import {
-  createRemoteJWKSet,
-  jwtVerify,
-  type JWTPayload,
-  type RemoteJWKSetOptions,
-} from "jose";
+  proxyNeonAuth,
+  resolveNeonSession,
+  type NeonAuthBindings,
+  type VerifiedNeonSession,
+} from "./auth";
 
 type P0Env = {
-  Bindings: {
+  Bindings: NeonAuthBindings & {
     P0_ENABLED?: string;
     P0_ALLOWED_ORIGIN?: string;
-    NEON_AUTH_ISSUER?: string;
-    NEON_AUTH_JWKS_URL?: string;
     NEON_DATA_API_URL?: string;
   };
   Variables: {
-    identity: { sub: string; payload: JWTPayload; token: string };
+    identity: VerifiedNeonSession;
   };
 };
 
 const app = new Hono<P0Env>();
-const jwksCache = new Map<string, ReturnType<typeof createRemoteJWKSet>>();
-const jwksOptions: RemoteJWKSetOptions = { cooldownDuration: 30_000 };
 const dataApiHost = "ep-rapid-flower-b46lkbp1.apirest.c-6.us-east-2.aws.neon.tech";
+
+app.use("/api/auth/*", async (c, next) => {
+  if (c.env.P0_ENABLED !== "1") return c.notFound();
+  return next();
+});
+app.all("/api/auth/*", (c) =>
+  proxyNeonAuth(c.req.raw, c.env, crypto.randomUUID()),
+);
 
 app.use("/__p0/*", secureHeaders());
 app.use("/__p0/*", async (c, next) => {
@@ -37,7 +41,7 @@ app.use(
   cors({
     origin: (origin, c) =>
       origin && origin === c.env.P0_ALLOWED_ORIGIN ? origin : "",
-    allowHeaders: ["Authorization", "Content-Type"],
+    allowHeaders: ["Content-Type"],
     allowMethods: ["GET", "POST", "OPTIONS"],
     maxAge: 300,
   }),
@@ -51,49 +55,17 @@ app.use("/__p0/*", async (c, next) => {
 app.get("/__p0/health", (c) => c.json({ status: "ok" }));
 
 app.use("/__p0/rows", async (c, next) => {
-  const authorization = c.req.header("Authorization");
-  const token = authorization?.match(/^Bearer ([^\s]+)$/)?.[1];
-  if (!token || token.length > 8192) {
-    return c.json({ error: "AUTH_REQUIRED" }, 401);
+  const resolution = await resolveNeonSession(c.req.raw, c.env);
+  if (!resolution.ok) {
+    return c.json({ error: "AUTH_UNAVAILABLE" }, 503);
   }
 
-  const issuer = c.env.NEON_AUTH_ISSUER;
-  const jwksUrl = c.env.NEON_AUTH_JWKS_URL;
-  if (!issuer || !jwksUrl) return c.json({ error: "AUTH_NOT_CONFIGURED" }, 503);
-
-  let keySet = jwksCache.get(jwksUrl);
-  if (!keySet) {
-    const parsedJwksUrl = new URL(jwksUrl);
-    if (
-      parsedJwksUrl.protocol !== "https:" ||
-      !parsedJwksUrl.hostname.includes(".neonauth.") ||
-      !parsedJwksUrl.pathname.endsWith("/.well-known/jwks.json")
-    ) {
-      return c.json({ error: "AUTH_NOT_CONFIGURED" }, 503);
-    }
-    keySet = createRemoteJWKSet(parsedJwksUrl, jwksOptions);
-    jwksCache.set(jwksUrl, keySet);
+  for (const cookie of resolution.refreshedCookies) {
+    c.header("Set-Cookie", cookie, { append: true });
   }
+  if (!resolution.session) return c.json({ error: "AUTH_REQUIRED" }, 401);
 
-  try {
-    const { payload } = await jwtVerify(token, keySet, {
-      issuer,
-      algorithms: ["EdDSA"],
-      requiredClaims: ["sub", "exp", "iss"],
-      clockTolerance: 5,
-    });
-    if (
-      typeof payload.sub !== "string" ||
-      payload.sub.length === 0 ||
-      payload.sub.length > 255 ||
-      payload.role !== "authenticated"
-    ) {
-      return c.json({ error: "AUTH_INVALID" }, 401);
-    }
-    c.set("identity", { sub: payload.sub, payload, token });
-  } catch {
-    return c.json({ error: "AUTH_INVALID" }, 401);
-  }
+  c.set("identity", resolution.session);
   return next();
 });
 
@@ -120,7 +92,7 @@ async function dataApiRequest(
 ) {
   const identity = c.get("identity");
   const headers = new Headers({
-    Authorization: `Bearer ${identity.token}`,
+    Authorization: `Bearer ${identity.providerJwt}`,
     Accept: "application/json",
   });
   if (method === "GET") {
@@ -161,7 +133,7 @@ async function dataApiRequest(
 app.get("/__p0/rows", async (c) => {
   const result = await dataApiRequest(c, "GET");
   if (result.response) return result.response;
-  return c.json({ rows: result.rows, sessionStatus: "jwt-only" });
+  return c.json({ rows: result.rows, sessionStatus: "active-cookie" });
 });
 
 app.post("/__p0/rows", async (c) => {
@@ -185,12 +157,12 @@ app.post("/__p0/rows", async (c) => {
   const identity = c.get("identity");
   const result = await dataApiRequest(c, "POST", {
     id: crypto.randomUUID(),
-    owner_user_id: identity.sub,
+    owner_user_id: identity.subject,
     marker: body.marker,
   });
   if (result.response) return result.response;
   return c.json(
-    { inserted: result.rows, sessionStatus: "jwt-only" },
+    { inserted: result.rows, sessionStatus: "active-cookie" },
     201,
   );
 });

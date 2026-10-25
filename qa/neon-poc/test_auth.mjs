@@ -1,52 +1,56 @@
-import { chromium } from "@playwright/test";
+import { readFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
+import { chromium, request } from "@playwright/test";
 
-const browser = await chromium.launch({
-  headless: true,
-  executablePath: "/opt/google/chrome/chrome",
-  args: ["--no-sandbox"],
-});
-
+const origin = "http://127.0.0.1:5173";
+const envPath = fileURLToPath(new URL("./.env.local", import.meta.url));
 const safe = {
   workerHealth: false,
   anonymousDenied: false,
-  signupA: false,
-  signupB: false,
-  tamperedDenied: false,
+  bearerOnlyDenied: false,
+  signInA: false,
+  signInB: false,
+  authJwtHidden: false,
+  sessionCookieHttpOnly: false,
+  browserUsesSameOriginOnly: false,
   forgedOwnerDenied: false,
   aSeesOwn: false,
   bCannotSeeA: false,
   bSeesOwn: false,
   aCannotSeeB: false,
-  authRoleClaimValid: false,
+  signOutA: false,
   sessionRevocationEnforced: false,
   sessionReplayStatus: null,
   workerResponses: {},
-  tokenMetadata: [],
   failureStage: null,
 };
 
-let stage = "launch";
+let stage = "environment";
+let browser;
 let contextA;
-let pageA;
 let contextB;
+let replayContext;
+let pageA;
+let pageB;
+let externalBrowserRequests = 0;
 
-async function openClient() {
-  const context = await browser.newContext();
-  context.setDefaultTimeout(15_000);
-  const page = await context.newPage();
-  page.on("pageerror", () => {
-    safe.pageErrors = (safe.pageErrors ?? 0) + 1;
-  });
-  page.on("response", (response) => {
-    const url = new URL(response.url());
-    if (url.hostname.includes("neonauth.")) {
-      safe.authResponses ??= [];
-      safe.authResponses.push({ path: url.pathname, status: response.status() });
+function parseEnv(source) {
+  const values = new Map();
+  for (const line of source.split(/\r?\n/u)) {
+    const match = line.match(/^\s*(?:export\s+)?([A-Z0-9_]+)\s*=\s*(.*?)\s*$/u);
+    if (!match) continue;
+    let value = match[2] ?? "";
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      value = value.slice(1, -1);
+    } else {
+      value = value.replace(/\s+#.*$/u, "").trim();
     }
-  });
-  await page.goto("http://127.0.0.1:5173", { waitUntil: "domcontentloaded" });
-  await page.waitForFunction(() => window.p0NeonAuth !== undefined);
-  return { context, page };
+    values.set(match[1], value);
+  }
+  return values;
 }
 
 function rows(body) {
@@ -59,10 +63,6 @@ function summarize(response) {
   return {
     status: response.status,
     error: typeof response.body?.error === "string" ? response.body.error : null,
-    upstreamStatus:
-      typeof response.body?.upstreamStatus === "number"
-        ? response.body.upstreamStatus
-        : null,
     sessionStatus:
       typeof response.body?.sessionStatus === "string"
         ? response.body.sessionStatus
@@ -74,125 +74,191 @@ function summarize(response) {
   };
 }
 
+async function openClient() {
+  const context = await browser.newContext();
+  context.setDefaultTimeout(15_000);
+  const page = await context.newPage();
+  page.on("request", (requestEvent) => {
+    if (new URL(requestEvent.url()).origin !== origin) {
+      externalBrowserRequests += 1;
+    }
+  });
+  page.on("pageerror", () => {
+    safe.pageErrors = (safe.pageErrors ?? 0) + 1;
+  });
+  await page.goto(origin, { waitUntil: "domcontentloaded" });
+  await page.waitForFunction(() => window.p0NeonAuth !== undefined);
+  return { context, page };
+}
+
+async function evaluate(page, operation, ...args) {
+  return page.evaluate(
+    ({ operationName, operationArgs }) =>
+      window.p0NeonAuth[operationName](...operationArgs),
+    { operationName: operation, operationArgs: args },
+  );
+}
+
 try {
+  const source = await readFile(envPath, "utf8");
+  const env = parseEnv(source);
+  const userA = {
+    email: env.get("P0_TEST_USER_A_EMAIL"),
+    password: env.get("P0_TEST_USER_A_PASSWORD"),
+  };
+  const userB = {
+    email: env.get("P0_TEST_USER_B_EMAIL"),
+    password: env.get("P0_TEST_USER_B_PASSWORD"),
+  };
+  if (
+    !userA.email ||
+    !userA.password ||
+    !userB.email ||
+    !userB.password ||
+    userA.email === userB.email
+  ) {
+    throw new Error("TEST_ACCOUNTS_NOT_CONFIGURED");
+  }
+
+  browser = await chromium.launch({
+    headless: true,
+    executablePath: "/opt/google/chrome/chrome",
+    args: ["--no-sandbox"],
+  });
+
   stage = "client-A";
   ({ context: contextA, page: pageA } = await openClient());
 
   stage = "health";
-  const health = await pageA.evaluate(() => window.p0NeonAuth.health());
+  const health = await evaluate(pageA, "health");
   safe.workerHealth = health.status === 200;
 
   stage = "anonymous";
-  const anonymous = await pageA.evaluate(() => window.p0NeonAuth.anonymous());
+  const anonymous = await evaluate(pageA, "anonymous");
   safe.anonymousDenied = anonymous.status === 401;
 
-  stage = "signup-A";
-  const authA = await pageA.evaluate(() => window.p0NeonAuth.signupA());
-  safe.signupA = authA.signup === "ok";
-  if (!safe.signupA) {
-    safe.signupFailure = authA.failure ?? { kind: "unknown" };
-    throw new Error("Synthetic signup failed.");
-  }
-  safe.tokenMetadata.push(authA.jwtClaims);
-  safe.authRoleClaimValid =
-    authA.jwtClaims?.role === "authenticated" &&
-    authA.jwtClaims?.subjectPresent === true;
+  stage = "bearer-only";
+  const bearerOnly = await evaluate(pageA, "bearerOnly");
+  safe.bearerOnlyDenied = bearerOnly.status === 401;
+
+  stage = "sign-in-A";
+  const authA = await evaluate(pageA, "signIn", userA.email, userA.password);
+  safe.signInA = authA.status === 200;
+  safe.authJwtHidden = authA.authJwtHeaderExposed === false;
+  if (!safe.signInA) throw new Error("SIGN_IN_A_FAILED");
+
+  stage = "cookie-A";
+  const sessionCookie = (await contextA.cookies(origin)).find((cookie) =>
+    cookie.name.endsWith("neonauth.session_token"),
+  );
+  safe.sessionCookieHttpOnly = sessionCookie?.httpOnly === true;
+  if (!sessionCookie) throw new Error("SESSION_COOKIE_MISSING");
+  const staleCookieHeader = `${sessionCookie.name}=${sessionCookie.value}`;
+
+  const runId = crypto.randomUUID().replaceAll("-", "");
+  const markerA = `qa_a_${runId}`;
+  const markerB = `qa_b_${runId}`;
 
   stage = "create-A";
-  const createA = await pageA.evaluate(() =>
-    window.p0NeonAuth.createRow("user-A"),
-  );
-  const tokenA = await pageA.evaluate(() => window.p0NeonAuth.currentToken());
+  const createA = await evaluate(pageA, "createRow", markerA);
+  safe.workerResponses.createA = summarize(createA);
   safe.aSeesOwn =
     createA.status === 201 &&
-    createA.body?.inserted?.[0]?.marker === "user-A";
-  safe.workerResponses.createA = summarize(createA);
+    createA.body?.sessionStatus === "active-cookie" &&
+    createA.body?.inserted?.some((row) => row.marker === markerA) === true;
 
   stage = "list-A";
-  const listA = await pageA.evaluate(() => window.p0NeonAuth.list());
+  const listA = await evaluate(pageA, "list");
   safe.workerResponses.listA = summarize(listA);
   safe.aSeesOwn &&=
     listA.status === 200 &&
-    rows(listA.body).length === 1 &&
-    rows(listA.body)[0]?.marker === "user-A";
-
-  stage = "tampered";
-  const tampered = await pageA.evaluate(() => window.p0NeonAuth.tampered());
-  safe.tamperedDenied = tampered.status === 401;
+    listA.body?.sessionStatus === "active-cookie" &&
+    rows(listA.body).some((row) => row.marker === markerA);
 
   stage = "forged-owner";
-  const forgedOwner = await pageA.evaluate(() =>
-    window.p0NeonAuth.forgedOwner(),
-  );
+  const forgedOwner = await evaluate(pageA, "forgedOwner");
   safe.forgedOwnerDenied = forgedOwner.status === 400;
 
   stage = "client-B";
-  ({ context: contextB } = await openClient());
-  const pageB = contextB.pages()[0];
+  ({ context: contextB, page: pageB } = await openClient());
 
-  stage = "signup-B";
-  const authB = await pageB.evaluate(() => window.p0NeonAuth.signupB());
-  safe.signupB = authB.signup === "ok";
-  safe.tokenMetadata.push(authB.jwtClaims);
-  const emptyB = await pageB.evaluate(() => window.p0NeonAuth.list());
+  stage = "sign-in-B";
+  const authB = await evaluate(pageB, "signIn", userB.email, userB.password);
+  safe.signInB = authB.status === 200;
+  safe.authJwtHidden &&= authB.authJwtHeaderExposed === false;
+  if (!safe.signInB) throw new Error("SIGN_IN_B_FAILED");
+  safe.browserUsesSameOriginOnly = externalBrowserRequests === 0;
+
+  stage = "list-B-before-insert";
+  const emptyB = await evaluate(pageB, "list");
   safe.workerResponses.listBBeforeInsert = summarize(emptyB);
-  safe.bCannotSeeA = emptyB.status === 200 && rows(emptyB.body).length === 0;
+  safe.bCannotSeeA =
+    emptyB.status === 200 && !rows(emptyB.body).some((row) => row.marker === markerA);
 
   stage = "create-B";
-  const createB = await pageB.evaluate(() =>
-    window.p0NeonAuth.createRow("user-B"),
-  );
+  const createB = await evaluate(pageB, "createRow", markerB);
   safe.workerResponses.createB = summarize(createB);
   safe.bSeesOwn =
     createB.status === 201 &&
-    createB.body?.inserted?.[0]?.marker === "user-B";
+    createB.body?.sessionStatus === "active-cookie" &&
+    createB.body?.inserted?.some((row) => row.marker === markerB) === true;
 
   stage = "list-B";
-  const listB = await pageB.evaluate(() => window.p0NeonAuth.list());
+  const listB = await evaluate(pageB, "list");
   safe.workerResponses.listB = summarize(listB);
   safe.bSeesOwn &&=
     listB.status === 200 &&
-    rows(listB.body).length === 1 &&
-    rows(listB.body)[0]?.marker === "user-B";
+    rows(listB.body).some((row) => row.marker === markerB);
 
   stage = "a-cannot-see-B";
-  const aAfterB = await pageA.evaluate((token) =>
-    window.p0NeonAuth.listAs(token), tokenA);
+  const aAfterB = await evaluate(pageA, "list");
   safe.workerResponses.listAAfterB = summarize(aAfterB);
   safe.aCannotSeeB =
-    aAfterB.status === 200 &&
-    rows(aAfterB.body).length === 1 &&
-    rows(aAfterB.body)[0]?.marker === "user-A";
+    aAfterB.status === 200 && !rows(aAfterB.body).some((row) => row.marker === markerB);
 
-  stage = "session-revoke";
-  const replay = await pageA.evaluate(() =>
-    window.p0NeonAuth.signOutThenReplay(),
-  );
-  safe.sessionReplayStatus = replay.status;
-  safe.sessionRevocationEnforced = replay.status === 401;
-  safe.workerResponses.sessionReplay = summarize(replay);
+  stage = "sign-out-A";
+  const signOut = await evaluate(pageA, "signOut");
+  safe.signOutA = signOut.status === 200;
+
+  stage = "session-replay";
+  replayContext = await request.newContext();
+  const replay = await replayContext.get(`${origin}/__p0/rows`, {
+    headers: { Cookie: staleCookieHeader },
+  });
+  safe.sessionReplayStatus = replay.status();
+  safe.sessionRevocationEnforced = replay.status() === 401;
+  const replayBody = await replay.json().catch(() => null);
+  safe.workerResponses.sessionReplay = {
+    status: replay.status(),
+    error: typeof replayBody?.error === "string" ? replayBody.error : null,
+  };
+  safe.browserUsesSameOriginOnly &&= externalBrowserRequests === 0;
 } catch (error) {
   safe.failure = error instanceof Error ? error.name : "unknown";
   safe.failureStage = stage;
 } finally {
+  await replayContext?.dispose();
   await contextB?.close();
   await contextA?.close();
-  await browser.close();
+  await browser?.close();
 }
 
 process.stdout.write(`${JSON.stringify(safe)}\n`);
 if (
   !safe.workerHealth ||
   !safe.anonymousDenied ||
-  !safe.signupA ||
-  !safe.signupB ||
-  !safe.tamperedDenied ||
+  !safe.bearerOnlyDenied ||
+  !safe.signInA ||
+  !safe.signInB ||
+  !safe.authJwtHidden ||
+  !safe.sessionCookieHttpOnly ||
+  !safe.browserUsesSameOriginOnly ||
   !safe.forgedOwnerDenied ||
   !safe.aSeesOwn ||
   !safe.bCannotSeeA ||
   !safe.bSeesOwn ||
   !safe.aCannotSeeB ||
-  !safe.authRoleClaimValid ||
+  !safe.signOutA ||
   !safe.sessionRevocationEnforced
 ) {
   process.exitCode = 1;
